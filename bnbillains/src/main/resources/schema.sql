@@ -1,22 +1,21 @@
 DROP DATABASE IF EXISTS bnbillain_db;
 CREATE DATABASE bnbillain_db;
-USE bnbillain_db; -- Importante: Seleccionar la DB para trabajar en ella
 SET NAMES utf8mb4;
 
-CREATE TABLE sala_secreta (
+CREATE TABLE IF NOT EXISTS sala_secreta (
     id LONG AUTO_INCREMENT PRIMARY KEY,
     codigo_acceso VARCHAR(8) NOT NULL,
     funcion_principal VARCHAR(255) NOT NULL,
     salida_emergencia BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE comodidad (
+CREATE TABLE IF NOT EXISTS comodidad (
     id LONG AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL UNIQUE,
     auto_destruccion BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE villano (
+CREATE TABLE IF NOT EXISTS villano (
      id LONG AUTO_INCREMENT PRIMARY KEY,
      nombre VARCHAR(255) NOT NULL,
      alias VARCHAR(255) NOT NULL,
@@ -25,7 +24,7 @@ CREATE TABLE villano (
 );
 
 -- Tabla Guarida (1:1 con Sala Secreta)
-CREATE TABLE guarida (
+CREATE TABLE IF NOT EXISTS guarida (
      id LONG AUTO_INCREMENT PRIMARY KEY,
      nombre VARCHAR(255) NOT NULL,
      descripcion VARCHAR(1000),
@@ -38,7 +37,7 @@ CREATE TABLE guarida (
 );
 
 -- Tabla (N:M Guarida-Comodidad)
-CREATE TABLE guarida_comodidades (
+CREATE TABLE IF NOT EXISTS guarida_comodidades (
      guarida_id LONG,
      comodidades_id LONG,
      PRIMARY KEY (guarida_id, comodidades_id),
@@ -50,7 +49,7 @@ CREATE TABLE guarida_comodidades (
 
 
 -- Tabla Reserva (N:1 con Villano y Guarida)
-CREATE TABLE reserva (
+CREATE TABLE IF NOT EXISTS reserva (
      id LONG AUTO_INCREMENT PRIMARY KEY,
      fecha_inicio DATE NOT NULL,
      fecha_fin DATE NOT NULL,
@@ -68,7 +67,7 @@ CREATE TABLE reserva (
 );
 
 -- Tabla Factura (1:1 con Reserva)
-CREATE TABLE factura (
+CREATE TABLE IF NOT EXISTS factura (
      id LONG AUTO_INCREMENT PRIMARY KEY,
      fecha_emision DATE NOT NULL,
      importe DECIMAL(10, 2) NOT NULL,
