@@ -3,7 +3,7 @@ CREATE DATABASE bnbillain_db;
 USE bnbillain_db; -- Importante: Seleccionar la DB para trabajar en ella
 SET NAMES utf8mb4;
 
-CREATE TABLE sala_secreta (
+CREATE TABLE salaSecreta (
     id LONG AUTO_INCREMENT PRIMARY KEY,
     codigo_acceso VARCHAR(8) NOT NULL,
     funcion_principal VARCHAR(255) NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE villano (
 CREATE TABLE guarida (
      id LONG AUTO_INCREMENT PRIMARY KEY,
      nombre VARCHAR(255) NOT NULL,
-     descripcion VARCHAR(1000),
+     descripcion VARCHAR(255),
      ubicacion VARCHAR(255) NOT NULL,
      precio_noche DECIMAL(10, 2) NOT NULL,
      imagen VARCHAR(255),
@@ -38,7 +38,7 @@ CREATE TABLE guarida (
 );
 
 -- Tabla (N:M Guarida-Comodidad)
-CREATE TABLE guarida_comodidades (
+CREATE TABLE guaridaComodidades (
      guarida_id LONG,
      comodidades_id LONG,
      PRIMARY KEY (guarida_id, comodidades_id),
@@ -81,9 +81,9 @@ CREATE TABLE factura (
 );
 
 -- Tabla Reseña (N:1 con Villano y Guarida)
-CREATE TABLE reseña (
+CREATE TABLE resena (
     id LONG AUTO_INCREMENT PRIMARY KEY,
-    comentario VARCHAR(1000),
+    comentario VARCHAR(255),
     puntuacion LONG NOT NULL,
     fecha_publicacion DATE,
     villano_id LONG,
