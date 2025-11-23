@@ -1,6 +1,12 @@
 DROP DATABASE IF EXISTS bnbillain_db;
 CREATE DATABASE bnbillain_db;
+USE bnbillain_db;
 SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0; -- Desactivar checks para evitar errores al crear
+
+-- =========================================================
+-- 1. TABLAS INDEPENDIENTES
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS sala_secreta (
     id LONG AUTO_INCREMENT PRIMARY KEY,
@@ -23,20 +29,25 @@ CREATE TABLE IF NOT EXISTS villano (
      email VARCHAR(255) NOT NULL UNIQUE
 );
 
+-- =========================================================
+-- 2. ENTIDADES PRINCIPALES
+-- =========================================================
+
 -- Tabla Guarida (1:1 con Sala Secreta)
 CREATE TABLE IF NOT EXISTS guarida (
      id LONG AUTO_INCREMENT PRIMARY KEY,
      nombre VARCHAR(255) NOT NULL,
-     descripcion VARCHAR(1000),
+     descripcion VARCHAR(255),
      ubicacion VARCHAR(255) NOT NULL,
      precio_noche DECIMAL(10, 2) NOT NULL,
      imagen VARCHAR(255),
      sala_secreta_id LONG UNIQUE,
-     FOREIGN KEY (sala_secreta_id) REFERENCES sala_secreta(id) ON DELETE CASCADE ON UPDATE CASCADE,
+     FOREIGN KEY (sala_secreta_id) REFERENCES sala_secreta(id) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
      CONSTRAINT chk_precio_positivo CHECK (precio_noche > 0)
 );
 
--- Tabla (N:M Guarida-Comodidad)
+-- Tabla Intermedia (N:M Guarida-Comodidad)
 CREATE TABLE IF NOT EXISTS guarida_comodidades (
      guarida_id LONG,
      comodidades_id LONG,
@@ -47,6 +58,9 @@ CREATE TABLE IF NOT EXISTS guarida_comodidades (
          ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- =========================================================
+-- 3. TRANSACCIONES Y NEGOCIO
+-- =========================================================
 
 -- Tabla Reserva (N:1 con Villano y Guarida)
 CREATE TABLE IF NOT EXISTS reserva (
@@ -61,7 +75,6 @@ CREATE TABLE IF NOT EXISTS reserva (
          ON DELETE CASCADE ON UPDATE CASCADE,
      FOREIGN KEY (guarida_id) REFERENCES guarida(id)
          ON DELETE CASCADE ON UPDATE CASCADE,
-    -- Restricción: La fecha de inicio debe ser ANTERIOR a la de fin
      CONSTRAINT chk_fechas_validas CHECK (fecha_inicio < fecha_fin),
      CONSTRAINT chk_coste_positivo CHECK (coste_total >= 0)
 );
@@ -80,9 +93,9 @@ CREATE TABLE IF NOT EXISTS factura (
 );
 
 -- Tabla Reseña (N:1 con Villano y Guarida)
-CREATE TABLE reseña (
+CREATE TABLE IF NOT EXISTS resena (
     id LONG AUTO_INCREMENT PRIMARY KEY,
-    comentario VARCHAR(1000),
+    comentario VARCHAR(255),
     puntuacion LONG NOT NULL,
     fecha_publicacion DATE,
     villano_id LONG,
@@ -91,6 +104,7 @@ CREATE TABLE reseña (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (guarida_id) REFERENCES guarida(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
--- Restricción: Puntuación entre 1 y 5
     CONSTRAINT chk_puntuacion_rango CHECK (puntuacion >= 1 AND puntuacion <= 5)
 );
+
+SET FOREIGN_KEY_CHECKS = 1;
