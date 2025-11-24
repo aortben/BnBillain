@@ -33,14 +33,12 @@ public class VillanoService {
         return villanoRepository.findById(id)
                 .map(g -> {
                     g.setNombre(villano.getNombre());
-                    g.setDescripcion(villano.getDescripcion());
-                    g.setUbicacion(villano.getUbicacion());
-                    g.setPrecioNoche(villano.getPrecioNoche());
-                    g.setImagen(villano.getImagen());
-                    g.setComodidades(villano.getComodidades());
-                    g.setSalaSecreta(villano.getSalaSecreta());
+                    g.setAlias(villano.getAlias());
+                    g.setCarnetDeVillano(villano.getCarnetDeVillano());
+                    g.setEmail(villano.getEmail());
                     return villanoRepository.save(g);
                 })
+        }
                 .orElseThrow(() -> new IllegalArgumentException("Villano no encontrado"));
     }
 
