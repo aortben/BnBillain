@@ -16,6 +16,5 @@ public interface GuaridaRepository extends JpaRepository<Guarida, Long> {
     boolean existsByNombre(String nombre);
     List<Guarida> findByPrecioNocheBetween(Double min, Double max, Sort sort);
     List<Guarida> findAll(Sort sort);
-
 }
 
