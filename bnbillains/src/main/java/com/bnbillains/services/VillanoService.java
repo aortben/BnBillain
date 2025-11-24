@@ -69,4 +69,3 @@ public class VillanoService {
         return villanoRepository.existsByEmail(email);
     }
 }
-
