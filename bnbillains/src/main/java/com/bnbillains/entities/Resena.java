@@ -16,7 +16,7 @@ import java.time.LocalDate;
  * Contiene validaciones específicas para la puntuación (1-5 estrellas).
  */
 @Entity // Marca esta clase como una entidad gestionada por JPA.
-@Table(name = "reseña") // Especifica el nombre de la tabla asociada a esta entidad.
+@Table(name = "resena") // Especifica el nombre de la tabla asociada a esta entidad.
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
