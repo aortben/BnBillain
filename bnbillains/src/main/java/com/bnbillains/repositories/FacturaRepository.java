@@ -17,5 +17,6 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
     List<Factura> findByFechaEmision(LocalDate fechaEmision);
     List<Factura> findByMetodoPagoContainingIgnoreCase(String metodo);
     boolean existsByReserva_Id(Long reservaId);
+    List<Factura> findByFechaEmisionBetween(LocalDate inicio, LocalDate fin);
 }
 

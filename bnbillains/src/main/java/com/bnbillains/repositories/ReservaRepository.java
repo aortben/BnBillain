@@ -19,4 +19,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByFechaInicio(LocalDate fechaInicio);
     Optional<Reserva> findByFactura_Id(Long facturaId);
     boolean existsByFactura_Id(Long facturaId);
+    List<Reserva> findByFechaInicioBetween(LocalDate inicio, LocalDate fin);
+    List<Reserva> findByFechaFinBetween(LocalDate inicio, LocalDate fin);
 }
