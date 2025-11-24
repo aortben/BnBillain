@@ -1,10 +1,13 @@
 package com.bnbillains.services;
 
+import com.bnbillains.entities.Guarida;
 import com.bnbillains.entities.Reserva;
+import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.ReservaRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,19 +34,15 @@ public class ReservaService {
 
     public Reserva actualizar(Long id, Reserva reserva) {
         return reservaRepository.findById(id)
-                .map(g -> {
-                    g.setFechaInicio(reserva.getFechaInicio());
-                    g.setFechaFin(reserva.getFechaFin());
-                    g.setCosteTotal(reserva.getCosteTotal());
-                    g.setEstado(reserva.getEstado());
-                    g.setVillano(reserva.getVillano());
-                    g.setGuarida(reserva.getGuarida());
-                    return reservaRepository.save(g);
-
-
-                    estado BOOLEAN DEFAULT FALSE,
-                    villano_id BIGINT,
-                    guarida_id BIGINT,
+                .map(rv -> {
+                    rv.setFechaInicio(reserva.getFechaInicio());
+                    rv.setFechaFin(reserva.getFechaFin());
+                    rv.setCosteTotal(reserva.getCosteTotal());
+                    rv.setEstado(reserva.getEstado());
+                    rv.setVillano(reserva.getVillano());
+                    rv.setGuarida(reserva.getGuarida());
+                    rv.setFactura(reserva.getFactura());
+                    return reservaRepository.save(rv);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
     }
@@ -53,23 +52,30 @@ public class ReservaService {
     }
 
     public List<Reserva> buscarPorFInicio(LocalDate fechaInicio) {
-        return reservaRepository.findByFInicio(fechaInicio);
+        return reservaRepository.findByFechaInicio(fechaInicio);
     }
 
-    public List<Reserva> buscarPorFFin(LocalDate fechaFin) {
-        return reservaRepository.findByFFin(fechaFin);
+    public List<Reserva> buscarFFinEntre(LocalDate fechaInicio, LocalDate fechaFin) {
+        return reservaRepository.findByFechaFinBetween(fechaInicio, fechaFin);
     }
 
     public List<Reserva> obtenerTodosOrdenados(Sort sort) {
         return reservaRepository.findAll(sort);
     }
 
-    public List<Reserva> buscarPorCosteTotal(Double fechaFin) {
-        return reservaRepository.findByCosteTotal(fechaFin);
+    public List<Reserva> buscarFInicioEntre(LocalDate fechaInicio, LocalDate fechaFin) {
+        return reservaRepository.findByFechaInicioBetween(fechaInicio, fechaFin);
     }
-
+    public Optional<Reserva> buscarIdFactura(Long id) {
+        return reservaRepository.findByFactura_Id(id);
+    }
+    public List<Reserva> buscarGuarida(Guarida guarida) {
+        return reservaRepository.findByGuarida(guarida);
+    }
+    public List<Reserva> buscarVillano(Villano villano) {
+        return reservaRepository.findByVillano(villano);
+    }
     public List<Reserva> buscarPorEstado(Boolean estado) {
         return reservaRepository.findByEstado(estado);
     }
 }
-
