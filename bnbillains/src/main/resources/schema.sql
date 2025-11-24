@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS bnbillain_db;
-CREATE DATABASE bnbillain_db;
-USE bnbillain_db;
+DROP DATABASE IF EXISTS bnbillains_db;
+CREATE DATABASE bnbillains_db;
+USE bnbillains_db;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0; -- Desactivar checks para evitar errores al crear
 
@@ -9,20 +9,20 @@ SET FOREIGN_KEY_CHECKS = 0; -- Desactivar checks para evitar errores al crear
 -- =========================================================
 
 CREATE TABLE IF NOT EXISTS sala_secreta (
-    id LONG AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     codigo_acceso VARCHAR(8) NOT NULL,
     funcion_principal VARCHAR(255) NOT NULL,
     salida_emergencia BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS comodidad (
-    id LONG AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL UNIQUE,
     auto_destruccion BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS villano (
-     id LONG AUTO_INCREMENT PRIMARY KEY,
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
      nombre VARCHAR(255) NOT NULL,
      alias VARCHAR(255) NOT NULL,
      carne_villano VARCHAR(20) NOT NULL UNIQUE,
@@ -35,13 +35,13 @@ CREATE TABLE IF NOT EXISTS villano (
 
 -- Tabla Guarida (1:1 con Sala Secreta)
 CREATE TABLE IF NOT EXISTS guarida (
-     id LONG AUTO_INCREMENT PRIMARY KEY,
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
      nombre VARCHAR(255) NOT NULL,
-     descripcion VARCHAR(255),
+     descripcion VARCHAR(1000),
      ubicacion VARCHAR(255) NOT NULL,
      precio_noche DECIMAL(10, 2) NOT NULL,
      imagen VARCHAR(255),
-     sala_secreta_id LONG UNIQUE,
+     sala_secreta_id BIGINT UNIQUE,
      FOREIGN KEY (sala_secreta_id) REFERENCES sala_secreta(id) 
         ON DELETE CASCADE ON UPDATE CASCADE,
      CONSTRAINT chk_precio_positivo CHECK (precio_noche > 0)
@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS guarida (
 
 -- Tabla Intermedia (N:M Guarida-Comodidad)
 CREATE TABLE IF NOT EXISTS guarida_comodidades (
-     guarida_id LONG,
-     comodidades_id LONG,
+     guarida_id BIGINT,
+     comodidades_id BIGINT,
      PRIMARY KEY (guarida_id, comodidades_id),
      FOREIGN KEY (guarida_id) REFERENCES guarida(id)
          ON DELETE CASCADE ON UPDATE CASCADE,
@@ -64,13 +64,13 @@ CREATE TABLE IF NOT EXISTS guarida_comodidades (
 
 -- Tabla Reserva (N:1 con Villano y Guarida)
 CREATE TABLE IF NOT EXISTS reserva (
-     id LONG AUTO_INCREMENT PRIMARY KEY,
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
      fecha_inicio DATE NOT NULL,
      fecha_fin DATE NOT NULL,
      coste_total DECIMAL(10, 2) NOT NULL,
      estado BOOLEAN DEFAULT FALSE,
-     villano_id LONG,
-     guarida_id LONG,
+     villano_id BIGINT,
+     guarida_id BIGINT,
      FOREIGN KEY (villano_id) REFERENCES villano(id)
          ON DELETE CASCADE ON UPDATE CASCADE,
      FOREIGN KEY (guarida_id) REFERENCES guarida(id)
@@ -81,12 +81,12 @@ CREATE TABLE IF NOT EXISTS reserva (
 
 -- Tabla Factura (1:1 con Reserva)
 CREATE TABLE IF NOT EXISTS factura (
-     id LONG AUTO_INCREMENT PRIMARY KEY,
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
      fecha_emision DATE NOT NULL,
      importe DECIMAL(10, 2) NOT NULL,
      impuestos_malignos DECIMAL(10, 2) DEFAULT 0.0,
      metodo_pago VARCHAR(255),
-     reserva_id LONG UNIQUE,
+     reserva_id BIGINT UNIQUE,
      FOREIGN KEY (reserva_id) REFERENCES reserva(id)
          ON DELETE CASCADE ON UPDATE CASCADE,
      CONSTRAINT chk_importe_positivo CHECK (importe >= 0)
@@ -94,12 +94,12 @@ CREATE TABLE IF NOT EXISTS factura (
 
 -- Tabla Reseña (N:1 con Villano y Guarida)
 CREATE TABLE IF NOT EXISTS resena (
-    id LONG AUTO_INCREMENT PRIMARY KEY,
-    comentario VARCHAR(255),
-    puntuacion LONG NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    comentario VARCHAR(1000),
+    puntuacion BIGINT NOT NULL,
     fecha_publicacion DATE,
-    villano_id LONG,
-    guarida_id LONG,
+    villano_id BIGINT,
+    guarida_id BIGINT,
     FOREIGN KEY (villano_id) REFERENCES villano(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (guarida_id) REFERENCES guarida(id)

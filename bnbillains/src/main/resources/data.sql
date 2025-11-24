@@ -54,7 +54,7 @@ INSERT INTO factura (fecha_emision, importe, impuestos_malignos, metodo_pago, re
 ('2025-12-28', 3000.00, 50.00, 'Bitcoin', 3);
 
 -- 8. INSERTAR RESEÑAS
-INSERT INTO reseña (comentario, puntuacion, fecha_publicacion, villano_id, guarida_id) VALUES
+INSERT INTO resena (comentario, puntuacion, fecha_publicacion, villano_id, guarida_id) VALUES
 ('La lava estaba un poco fría, pero los esbirros muy atentos.', 4, '2025-12-06', 1, 1),
 ('Demasiada humedad para mis artilugios. Se me oxidó el Inator.', 2, '2025-11-23', 3, 3),
 ('Excelente para esconder la Luna.', 5, '2026-01-21', 4, 4);
