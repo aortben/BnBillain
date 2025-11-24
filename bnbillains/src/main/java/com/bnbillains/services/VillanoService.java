@@ -1,5 +1,6 @@
 package com.bnbillains.services;
 
+import com.bnbillains.entities.Guarida;
 import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.VillanoRepository;
 import org.springframework.data.domain.Sort;
@@ -31,35 +32,41 @@ public class VillanoService {
 
     public Villano actualizar(Long id, Villano villano) {
         return villanoRepository.findById(id)
-                .map(g -> {
-                    g.setNombre(villano.getNombre());
-                    g.setAlias(villano.getAlias());
-                    g.setCarnetDeVillano(villano.getCarnetDeVillano());
-                    g.setEmail(villano.getEmail());
-                    return villanoRepository.save(g);
+                .map(v -> {
+                    v.setNombre(villano.getNombre());
+                    v.setAlias(villano.getAlias());
+                    v.setCarnetDeVillano(villano.getCarnetDeVillano());
+                    v.setEmail(villano.getEmail());
+                    return villanoRepository.save(v);
                 })
-        }
-                .orElseThrow(() -> new IllegalArgumentException("Villano no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Guarida no encontrada"));
     }
 
     public void eliminar(Long id) {
         villanoRepository.deleteById(id);
     }
 
-    public List<Villano> buscarPorNombre(String nombre) {
-        return villanoRepository.findByNombreContainingIgnoreCase(nombre);
+    public Optional<Villano> buscarPorEmail(String email) {
+        return villanoRepository.findByEmail(email);
     }
 
-    public List<Villano> buscarPorAlias(String alias) {
-        return villanoRepository.findByAliasContainingIgnoreCase(alias);
+    public Optional<Villano> buscarPorCarnetDeVillano(String carnetDeVillano) {
+        return villanoRepository.findByCarnetDeVillano(carnetDeVillano);
     }
 
     public List<Villano> obtenerTodosOrdenados(Sort sort) {
+
         return villanoRepository.findAll(sort);
     }
 
-    public boolean existePorNombre(String nombre) {
-        return villanoRepository.existsByNombre(nombre);
+    public boolean existePorCarnetDeVillano(String carnetDeVillano) {
+
+        return villanoRepository.existsByCarnetDeVillano(carnetDeVillano);
+    }
+
+    public boolean existePorEmail(String email) {
+
+        return villanoRepository.existsByEmail(email);
     }
 }
 
