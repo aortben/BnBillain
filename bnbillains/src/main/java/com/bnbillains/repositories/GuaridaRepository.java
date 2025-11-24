@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface GuaridaRepository extends JpaRepository<Guarida, Long> {
+
     List<Guarida> findByUbicacion(String ubicacion);
     List<Guarida> findByNombreContainingIgnoreCase(String text);
     List<Guarida> findByPrecioNocheBetween(Double min, Double max);
