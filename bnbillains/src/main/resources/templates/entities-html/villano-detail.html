@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/head :: head ('Detalle Villano - BnBillains')"></head>
+<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="flex-shrink-0" style="margin-top: 10%; padding: 2rem;">
+    <div class="container">
+        <div class="mb-4">
+            <a href="/villano" class="btn btn-secondary">← Volver a Villanos</a>
+        </div>
+
+        <div class="card mb-4 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h2 class="mb-0" th:text="${villano.nombre}"></h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Alias:</strong> <span th:text="${villano.alias}"></span></p>
+                        <p><strong>Carnet de Villano:</strong> <span th:text="${villano.carnetDeVillano}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> <span th:text="${villano.email}"></span></p>
+                        <p><strong>ID:</strong> <span th:text="${villano.id}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Reservas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${reservas.isEmpty()}" class="alert alert-info">
+                            No hay reservas realizadas
+                        </div>
+                        <div th:if="!${reservas.isEmpty()}">
+                            <div th:each="reserva : ${reservas}" class="mb-3 p-3 border rounded">
+                                <p><strong>Guarida:</strong> <span th:text="${reserva.guarida.nombre}"></span></p>
+                                <p><strong>Fecha Inicio:</strong> <span th:text="${reserva.fechaInicio}"></span></p>
+                                <p><strong>Fecha Fin:</strong> <span th:text="${reserva.fechaFin}"></span></p>
+                                <p><strong>Coste Total:</strong> <span th:text="${reserva.costeTotal}"></span>€</p>
+                                <p><strong>Estado:</strong> 
+                                    <span th:if="${reserva.estado}" class="badge bg-success">Confirmada</span>
+                                    <span th:unless="${reserva.estado}" class="badge bg-warning">Pendiente</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Reseñas Escritas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${resenas.isEmpty()}" class="alert alert-info">
+                            No hay reseñas escritas
+                        </div>
+                        <div th:if="!${resenas.isEmpty()}">
+                            <div th:each="resena : ${resenas}" class="mb-3 p-3 border rounded">
+                                <p><strong>Guarida:</strong> <span th:text="${resena.guarida.nombre}"></span></p>
+                                <p><strong>Puntuación:</strong> 
+                                    <span class="badge bg-warning" th:text="${resena.puntuacion} + '/5'"></span>
+                                </p>
+                                <p><strong>Comentario:</strong></p>
+                                <p th:text="${resena.comentario}"></p>
+                                <small class="text-muted" th:text="${resena.fechaPublicacion}"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-warning mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Facturas</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${facturas.isEmpty()}" class="alert alert-info">
+                    No hay facturas asociadas
+                </div>
+                <div th:if="!${facturas.isEmpty()}">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha Emisión</th>
+                                    <th>Importe</th>
+                                    <th>Impuestos</th>
+                                    <th>Método Pago</th>
+                                    <th>Reserva</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="factura : ${facturas}">
+                                    <td th:text="${factura.id}"></td>
+                                    <td th:text="${factura.fechaEmision}"></td>
+                                    <td th:text="${factura.importe}"></td>
+                                    <td th:text="${factura.impuestosMalignos}"></td>
+                                    <td th:text="${factura.metodoPago}"></td>
+                                    <td th:text="${factura.reserva.guarida.nombre}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/villano/{id}/edit(id=${villano.id})}" class="btn btn-warning">Editar Villano</a>
+            <a th:href="@{/villano/{id}/delete(id=${villano.id})}" class="btn btn-danger" 
+               onclick="return confirm('¿Eliminar este villano?');">Eliminar Villano</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>
