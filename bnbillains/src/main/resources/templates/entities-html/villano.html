@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/head :: head ('Villanos - BnBillains')"></head>
+<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="flex-shrink-0" style="margin-top: 10%; padding: 2rem;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Gestión de Villanos</h1>
+            <a href="/villano/new" class="btn btn-danger">+ Nuevo Villano</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-dark">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Alias</th>
+                        <th>Carnet</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${villanos.isEmpty()}">
+                        <td colspan="6" class="text-center text-muted">No hay villanos registrados</td>
+                    </tr>
+                    <tr th:each="villano : ${villanos}">
+                        <td th:text="${villano.id}"></td>
+                        <td>
+                            <a th:href="@{/villano/{id}(id=${villano.id})}" 
+                               class="text-decoration-none text-light" 
+                               style="font-weight: bold; cursor: pointer;">
+                                <span th:text="${villano.nombre}"></span>
+                            </a>
+                        </td>
+                        <td th:text="${villano.alias}"></td>
+                        <td th:text="${villano.carnetDeVillano}"></td>
+                        <td th:text="${villano.email}"></td>
+                        <td>
+                            <a th:href="@{/villano/{id}/edit(id=${villano.id})}" class="btn btn-sm btn-warning">Editar</a>
+                            <a th:href="@{/villano/{id}/delete(id=${villano.id})}" class="btn btn-sm btn-danger" 
+                               onclick="return confirm('¿Eliminar este villano?');">Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>
