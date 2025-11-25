@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('DWES Pokedex - Home')"></head>
+<head th:replace="fragments/head :: head ('BnBillains - Home')"></head>
 <body class="d-flex flex-column h-100">
 
 <header th:replace="fragments/header :: header"></header>
 
-<main class="flex-shrink-0 d-flex justify-content-center" style="margin-top: 5%;">
-    <div class="container" style="max-width: 80%;">
-        <div class="text-center">
-            <img th:src="@{/images/Alola.png}"
-                 alt="Alola"
-                 class="img-fluid rounded"
-                 style="border-radius: 20%; max-width: 50%; height: auto;">
+<main class="flex-shrink-0 d-flex justify-content-center align-items-center" style="margin-top: 100px; flex: 1;">
+    <div class="text-center">
+        <h1 class="display-4 fw-bold mb-4">Bienvenido a BnBillains</h1>
+        <p class="lead mb-4">La plataforma de alquiler de guaridas para villanos</p>
+        <div class="mt-5">
+            <a href="/villano" class="btn btn-danger btn-lg me-3">Ver Villanos</a>
+            <a href="/guarida" class="btn btn-dark btn-lg">Ver Guaridas</a>
         </div>
     </div>
 </main>
 
 <footer th:replace="fragments/footer :: footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
