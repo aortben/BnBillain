@@ -1,10 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Reseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="background-color: #f8f9fa;">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="mb-4" th:text="${resena.id != null ? 'Editar Reseña' : 'Nueva Reseña'}"></h1>
+                
+                <form th:action="${resena.id != null ? '/resena/update' : '/resena/save'}" method="post" th:object="${resena}">
+                    <input type="hidden" th:field="*{id}" />
 
+                    <div class="mb-3">
+                        <label for="villano" class="form-label">Villano:</label>
+                        <select class="form-control" id="villano" th:field="*{villano}" required>
+                            <option value="">Selecciona un villano</option>
+                            <option th:each="villano : ${villanos}" th:value="${villano.id}" th:text="${villano.nombre}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="guarida" class="form-label">Guarida:</label>
+                        <select class="form-control" id="guarida" th:field="*{guarida}" required>
+                            <option value="">Selecciona una guarida</option>
+                            <option th:each="guarida : ${guaridas}" th:value="${guarida.id}" th:text="${guarida.nombre}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="comentario" class="form-label">Comentario:</label>
+                        <textarea class="form-control" id="comentario" th:field="*{comentario}" rows="4"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="puntuacion" class="form-label">Puntuación (1-5):</label>
+                        <input type="number" class="form-control" id="puntuacion" th:field="*{puntuacion}" 
+                               min="1" max="5" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fechaPublicacion" class="form-label">Fecha de Publicación:</label>
+                        <input type="date" class="form-control" id="fechaPublicacion" th:field="*{fechaPublicacion}">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a href="/resena" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
