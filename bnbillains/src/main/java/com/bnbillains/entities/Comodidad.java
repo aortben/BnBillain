@@ -31,9 +31,8 @@ public class Comodidad {
     @ManyToMany(mappedBy = "comodidades")
     private List<Guarida> guaridas;
 
-    public Comodidad(String nombre, Boolean autoDestruccion, List<Guarida> guaridas) {
+    public Comodidad(String nombre, Boolean autoDestruccion) {
         this.nombre = nombre;
         this.autoDestruccion = autoDestruccion;
-        this.guaridas = guaridas;
     }
 }
