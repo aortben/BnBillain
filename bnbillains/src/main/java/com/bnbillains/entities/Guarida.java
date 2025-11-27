@@ -1,6 +1,7 @@
 package com.bnbillains.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -34,7 +35,7 @@ public class Guarida {
     @Column(name = "ubicacion", nullable = false)
     private String ubicacion;
 
-    @Min(value = 1, message = "El precio debe ser positivo")
+    @DecimalMin(value = "1.0", message = "El precio debe ser positivo")
     @Column(name = "precio_noche", nullable = false)
     private Double precioNoche;
 
@@ -55,11 +56,21 @@ public class Guarida {
     )
     private List<Comodidad> comodidades = new ArrayList<>();
 
-
     @OneToMany(mappedBy = "guarida", cascade = CascadeType.ALL)
     private List<Resena> resenas; // Nota: en SQL la tabla es 'resena'
 
     @OneToMany(mappedBy = "guarida")
     private List<Reserva> reservas;
 
+    public Guarida(String nombre, String descripcion, String ubicacion, Double precioNoche, String imagen, SalaSecreta salaSecreta, List<Comodidad> comodidades, List<Resena> resenas, List<Reserva> reservas) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.ubicacion = ubicacion;
+        this.precioNoche = precioNoche;
+        this.imagen = imagen;
+        this.salaSecreta = salaSecreta;
+        this.comodidades = comodidades;
+        this.resenas = resenas;
+        this.reservas = reservas;
+    }
 }
