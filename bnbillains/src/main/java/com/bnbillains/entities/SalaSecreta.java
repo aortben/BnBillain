@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "salaSecreta") // CORREGIDO: Coincide con tu SQL 'CREATE TABLE salaSecreta'
 @Data
@@ -29,4 +31,10 @@ public class SalaSecreta {
 
     @Column(name = "salida_emergencia")
     private Boolean salidaEmergencia;
+
+    public SalaSecreta(String codigoAcceso, String funcionPrincipal,Boolean salidaEmergencia) {
+        this.codigoAcceso = codigoAcceso;
+        this.funcionPrincipal = funcionPrincipal;
+        this.salidaEmergencia = salidaEmergencia;
+    }
 }
