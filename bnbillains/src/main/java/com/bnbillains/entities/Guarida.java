@@ -62,15 +62,12 @@ public class Guarida {
     @OneToMany(mappedBy = "guarida")
     private List<Reserva> reservas;
 
-    public Guarida(String nombre, String descripcion, String ubicacion, Double precioNoche, String imagen, SalaSecreta salaSecreta, List<Comodidad> comodidades, List<Resena> resenas, List<Reserva> reservas) {
+    public Guarida(String nombre, String descripcion, String ubicacion, Double precioNoche, String imagen, SalaSecreta salaSecreta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
         this.precioNoche = precioNoche;
         this.imagen = imagen;
         this.salaSecreta = salaSecreta;
-        this.comodidades = comodidades;
-        this.resenas = resenas;
-        this.reservas = reservas;
     }
 }
