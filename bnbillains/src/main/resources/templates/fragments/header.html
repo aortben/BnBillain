@@ -1,0 +1,45 @@
+<!-- header.html -->
+<header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
+    <!-- Pokedex-style navbar -->
+    <nav class="navbar navbar-expand-md fixed-top"
+         style="width: 80%; margin: 0 auto;
+                background: linear-gradient(to right,
+                                            #ff0000 0%,
+                                            #ff4d4d 25%,
+                                            #ff9999 50%,
+                                            #ffe6e6 75%,
+                                            #ffffff 100%);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                border-radius: 0 0 15px 15px;">
+        <div class="container-fluid">
+            <!-- Logo / brand -->
+            <a class="navbar-brand text-white fw-bold" href="#" th:href="@{/}" style="text-shadow: 1px 1px #000;">
+                🦹 BNBILLAINS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/villano}">Villanos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/guarida}">Guaridas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/salaSecreta}">Salas Secretas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/comodidad}">Comodidades</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
