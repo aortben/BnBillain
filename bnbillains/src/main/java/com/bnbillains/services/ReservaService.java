@@ -1,6 +1,7 @@
 package com.bnbillains.services;
 
 import com.bnbillains.entities.Guarida;
+import com.bnbillains.entities.Resena;
 import com.bnbillains.entities.Reserva;
 import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.ReservaRepository;
@@ -65,6 +66,9 @@ public class ReservaService {
 
     public List<Reserva> buscarFInicioEntre(LocalDate fechaInicio, LocalDate fechaFin) {
         return reservaRepository.findByFechaInicioBetween(fechaInicio, fechaFin);
+    }
+    public List<Reserva> obtenerReservasPorVillano(Long villano_id){
+        return reservaRepository.findByVillanoId(villano_id);
     }
     public Optional<Reserva> buscarIdFactura(Long id) {
         return reservaRepository.findByFactura_Id(id);
