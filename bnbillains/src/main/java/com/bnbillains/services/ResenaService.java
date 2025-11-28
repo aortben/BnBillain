@@ -1,5 +1,6 @@
 package com.bnbillains.services;
 
+import com.bnbillains.entities.Factura;
 import com.bnbillains.entities.Guarida;
 import com.bnbillains.entities.Resena;
 import com.bnbillains.entities.Villano;
@@ -55,6 +56,10 @@ public class ResenaService {
     
     public List<Resena> buscarPorGuarida(Guarida guarida) {
         return resenaRepository.findByGuarida(guarida);
+    }
+
+    public List<Resena> obtenerResenasPorVillano(Long villano_id){
+        return resenaRepository.findByVillanoId(villano_id);
     }
     public List<Resena> buscarPorVillano(Villano villano) {
         return resenaRepository.findByVillano(villano);
