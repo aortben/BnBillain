@@ -12,7 +12,9 @@ import java.util.List;
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     List<Resena> findByVillano(Villano villano);
+    List<Resena> findByVillanoId(Long villano_id);
     List<Resena> findByGuarida(Guarida guarida);
+    List<Resena> findByGuaridaId(Long guarida_id);
     List<Resena> findByPuntuacion(Long puntuacion);
     List<Resena> findByPuntuacionBetween(Long min, Long max);
     List<Resena> findByComentarioContainingIgnoreCase(String texto);
