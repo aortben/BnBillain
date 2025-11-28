@@ -2,6 +2,7 @@ package com.bnbillains.services;
 
 import com.bnbillains.entities.Factura;
 import com.bnbillains.entities.Reserva;
+import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.FacturaRepository;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,13 @@ public class FacturaService {
         return facturaRepository.findByFechaEmision(fecha);
     }
 
+    public Optional<Factura> obtenerPorVillano(Villano villano) {
+        return facturaRepository.findByVillano(villano);
+    }
+
+    public Optional<Factura> obtenerFacturasPorVillano(Long villano_id){
+        return facturaRepository.findByVillano_Id(villano_id);
+    }
     public List<Factura> buscarPorMetodoPago(String metodo) {
         return facturaRepository.findByMetodoPagoContainingIgnoreCase(metodo);
     }
