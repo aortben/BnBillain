@@ -2,9 +2,11 @@ package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Guarida;
 import com.bnbillains.repositories.ComodidadRepository;
+import com.bnbillains.services.FileStorageService;
 import com.bnbillains.services.GuaridaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
@@ -27,6 +30,8 @@ public class GuaridaController {
     private final GuaridaService guaridaService;
     private final ComodidadRepository comodidadRepository; // Necesario para los checkboxes del formulario
 
+    @Autowired
+    private FileStorageService fileStorageService;
     // Constructor
     public GuaridaController(GuaridaService guaridaService, ComodidadRepository comodidadRepository) {
         this.guaridaService = guaridaService;
@@ -106,7 +111,7 @@ public class GuaridaController {
     }
 
     @PostMapping("/guaridas/save")
-    public String guardar(@Valid @ModelAttribute Guarida guarida,
+    public String guardar(@Valid @ModelAttribute Guarida guarida, @RequestParam("imageFile") MultipartFile imageFile,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes,
                           Model model) {
@@ -121,13 +126,20 @@ public class GuaridaController {
             return "redirect:/guaridas/new";
         }
 
+        if (!imageFile.isEmpty()) {
+            String fileName = fileStorageService.saveFile(imageFile);
+            if (fileName != null) {
+                guarida.setImagen(fileName); // Guardar el nombre del archivo en la entidad
+            }
+        }
+
         guaridaService.guardar(guarida); // Aquí guarda la URL de la imagen tal cual viene del form
         redirectAttributes.addFlashAttribute("successMessage", "Guarida guardada con éxito.");
         return "redirect:/guaridas";
     }
 
     @PostMapping("/guaridas/update")
-    public String actualizar(@Valid @ModelAttribute Guarida guarida,
+    public String actualizar(@Valid @ModelAttribute Guarida guarida, @RequestParam("imageFile") MultipartFile imageFile,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
                              Model model) {
@@ -135,6 +147,13 @@ public class GuaridaController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allComodidades", comodidadRepository.findAll());
             return "forms-html/guarida-form";
+        }
+
+        if (!imageFile.isEmpty()) {
+            String fileName = fileStorageService.saveFile(imageFile);
+            if (fileName != null) {
+                guarida.setImagen(fileName); // Guardar el nombre del archivo en la entidad
+            }
         }
 
         try {
