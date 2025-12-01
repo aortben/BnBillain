@@ -12,6 +12,7 @@ import java.util.List;
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     List<Resena> findByVillano(Villano villano);
+    List<Resena> findByVillano_Id(Long villanoId);
     List<Resena> findByGuarida(Guarida guarida);
     List<Resena> findByPuntuacion(Long puntuacion);
     List<Resena> findByPuntuacionBetween(Long min, Long max);

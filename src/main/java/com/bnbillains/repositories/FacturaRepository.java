@@ -14,6 +14,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
 
     Optional<Factura> findByReserva(Reserva reserva);
     Optional<Factura> findByReserva_Id(Long reservaId);
+    List<Factura> findByReserva_Villano_Id(Long villanoId);
     List<Factura> findByFechaEmision(LocalDate fechaEmision);
     List<Factura> findByMetodoPagoContainingIgnoreCase(String metodo);
     boolean existsByReserva_Id(Long reservaId);

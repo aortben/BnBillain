@@ -70,4 +70,7 @@ public class FacturaService {
     public List<Factura> buscarPorRangoFecha(LocalDate inicio, LocalDate fin) {
         return facturaRepository.findByFechaEmisionBetween(inicio, fin);
     }
+    public List<Factura> obtenerFacturasPorVillano(Long villanoId) {
+        return facturaRepository.findByReserva_Villano_Id(villanoId);
+    }
 }
