@@ -1,6 +1,8 @@
 package com.bnbillains.services;
 
 import com.bnbillains.entities.Factura;
+import com.bnbillains.entities.Resena;
+import com.bnbillains.entities.Reserva;
 import com.bnbillains.repositories.FacturaRepository;
 import org.springframework.data.domain.Sort; // IMPORTANTE
 import org.springframework.stereotype.Service;
@@ -62,4 +64,9 @@ public class FacturaService {
     public List<Factura> buscarPorRangoImporte(Double min, Double max, Sort sort) {
         return facturaRepository.findByImporteBetween(min, max, sort);
     }
+
+    public List<Factura> obtenerFacturasPorVillano(Long villanoId) {
+        return facturaRepository.findByReserva_Villano_Id(villanoId);
+    }
+
 }
