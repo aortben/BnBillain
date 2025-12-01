@@ -2,6 +2,7 @@ package com.bnbillains.services;
 
 import com.bnbillains.entities.Comodidad;
 import com.bnbillains.repositories.ComodidadRepository;
+import org.springframework.data.domain.Sort; // IMPORTANTE
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +21,15 @@ public class ComodidadService {
         return comodidadRepository.findAll();
     }
 
+    //listado general ordenado
+    public List<Comodidad> obtenerTodasOrdenadas(Sort sort) {
+        return comodidadRepository.findAll(sort);
+    }
+
     public Optional<Comodidad> obtenerPorId(Long id) {
         return comodidadRepository.findById(id);
     }
+
 
     public Comodidad guardar(Comodidad comodidad) {
         return comodidadRepository.save(comodidad);
@@ -42,6 +49,7 @@ public class ComodidadService {
         comodidadRepository.deleteById(id);
     }
 
+    // busqueda
     public Comodidad obtenerPorNombre(String nombre) {
         return comodidadRepository.findByNombreIgnoreCase(nombre);
     }
@@ -50,8 +58,12 @@ public class ComodidadService {
         return comodidadRepository.findByNombreContainingIgnoreCase(fragmento);
     }
 
+    // busqueda con ordenacion
+    public List<Comodidad> buscarPorFragmentoOrdenado(String fragmento, Sort sort) {
+        return comodidadRepository.findByNombreContainingIgnoreCase(fragmento, sort);
+    }
+
     public boolean existePorNombre(String nombre) {
         return comodidadRepository.existsByNombreIgnoreCase(nombre);
     }
 }
-
