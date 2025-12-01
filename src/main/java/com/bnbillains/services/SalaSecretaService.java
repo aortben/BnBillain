@@ -2,6 +2,7 @@ package com.bnbillains.services;
 
 import com.bnbillains.entities.SalaSecreta;
 import com.bnbillains.repositories.SalaSecretaRepository;
+import org.springframework.data.domain.Sort; // IMPORTANTE
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,10 @@ public class SalaSecretaService {
 
     public List<SalaSecreta> obtenerTodas() {
         return salaSecretaRepository.findAll();
+    }
+
+    public List<SalaSecreta> obtenerTodasOrdenadas(Sort sort) {
+        return salaSecretaRepository.findAll(sort);
     }
 
     public Optional<SalaSecreta> obtenerPorId(Long id) {
@@ -47,8 +52,13 @@ public class SalaSecretaService {
         return salaSecretaRepository.findByCodigoAcceso(codigo);
     }
 
+    // intento de busqueda flexible
+    public List<SalaSecreta> buscarFlexible(String texto, Sort sort) {
+        // Buscamos por función principal, que es lo más lógico para filtrar
+        return salaSecretaRepository.findByFuncionPrincipalContainingIgnoreCase(texto, sort);
+    }
+
     public boolean existeCodigoAcceso(String codigo) {
         return salaSecretaRepository.existsByCodigoAcceso(codigo);
     }
 }
-
