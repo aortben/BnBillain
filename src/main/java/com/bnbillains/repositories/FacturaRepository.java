@@ -2,6 +2,7 @@ package com.bnbillains.repositories;
 
 import com.bnbillains.entities.Factura;
 import com.bnbillains.entities.Reserva;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,13 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface FacturaRepository extends JpaRepository<Factura, Long> {
+    List<Factura> findByMetodoPagoContainingIgnoreCase(String metodo, Sort sort);
 
-    Optional<Factura> findByReserva(Reserva reserva);
-    Optional<Factura> findByReserva_Id(Long reservaId);
-    List<Factura> findByReserva_Villano_Id(Long villanoId);
-    List<Factura> findByFechaEmision(LocalDate fechaEmision);
-    List<Factura> findByMetodoPagoContainingIgnoreCase(String metodo);
+    // Buscar facturas por rango de importe (ej: de 1000 a 5000 monedas de oro)
+    List<Factura> findByImporteBetween(Double min, Double max, Sort sort);
+
+    // --- MÉTODOS DE SOPORTE ---
     boolean existsByReserva_Id(Long reservaId);
-    List<Factura> findByFechaEmisionBetween(LocalDate inicio, LocalDate fin);
 }
 

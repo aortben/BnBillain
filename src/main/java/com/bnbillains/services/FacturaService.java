@@ -1,11 +1,10 @@
 package com.bnbillains.services;
 
 import com.bnbillains.entities.Factura;
-import com.bnbillains.entities.Reserva;
 import com.bnbillains.repositories.FacturaRepository;
+import org.springframework.data.domain.Sort; // IMPORTANTE
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,15 +17,23 @@ public class FacturaService {
         this.facturaRepository = facturaRepository;
     }
 
-    public List<Factura> obtenerTodas() {
-        return facturaRepository.findAll();
+    public List<Factura> obtenerTodas(Sort sort) {
+        return facturaRepository.findAll(sort);
     }
 
     public Optional<Factura> obtenerPorId(Long id) {
         return facturaRepository.findById(id);
     }
 
+    // --- ESCRITURA ---
     public Factura guardar(Factura factura) {
+        // Regla de negocio: Una reserva solo puede tener UNA factura
+        // Verificamos si es nueva (id null) y si la reserva ya tiene factura
+        if (factura.getId() == null && factura.getReserva() != null) {
+            if (facturaRepository.existsByReserva_Id(factura.getReserva().getId())) {
+                throw new IllegalArgumentException("Esta reserva ya ha sido facturada. ¡No seas avaricioso!");
+            }
+        }
         return facturaRepository.save(factura);
     }
 
@@ -47,30 +54,12 @@ public class FacturaService {
         facturaRepository.deleteById(id);
     }
 
-    public Optional<Factura> obtenerPorReserva(Reserva reserva) {
-        return facturaRepository.findByReserva(reserva);
+    // --- BÚSQUEDA ---
+    public List<Factura> buscarPorMetodoPago(String metodo, Sort sort) {
+        return facturaRepository.findByMetodoPagoContainingIgnoreCase(metodo, sort);
     }
 
-    public Optional<Factura> obtenerPorReservaId(Long reservaId) {
-        return facturaRepository.findByReserva_Id(reservaId);
-    }
-
-    public List<Factura> obtenerPorFechaEmision(LocalDate fecha) {
-        return facturaRepository.findByFechaEmision(fecha);
-    }
-
-    public List<Factura> buscarPorMetodoPago(String metodo) {
-        return facturaRepository.findByMetodoPagoContainingIgnoreCase(metodo);
-    }
-
-    public boolean existePorReservaId(Long reservaId) {
-        return facturaRepository.existsByReserva_Id(reservaId);
-    }
-
-    public List<Factura> buscarPorRangoFecha(LocalDate inicio, LocalDate fin) {
-        return facturaRepository.findByFechaEmisionBetween(inicio, fin);
-    }
-    public List<Factura> obtenerFacturasPorVillano(Long villanoId) {
-        return facturaRepository.findByReserva_Villano_Id(villanoId);
+    public List<Factura> buscarPorRangoImporte(Double min, Double max, Sort sort) {
+        return facturaRepository.findByImporteBetween(min, max, sort);
     }
 }
