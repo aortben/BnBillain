@@ -14,8 +14,6 @@ import java.util.Optional;
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
-    List<Reserva> findByVillano_Id(Long villanoId, Sort sort);
-
     List<Reserva> findByGuarida_Id(Long guaridaId, Sort sort);
 
     List<Reserva> findByEstado(Boolean estado, Sort sort);

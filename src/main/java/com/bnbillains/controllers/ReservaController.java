@@ -53,7 +53,7 @@ public class ReservaController {
 
         // 1. Lógica de Filtrado
         if (villanoId != null) {
-            resultados = reservaService.buscarPorVillano(villanoId, sortObj);
+            resultados = reservaService.obtenerReservasPorVillano(villanoId);
         } else if (estado != null) {
             resultados = reservaService.buscarPorEstado(estado, sortObj);
         } else {

@@ -53,12 +53,12 @@ public class ReservaService {
         reservaRepository.deleteById(id);
     }
 
-    public List<Reserva> buscarPorVillano(Long villanoId, Sort sort) {
-        return reservaRepository.findByVillano_Id(villanoId, sort);
+    public List<Reserva> obtenerReservasPorVillano(Long villanoId) {
+        return reservaRepository.findByVillano_Id(villanoId);
     }
 
-    public List<Reserva> buscarPorGuarida(Long guaridaId, Sort sort) {
-        return reservaRepository.findByGuarida_Id(guaridaId, sort);
+    public List<Reserva> buscarPorGuarida(Long guaridaId) {
+        return reservaRepository.findByGuarida_Id(guaridaId);
     }
 
     public List<Reserva> buscarPorEstado(Boolean estado, Sort sort) {
