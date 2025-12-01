@@ -78,4 +78,7 @@ public class ReservaService {
     public List<Reserva> buscarPorEstado(Boolean estado) {
         return reservaRepository.findByEstado(estado);
     }
+    public List<Reserva> obtenerReservasPorVillano(Long villanoId) {
+        return reservaRepository.findByVillano_Id(villanoId);
+    }
 }

@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     List<Reserva> findByVillano(Villano villano);
+    List<Reserva> findByVillano_Id(Long villanoId);
     List<Reserva> findByGuarida(Guarida guarida);
     List<Reserva> findByEstado(Boolean estado);
     List<Reserva> findByFechaInicio(LocalDate fechaInicio);

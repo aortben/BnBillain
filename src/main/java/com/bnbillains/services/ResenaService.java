@@ -75,4 +75,7 @@ public class ResenaService {
 
         return resenaRepository.existsById(id);
     }
+    public List<Resena> obtenerResenasPorVillano(Long villanoId) {
+        return resenaRepository.findByVillano_Id(villanoId);
+    }
 }
