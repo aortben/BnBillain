@@ -3,6 +3,7 @@ package com.bnbillains.repositories;
 import com.bnbillains.entities.Resena;
 import com.bnbillains.entities.Villano;
 import com.bnbillains.entities.Guarida;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,12 +12,11 @@ import java.util.List;
 @Repository
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
-    List<Resena> findByVillano(Villano villano);
-    List<Resena> findByVillano_Id(Long villanoId);
-    List<Resena> findByGuarida(Guarida guarida);
-    List<Resena> findByPuntuacion(Long puntuacion);
-    List<Resena> findByPuntuacionBetween(Long min, Long max);
-    List<Resena> findByComentarioContainingIgnoreCase(String texto);
+    // --- BÚSQUEDAS ORDENADAS ---
+    List<Resena> findByPuntuacion(Long puntuacion, Sort sort);
+
+    // Buscar por texto en el comentario + orden
+    List<Resena> findByComentarioContainingIgnoreCase(String texto, Sort sort);
 
 }
 
