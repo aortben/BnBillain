@@ -23,6 +23,7 @@
                         <th>Ubicación</th>
                         <th>Precio/Noche</th>
                         <th>Descripción</th>
+                        <th>Imagen</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -36,6 +37,13 @@
                         <td th:text="${guarida.ubicacion}"></td>
                         <td th:text="${guarida.precioNoche}"></td>
                         <td th:text="${guarida.descripcion}"></td>
+                        <td>
+                            <img alt="Imagen de la Guarida"
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 th:if="${guarida.imagen != null}"
+                                 th:src="@{'/update/' + ${guarida.imagen}}"/>
+                            <span th:if="${guarida.imagen == null}" th:text="#{msg.guarida.noImage}"></span>
+                        </td>
                         <td>
                             <a th:href="@{/guarida/{id}/edit(id=${guarida.id})}" class="btn btn-sm btn-warning">Editar</a>
                             <a th:href="@{/guarida/{id}/delete(id=${guarida.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?');">Eliminar</a>
