@@ -32,7 +32,7 @@ public class SalaSecretaController {
     /**
      * Listado de Salas Secretas con Paginación Manual, Filtro y Ordenación.
      */
-    @GetMapping("/salas-secretas")
+    @GetMapping("/salas_secretas")
     public String listar(@RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) String search,
                          @RequestParam(required = false) String sort,
