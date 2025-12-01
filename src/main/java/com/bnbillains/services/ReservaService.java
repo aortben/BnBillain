@@ -1,13 +1,10 @@
 package com.bnbillains.services;
 
-import com.bnbillains.entities.Guarida;
 import com.bnbillains.entities.Reserva;
-import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.ReservaRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +17,8 @@ public class ReservaService {
         this.reservaRepository = reservaRepository;
     }
 
-    public List<Reserva> obtenerTodas() {
-        return reservaRepository.findAll();
+    public List<Reserva> obtenerTodas(Sort sort) {
+        return reservaRepository.findAll(sort);
     }
 
     public Optional<Reserva> obtenerPorId(Long id) {
@@ -29,20 +26,25 @@ public class ReservaService {
     }
 
     public Reserva guardar(Reserva reserva) {
+        validarFechas(reserva);
+        // Aquí podríamos calcular el costeTotal automáticamente
+        // long dias = ChronoUnit.DAYS.between(reserva.getFechaInicio(), reserva.getFechaFin());
+        // reserva.setCosteTotal(dias * reserva.getGuarida().getPrecioNoche());
+
         return reservaRepository.save(reserva);
     }
 
     public Reserva actualizar(Long id, Reserva reserva) {
+        validarFechas(reserva);
         return reservaRepository.findById(id)
-                .map(rv -> {
-                    rv.setFechaInicio(reserva.getFechaInicio());
-                    rv.setFechaFin(reserva.getFechaFin());
-                    rv.setCosteTotal(reserva.getCosteTotal());
-                    rv.setEstado(reserva.getEstado());
-                    rv.setVillano(reserva.getVillano());
-                    rv.setGuarida(reserva.getGuarida());
-                    rv.setFactura(reserva.getFactura());
-                    return reservaRepository.save(rv);
+                .map(r -> {
+                    r.setFechaInicio(reserva.getFechaInicio());
+                    r.setFechaFin(reserva.getFechaFin());
+                    r.setCosteTotal(reserva.getCosteTotal());
+                    r.setEstado(reserva.getEstado());
+                    r.setVillano(reserva.getVillano());
+                    r.setGuarida(reserva.getGuarida());
+                    return reservaRepository.save(r);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
     }
@@ -51,34 +53,24 @@ public class ReservaService {
         reservaRepository.deleteById(id);
     }
 
-    public List<Reserva> buscarPorFInicio(LocalDate fechaInicio) {
-        return reservaRepository.findByFechaInicio(fechaInicio);
+    public List<Reserva> buscarPorVillano(Long villanoId, Sort sort) {
+        return reservaRepository.findByVillano_Id(villanoId, sort);
     }
 
-    public List<Reserva> buscarFFinEntre(LocalDate fechaInicio, LocalDate fechaFin) {
-        return reservaRepository.findByFechaFinBetween(fechaInicio, fechaFin);
+    public List<Reserva> buscarPorGuarida(Long guaridaId, Sort sort) {
+        return reservaRepository.findByGuarida_Id(guaridaId, sort);
     }
 
-    public List<Reserva> obtenerTodosOrdenados(Sort sort) {
-        return reservaRepository.findAll(sort);
+    public List<Reserva> buscarPorEstado(Boolean estado, Sort sort) {
+        return reservaRepository.findByEstado(estado, sort);
     }
 
-    public List<Reserva> buscarFInicioEntre(LocalDate fechaInicio, LocalDate fechaFin) {
-        return reservaRepository.findByFechaInicioBetween(fechaInicio, fechaFin);
-    }
-    public Optional<Reserva> buscarIdFactura(Long id) {
-        return reservaRepository.findByFactura_Id(id);
-    }
-    public List<Reserva> buscarGuarida(Guarida guarida) {
-        return reservaRepository.findByGuarida(guarida);
-    }
-    public List<Reserva> buscarVillano(Villano villano) {
-        return reservaRepository.findByVillano(villano);
-    }
-    public List<Reserva> buscarPorEstado(Boolean estado) {
-        return reservaRepository.findByEstado(estado);
-    }
-    public List<Reserva> obtenerReservasPorVillano(Long villanoId) {
-        return reservaRepository.findByVillano_Id(villanoId);
+    //validacion de fechas
+    private void validarFechas(Reserva reserva) {
+        if (reserva.getFechaInicio() != null && reserva.getFechaFin() != null) {
+            if (!reserva.getFechaFin().isAfter(reserva.getFechaInicio())) {
+                throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio.");
+            }
+        }
     }
 }
