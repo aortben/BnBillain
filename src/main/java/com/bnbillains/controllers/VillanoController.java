@@ -2,160 +2,160 @@ package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Villano;
 import com.bnbillains.services.VillanoService;
-import com.bnbillains.services.ReservaService;
-import com.bnbillains.services.ResenaService;
-import com.bnbillains.services.FacturaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class VillanoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(VillanoController.class);
     private final VillanoService villanoService;
-    private final ReservaService reservaService;
-    private final ResenaService resenaService;
-    private final FacturaService facturaService;
 
-    public VillanoController(VillanoService villanoService, ReservaService reservaService, 
-                             ResenaService resenaService, FacturaService facturaService) {
+    public VillanoController(VillanoService villanoService) {
         this.villanoService = villanoService;
-        this.reservaService = reservaService;
-        this.resenaService = resenaService;
-        this.facturaService = facturaService;
     }
 
-    @GetMapping("/villano")
-    public String listar(Model model) {
-        List<Villano> villanos = villanoService.obtenerTodas();
-        model.addAttribute("villanos", villanos);
-        return "entities-html/villano";
+    /**
+     * Listado de Villanos: Paginación + Filtro (Nombre/Alias) + Ordenación.
+     */
+    @GetMapping("/villanos")
+    public String listar(@RequestParam(defaultValue = "1") int page,
+                         @RequestParam(required = false) String search,
+                         @RequestParam(required = false) String sort,
+                         Model model) {
+
+        logger.info("WEB: Listando villanos... Pag: {}, Search: {}, Sort: {}", page, search, sort);
+
+        Sort sortObj = getSort(sort);
+        List<Villano> resultados;
+
+        // 1. Obtención de datos
+        if (search != null && !search.isBlank()) {
+            resultados = villanoService.buscarFlexible(search, sortObj);
+        } else {
+            resultados = villanoService.obtenerTodas(sortObj);
+        }
+
+        // 2. Paginación Manual
+        int pageSize = 5;
+        int totalItems = resultados.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        if (page < 1) page = 1;
+
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalItems);
+
+        List<Villano> listaPaginada = (start > end || totalItems == 0) ?
+                Collections.emptyList() : resultados.subList(start, end);
+
+        // 3. Pasar atributos
+        model.addAttribute("villanos", listaPaginada);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("search", search);
+        model.addAttribute("sort", sort);
+
+        return "entities-html/villano"; // Ruta: templates/entities-html/villano.html
     }
 
-    @GetMapping("/villano/new")
+    @GetMapping("/villanos/new")
     public String formularioNuevo(Model model) {
+        logger.info("WEB: Nuevo villano.");
         model.addAttribute("villano", new Villano());
         return "forms-html/villano-form";
     }
 
-    @GetMapping("/villano/{id}/edit")
+    @GetMapping("/villanos/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
+        logger.info("WEB: Editando villano ID {}", id);
         Optional<Villano> villano = villanoService.obtenerPorId(id);
         if (villano.isPresent()) {
             model.addAttribute("villano", villano.get());
             return "forms-html/villano-form";
         }
-        return "redirect:/villano";
+        return "redirect:/villanos";
     }
 
-    @PostMapping("/villano/save")
-    public String guardar(@Valid @ModelAttribute Villano villano) {
+    @PostMapping("/villanos/save")
+    public String guardar(@Valid @ModelAttribute Villano villano,
+                          BindingResult bindingResult,
+                          RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            return "forms-html/villano-form";
+        }
+
+        // Validación de duplicados (Carnet o Email)
+        if (villano.getId() == null) {
+            if (villanoService.existePorCarnetDeVillano(villano.getCarnetDeVillano())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "El carnet de villano ya existe.");
+                return "redirect:/villanos/new";
+            }
+            if (villanoService.existePorEmail(villano.getEmail())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "El email ya está registrado.");
+                return "redirect:/villanos/new";
+            }
+        }
+
         villanoService.guardar(villano);
-        return "redirect:/villano";
+        logger.info("Villano registrado: {}", villano.getAlias());
+        redirectAttributes.addFlashAttribute("successMessage", "Villano registrado correctamente.");
+        return "redirect:/villanos";
     }
 
-    @PostMapping("/villano/update")
-    public String actualizar(@Valid @ModelAttribute Villano villano) {
-        villanoService.actualizar(villano.getId(), villano);
-        return "redirect:/villano";
-    }
+    @PostMapping("/villanos/update")
+    public String actualizar(@Valid @ModelAttribute Villano villano,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
 
-    @GetMapping("/villano/{id}/delete")
-    public String eliminar(@PathVariable Long id) {
-        villanoService.eliminar(id);
-        return "redirect:/villano";
-    }
-
-    @GetMapping("/villano/{id}")
-    public String verDetalle(@PathVariable Long id, Model model) {
-        Optional<Villano> villano = villanoService.obtenerPorId(id);
-        if (villano.isPresent()) {
-            model.addAttribute("villano", villano.get());
-            model.addAttribute("reservas", reservaService.obtenerReservasPorVillano(id));
-            model.addAttribute("resenas", resenaService.obtenerResenasPorVillano(id));
-            model.addAttribute("facturas", facturaService.obtenerFacturasPorVillano(id));
-            return "entities-html/villano-detail";
+        if (bindingResult.hasErrors()) {
+            return "forms-html/villano-form";
         }
-        return "redirect:/villano";
-    }
 
-    /* ENDPOINTS REST (COMENTADO)
-     * Si necesitas consumir datos en JSON desde JavaScript o apps externas:
-     * 
-     * Ejemplo con fetch en JavaScript:
-     * fetch('/api/villanos')
-     *   .then(response => response.json())
-     *   .then(villanos => console.log(villanos));
-     *
-     * Para habilitar, descomenta los métodos abajo y añade las importaciones:
-     * import org.springframework.http.HttpStatus;
-     * import org.springframework.http.ResponseEntity;
-     *
-    @GetMapping("/api/villanos")
-    @ResponseBody
-    public ResponseEntity<List<Villano>> obtenerTodasApi() {
-        return ResponseEntity.ok(villanoService.obtenerTodas());
-    }
-
-    @GetMapping("/api/villanos/{id}")
-    @ResponseBody
-    public ResponseEntity<Villano> obtenerPorIdApi(@PathVariable Long id) {
-        Optional<Villano> villano = villanoService.obtenerPorId(id);
-        return villano.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/api/villanos")
-    @ResponseBody
-    public ResponseEntity<Villano> crearApi(@Valid @RequestBody Villano villano) {
         try {
-            Villano nuevoVillano = villanoService.guardar(villano);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoVillano);
+            villanoService.actualizar(villano.getId(), villano);
+            redirectAttributes.addFlashAttribute("successMessage", "Villano actualizado.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar.");
         }
+        return "redirect:/villanos";
     }
 
-    @PutMapping("/api/villanos/{id}")
-    @ResponseBody
-    public ResponseEntity<Villano> actualizarApi(@PathVariable Long id, @Valid @RequestBody Villano villano) {
-        try {
-            Villano villanoActualizado = villanoService.actualizar(id, villano);
-            return ResponseEntity.ok(villanoActualizado);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/api/villanos/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> eliminarApi(@PathVariable Long id) {
+    @GetMapping("/villanos/delete/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        logger.info("WEB: Eliminando villano ID {}", id);
         try {
             villanoService.eliminar(id);
-            return ResponseEntity.noContent().build();
+            redirectAttributes.addFlashAttribute("successMessage", "Villano eliminado.");
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            redirectAttributes.addFlashAttribute("errorMessage", "No se puede eliminar (tiene reservas o reseñas).");
         }
+        return "redirect:/villanos";
     }
 
-    @GetMapping("/api/villanos/email/{email}")
-    @ResponseBody
-    public ResponseEntity<Villano> obtenerPorEmailApi(@PathVariable String email) {
-        Optional<Villano> villano = villanoService.buscarPorEmail(email);
-        return villano.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    // Helper de ordenación
+    private Sort getSort(String sort) {
+        if (sort == null) return Sort.by("id").ascending();
+        return switch (sort) {
+            case "nameAsc" -> Sort.by("nombre").ascending();
+            case "nameDesc" -> Sort.by("nombre").descending();
+            case "aliasAsc" -> Sort.by("alias").ascending();
+            case "aliasDesc" -> Sort.by("alias").descending();
+            default -> Sort.by("id").ascending();
+        };
     }
-
-    @GetMapping("/api/villanos/carnet/{carnet}")
-    @ResponseBody
-    public ResponseEntity<Villano> obtenerPorCarnetApi(@PathVariable String carnet) {
-        Optional<Villano> villano = villanoService.buscarPorCarnetDeVillano(carnet);
-        return villano.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-    */
 }

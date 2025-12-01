@@ -1,6 +1,5 @@
 package com.bnbillains.services;
 
-import com.bnbillains.entities.Guarida;
 import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.VillanoRepository;
 import org.springframework.data.domain.Sort;
@@ -18,6 +17,12 @@ public class VillanoService {
         this.villanoRepository = villanoRepository;
     }
 
+    // --- LECTURA ---
+    public List<Villano> obtenerTodas(Sort sort) { // Acepta sort
+        return villanoRepository.findAll(sort);
+    }
+
+    // Método para compatibilidad si alguien lo usa sin sort
     public List<Villano> obtenerTodas() {
         return villanoRepository.findAll();
     }
@@ -26,6 +31,7 @@ public class VillanoService {
         return villanoRepository.findById(id);
     }
 
+    // --- ESCRITURA ---
     public Villano guardar(Villano villano) {
         return villanoRepository.save(villano);
     }
@@ -39,33 +45,33 @@ public class VillanoService {
                     v.setEmail(villano.getEmail());
                     return villanoRepository.save(v);
                 })
-                .orElseThrow(() -> new IllegalArgumentException("Guarida no encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Villano no encontrado"));
     }
 
     public void eliminar(Long id) {
         villanoRepository.deleteById(id);
     }
 
+    // --- BÚSQUEDA ---
     public Optional<Villano> buscarPorEmail(String email) {
         return villanoRepository.findByEmail(email);
     }
 
-    public Optional<Villano> buscarPorCarnetDeVillano(String carnetDeVillano) {
-        return villanoRepository.findByCarnetDeVillano(carnetDeVillano);
+    public Optional<Villano> buscarPorCarnetDeVillano(String carnet) {
+        return villanoRepository.findByCarnetDeVillano(carnet);
     }
 
-    public List<Villano> obtenerTodosOrdenados(Sort sort) {
-
-        return villanoRepository.findAll(sort);
+    // Búsqueda inteligente (Nombre o Alias) con Orden
+    public List<Villano> buscarFlexible(String texto, Sort sort) {
+        return villanoRepository.findByNombreContainingIgnoreCaseOrAliasContainingIgnoreCase(texto, texto, sort);
     }
 
-    public boolean existePorCarnetDeVillano(String carnetDeVillano) {
-
-        return villanoRepository.existsByCarnetDeVillano(carnetDeVillano);
+    // --- VALIDACIONES ---
+    public boolean existePorCarnetDeVillano(String carnet) {
+        return villanoRepository.existsByCarnetDeVillano(carnet);
     }
 
     public boolean existePorEmail(String email) {
-
         return villanoRepository.existsByEmail(email);
     }
 }
