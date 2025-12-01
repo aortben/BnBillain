@@ -1,122 +1,176 @@
 package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Factura;
+import com.bnbillains.repositories.ReservaRepository;
 import com.bnbillains.services.FacturaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class FacturaController {
 
-    private final FacturaService facturaService;
+    private static final Logger logger = LoggerFactory.getLogger(FacturaController.class);
 
-    public FacturaController(FacturaService facturaService) {
+    private final FacturaService facturaService;
+    private final ReservaRepository reservaRepository; // Para el select de reservas
+
+    public FacturaController(FacturaService facturaService, ReservaRepository reservaRepository) {
         this.facturaService = facturaService;
+        this.reservaRepository = reservaRepository;
     }
 
-    @GetMapping("/factura")
-    public String listar(Model model) {
-        List<Factura> facturas = facturaService.obtenerTodas();
-        model.addAttribute("facturas", facturas);
+
+    /**
+     * Listado de Facturas: Paginación Manual + Filtros (Método Pago / Importe) + Ordenación.
+     */
+    @GetMapping("/facturas")
+    public String listar(@RequestParam(defaultValue = "1") int page,
+                         @RequestParam(required = false) String metodoPago, // Filtro texto
+                         @RequestParam(required = false) Double minImporte, // Filtro rango
+                         @RequestParam(required = false) Double maxImporte,
+                         @RequestParam(required = false) String sort,
+                         Model model) {
+
+        logger.info("WEB: Listando facturas... Pag: {}, Metodo: {}, Sort: {}", page, metodoPago, sort);
+
+        Sort sortObj = getSort(sort);
+        List<Factura> resultados;
+
+        // 1. Lógica de Filtro
+        if (minImporte != null && maxImporte != null) {
+            resultados = facturaService.buscarPorRangoImporte(minImporte, maxImporte, sortObj);
+        } else if (metodoPago != null && !metodoPago.isBlank()) {
+            resultados = facturaService.buscarPorMetodoPago(metodoPago, sortObj);
+        } else {
+            resultados = facturaService.obtenerTodas(sortObj);
+        }
+
+        // 2. Paginación Manual
+        int pageSize = 5;
+        int totalItems = resultados.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        if (page < 1) page = 1;
+
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalItems);
+
+        List<Factura> listaPaginada = (start > end || totalItems == 0) ?
+                Collections.emptyList() : resultados.subList(start, end);
+
+        // 3. Pasar datos a la vista
+        model.addAttribute("facturas", listaPaginada);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalItems", totalItems);
+
+        // Mantener filtros
+        model.addAttribute("metodoPago", metodoPago);
+        model.addAttribute("minImporte", minImporte);
+        model.addAttribute("maxImporte", maxImporte);
+        model.addAttribute("sort", sort);
+
         return "entities-html/factura";
     }
 
-    @GetMapping("/factura/new")
+    @GetMapping("/facturas/new")
     public String formularioNuevo(Model model) {
+        logger.info("WEB: Nueva factura.");
         model.addAttribute("factura", new Factura());
+        model.addAttribute("allReservas", reservaRepository.findAll()); // Select de reservas
         return "forms-html/factura-form";
     }
 
-    @GetMapping("/factura/{id}/edit")
+    @GetMapping("/facturas/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
+        logger.info("WEB: Editando factura ID {}", id);
         Optional<Factura> factura = facturaService.obtenerPorId(id);
         if (factura.isPresent()) {
             model.addAttribute("factura", factura.get());
+            model.addAttribute("allReservas", reservaRepository.findAll());
             return "forms-html/factura-form";
         }
-        return "redirect:/factura";
+        return "redirect:/facturas";
     }
 
-    @PostMapping("/factura/save")
-    public String guardar(@Valid @ModelAttribute Factura factura) {
-        facturaService.guardar(factura);
-        return "redirect:/factura";
-    }
+    @PostMapping("/facturas/save")
+    public String guardar(@Valid @ModelAttribute Factura factura,
+                          BindingResult bindingResult,
+                          RedirectAttributes redirectAttributes,
+                          Model model) {
 
-    @PostMapping("/factura/update")
-    public String actualizar(@Valid @ModelAttribute Factura factura) {
-        facturaService.actualizar(factura.getId(), factura);
-        return "redirect:/factura";
-    }
-
-    @GetMapping("/factura/{id}/delete")
-    public String eliminar(@PathVariable Long id) {
-        facturaService.eliminar(id);
-        return "redirect:/factura";
-    }
-
-    /* ENDPOINTS REST (COMENTADO)
-     * Si necesitas consumir datos en JSON desde JavaScript o apps externas:
-     * 
-     * Ejemplo con fetch en JavaScript:
-     * fetch('/api/facturas')
-     *   .then(response => response.json())
-     *   .then(facturas => console.log(facturas));
-     *
-     * Para habilitar, descomenta los métodos abajo y añade las importaciones:
-     * import org.springframework.http.HttpStatus;
-     * import org.springframework.http.ResponseEntity;
-     *
-    @GetMapping("/api/facturas")
-    @ResponseBody
-    public ResponseEntity<List<Factura>> obtenerTodasApi() {
-        return ResponseEntity.ok(facturaService.obtenerTodas());
-    }
-
-    @GetMapping("/api/facturas/{id}")
-    @ResponseBody
-    public ResponseEntity<Factura> obtenerPorIdApi(@PathVariable Long id) {
-        Optional<Factura> factura = facturaService.obtenerPorId(id);
-        return factura.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/api/facturas")
-    @ResponseBody
-    public ResponseEntity<Factura> crearApi(@Valid @RequestBody Factura factura) {
-        try {
-            Factura nuevaFactura = facturaService.guardar(factura);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaFactura);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allReservas", reservaRepository.findAll());
+            return "forms-html/factura-form";
         }
-    }
 
-    @PutMapping("/api/facturas/{id}")
-    @ResponseBody
-    public ResponseEntity<Factura> actualizarApi(@PathVariable Long id, @Valid @RequestBody Factura factura) {
         try {
-            Factura facturaActualizada = facturaService.actualizar(id, factura);
-            return ResponseEntity.ok(facturaActualizada);
+            facturaService.guardar(factura);
+            logger.info("Factura emitida ID: {}", factura.getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Factura emitida correctamente.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            // Error: Reserva ya facturada
+            logger.error("Error negocio: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/facturas/new";
         }
+
+        return "redirect:/facturas";
     }
 
-    @DeleteMapping("/api/facturas/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> eliminarApi(@PathVariable Long id) {
+    @PostMapping("/facturas/update")
+    public String actualizar(@Valid @ModelAttribute Factura factura,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes,
+                             Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allReservas", reservaRepository.findAll());
+            return "forms-html/factura-form";
+        }
+
+        try {
+            facturaService.actualizar(factura.getId(), factura);
+            redirectAttributes.addFlashAttribute("successMessage", "Factura rectificada.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar.");
+        }
+        return "redirect:/facturas";
+    }
+
+    @GetMapping("/facturas/delete/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        logger.info("WEB: Eliminando factura ID {}", id);
         try {
             facturaService.eliminar(id);
-            return ResponseEntity.noContent().build();
+            redirectAttributes.addFlashAttribute("successMessage", "Factura eliminada.");
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            redirectAttributes.addFlashAttribute("errorMessage", "No se pudo eliminar.");
         }
+        return "redirect:/facturas";
     }
-    */
+
+    // ordenacion
+    private Sort getSort(String sort) {
+        if (sort == null) return Sort.by("id").descending();
+        return switch (sort) {
+            case "dateAsc" -> Sort.by("fechaEmision").ascending();
+            case "dateDesc" -> Sort.by("fechaEmision").descending();
+            case "amountAsc" -> Sort.by("importe").ascending();
+            case "amountDesc" -> Sort.by("importe").descending();
+            default -> Sort.by("id").descending();
+        };
+    }
 }
