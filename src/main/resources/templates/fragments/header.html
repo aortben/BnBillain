@@ -24,27 +24,33 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/}">Home</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/}" th:text="#{msg.header.home}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/villano}">Villanos</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/villano}" th:text="#{msg.header.villains}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/guarida}">Guaridas</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/guarida}" th:text="#{msg.header.lair}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/salaSecreta}">Salas Secretas</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/salaSecreta}" th:text="#{msg.header.secretRooms}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/comodidades}">Comodidades</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/comodidades}" th:text="#{msg.header.comfort}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/facturas}">Facturas</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/facturas}" th:text="#{msg.header.invoices}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/reservas}">Reservas</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/reservas}" th:text="#{msg.header.reservations}"></a>
                     </li>
                 </ul>
+                <form class="d-flex form-inline" method="get" th:action="@{/}">
+                    <select class="form-select" name="lang" onchange="this.form.submit()">
+                        <option th:selected="${#locale.language == 'es'}" value="es">Español</option>
+                        <option th:selected="${#locale.language == 'en'}" value="en">English</option>
+                    </select>
+                </form>
             </div>
         </div>
     </nav>
