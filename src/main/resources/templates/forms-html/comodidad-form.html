@@ -1,10 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${comodidad.id != null} ? 'Editar Comodidad' : 'Nueva Comodidad'">Comodidad</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="background-color: #f8f9fa;">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4" th:text="${comodidad.id != null} ? 'Editar Comodidad' : 'Nueva Comodidad'"></h1>
 
+            <!-- Formulario para editar -->
+            <form th:if="${comodidad.id != null}" th:action="@{/comodidades/update}" th:object="${comodidad}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="autoDestruccion" class="form-label">Auto-Destrucción:</label>
+                    <select class="form-control" id="autoDestruccion" th:field="*{autoDestruccion}">
+                        <option th:value="true" th:text="'Sí'" th:selected="*{autoDestruccion} == true"></option>
+                        <option th:value="false" th:text="'No'" th:selected="*{autoDestruccion} == false"></option>
+                    </select>
+                    <div class="text-danger" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
+                </div>
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="/comodidades" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+
+            <!-- Formulario para crear nuevo -->
+            <form th:if="${comodidad.id == null}" th:action="@{/comodidades/save}" th:object="${comodidad}" method="post">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="autoDestruccion" class="form-label">Auto-Destrucción:</label>
+                    <select class="form-control" id="autoDestruccion" th:field="*{autoDestruccion}">
+                        <option th:value="true" th:text="'Sí'" th:selected="*{autoDestruccion} == true"></option>
+                        <option th:value="false" th:text="'No'" th:selected="*{autoDestruccion} == false"></option>
+                    </select>
+                    <div class="text-danger" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
+                </div>
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="/comodidades" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
