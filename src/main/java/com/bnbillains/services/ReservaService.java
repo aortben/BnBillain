@@ -18,12 +18,10 @@ import java.util.Optional;
 @Service
 public class ReservaService {
 
-    // Necesitamos acceder a las 3 tablas para orquestar la operación
     private final ReservaRepository reservaRepository;
     private final FacturaRepository facturaRepository;
     private final GuaridaRepository guaridaRepository;
 
-    // Inyección de dependencias por Constructor
     public ReservaService(ReservaRepository reservaRepository,
                           FacturaRepository facturaRepository,
                           GuaridaRepository guaridaRepository) {
@@ -32,121 +30,102 @@ public class ReservaService {
         this.guaridaRepository = guaridaRepository;
     }
 
-    // --- LECTURA ---
+    // --- MÉTODOS DE LECTURA (Sin cambios) ---
+    public List<Reserva> obtenerTodas(Sort sort) { return reservaRepository.findAll(sort); }
+    public Optional<Reserva> obtenerPorId(Long id) { return reservaRepository.findById(id); }
 
-    public List<Reserva> obtenerTodas(Sort sort) {
-        return reservaRepository.findAll(sort);
-    }
-
-    public Optional<Reserva> obtenerPorId(Long id) {
-        return reservaRepository.findById(id);
-    }
-
-    // --- LÓGICA DE NEGOCIO PRINCIPAL (CREAR) ---
-
-    /**
-     * Guarda una nueva reserva y genera automáticamente su factura correspondiente.
-     * @Transactional asegura que si falla la factura, no se guarda la reserva.
-     */
+    // --- GUARDAR CON VALIDACIÓN DE FECHAS OCUPADAS ---
     @Transactional
     public Reserva guardar(Reserva reserva) {
-        // 1. Validar que la fecha fin sea posterior a inicio
-        validarFechas(reserva);
+        // 1. Validar lógica de fechas (Fin > Inicio)
+        validarFechasLogicas(reserva);
 
-        // 2. Obtener la Guarida REAL de la BD para saber su PRECIO
-        // (El objeto 'reserva' que viene del formulario suele traer solo el ID de la guarida)
+        // 2. 🔥 VALIDAR DISPONIBILIDAD (EL CAMBIO IMPORTANTE)
+        List<Reserva> conflictos = reservaRepository.encontrarConflictos(
+                reserva.getGuarida().getId(),
+                reserva.getFechaInicio(),
+                reserva.getFechaFin()
+        );
+
+        if (!conflictos.isEmpty()) {
+            throw new IllegalArgumentException("¡Imposible! La guarida está ocupada en esas fechas. Prueba a partir del "
+                    + conflictos.get(0).getFechaFin().plusDays(1));
+        }
+
+        // 3. Recuperar Guarida Real (Precio)
         Guarida guaridaReal = guaridaRepository.findById(reserva.getGuarida().getId())
-                .orElseThrow(() -> new IllegalArgumentException("La guarida seleccionada no existe."));
-
-        // Asignamos la guarida completa a la reserva
+                .orElseThrow(() -> new IllegalArgumentException("Guarida no existe"));
         reserva.setGuarida(guaridaReal);
 
-        // 3. Calcular el coste total (Días * PrecioNoche)
+        // 4. Calcular Coste y Guardar
         long dias = calcularDias(reserva.getFechaInicio(), reserva.getFechaFin());
         Double costeTotal = dias * guaridaReal.getPrecioNoche();
         reserva.setCosteTotal(costeTotal);
 
-        // 4. Guardar la Reserva en BD (Para generar su ID)
         Reserva reservaGuardada = reservaRepository.save(reserva);
 
-        // 5. GENERAR FACTURA AUTOMÁTICA
-        Factura factura = new Factura();
-        factura.setFechaEmision(LocalDate.now()); // Fecha de hoy
-        factura.setImporte(costeTotal);           // El precio calculado
-        factura.setImpuestosMalignos(costeTotal * 0.21); // 21% de IVA
-        factura.setMetodoPago("Pendiente");       // Por defecto
-        factura.setReserva(reservaGuardada);      // Vinculamos a la reserva recién creada
-
-        facturaRepository.save(factura);
+        // 5. Factura Automática
+        crearFacturaAutomatica(reservaGuardada, costeTotal);
 
         return reservaGuardada;
     }
 
-    // --- LÓGICA DE NEGOCIO SECUNDARIA (ACTUALIZAR) ---
-
-    /**
-     * Actualiza una reserva existente y RECALCULA el importe de su factura asociada.
-     */
+    // --- ACTUALIZAR CON VALIDACIÓN DE FECHAS OCUPADAS ---
     @Transactional
-    public Reserva actualizar(Long id, Reserva reservaDatosNuevos) {
-        validarFechas(reservaDatosNuevos);
+    public Reserva actualizar(Long id, Reserva reservaDatos) {
+        validarFechasLogicas(reservaDatos);
 
         return reservaRepository.findById(id)
                 .map(reservaExistente -> {
-                    // A. Actualizamos datos básicos
-                    reservaExistente.setFechaInicio(reservaDatosNuevos.getFechaInicio());
-                    reservaExistente.setFechaFin(reservaDatosNuevos.getFechaFin());
-                    reservaExistente.setEstado(reservaDatosNuevos.getEstado());
-                    reservaExistente.setVillano(reservaDatosNuevos.getVillano());
 
-                    // B. Si han cambiado la guarida, buscamos la nueva para saber el precio
-                    if (!reservaExistente.getGuarida().getId().equals(reservaDatosNuevos.getGuarida().getId())) {
-                        Guarida nuevaGuarida = guaridaRepository.findById(reservaDatosNuevos.getGuarida().getId())
-                                .orElseThrow(() -> new IllegalArgumentException("Nueva guarida no encontrada"));
+                    // 1. 🔥 VALIDAR DISPONIBILIDAD (Excluyendo la propia reserva)
+                    // Si cambio las fechas, tengo que ver que no choque con OTROS, pero ignorándome a mí mismo.
+                    List<Reserva> conflictos = reservaRepository.encontrarConflictosParaActualizar(
+                            reservaDatos.getGuarida().getId(), // Ojo, si cambia la guarida, validar la nueva
+                            id, // Mi ID para excluirme
+                            reservaDatos.getFechaInicio(),
+                            reservaDatos.getFechaFin()
+                    );
+
+                    if (!conflictos.isEmpty()) {
+                        throw new IllegalArgumentException("Fechas no disponibles. Coinciden con otra reserva existente.");
+                    }
+
+                    // 2. Actualizar datos
+                    reservaExistente.setFechaInicio(reservaDatos.getFechaInicio());
+                    reservaExistente.setFechaFin(reservaDatos.getFechaFin());
+                    reservaExistente.setEstado(reservaDatos.getEstado());
+                    reservaExistente.setVillano(reservaDatos.getVillano());
+
+                    // (Gestión de cambio de guarida omitida por brevedad, asumo que se mantiene o se gestiona igual)
+                    if (!reservaExistente.getGuarida().getId().equals(reservaDatos.getGuarida().getId())) {
+                        Guarida nuevaGuarida = guaridaRepository.findById(reservaDatos.getGuarida().getId()).orElseThrow();
                         reservaExistente.setGuarida(nuevaGuarida);
                     }
 
-                    // C. Recalcular Coste (por si cambiaron fechas o guarida)
+                    // 3. Recalcular Coste y Factura
                     long dias = calcularDias(reservaExistente.getFechaInicio(), reservaExistente.getFechaFin());
-                    Double precioNoche = reservaExistente.getGuarida().getPrecioNoche();
-                    Double nuevoCosteTotal = dias * precioNoche;
+                    Double nuevoCoste = dias * reservaExistente.getGuarida().getPrecioNoche();
+                    reservaExistente.setCosteTotal(nuevoCoste);
 
-                    reservaExistente.setCosteTotal(nuevoCosteTotal);
-
-                    // D. ACTUALIZAR LA FACTURA EXISTENTE
-                    facturaRepository.findByReserva_Id(reservaExistente.getId())
-                            .ifPresent(factura -> {
-                                factura.setImporte(nuevoCosteTotal);
-                                factura.setImpuestosMalignos(nuevoCosteTotal * 0.21);
-                                facturaRepository.save(factura);
-                            });
+                    actualizarFactura(reservaExistente, nuevoCoste);
 
                     return reservaRepository.save(reservaExistente);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
     }
 
-    public void eliminar(Long id) {
-        // Al borrar la reserva, la factura se borra sola por el CascadeType.ALL en la entidad
-        reservaRepository.deleteById(id);
-    }
-
-    // --- MÉTODOS DE BÚSQUEDA ---
-
-    public List<Reserva> buscarPorVillano(Long villanoId, Sort sort) {
-        return reservaRepository.findByVillano_Id(villanoId, sort);
-    }
-
-    public List<Reserva> buscarPorEstado(Boolean estado, Sort sort) {
-        return reservaRepository.findByEstado(estado, sort);
-    }
+    // ... (delete, búsquedas, etc... IGUAL QUE ANTES) ...
+    public void eliminar(Long id) { reservaRepository.deleteById(id); }
+    public List<Reserva> buscarPorVillano(Long vid, Sort s) { return reservaRepository.findByVillano_Id(vid, s); }
+    public List<Reserva> buscarPorEstado(Boolean e, Sort s) { return reservaRepository.findByEstado(e, s); }
 
     // --- HELPERS PRIVADOS ---
 
-    private void validarFechas(Reserva reserva) {
-        if (reserva.getFechaInicio() != null && reserva.getFechaFin() != null) {
-            if (!reserva.getFechaFin().isAfter(reserva.getFechaInicio())) {
-                throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio.");
+    private void validarFechasLogicas(Reserva r) {
+        if (r.getFechaInicio() != null && r.getFechaFin() != null) {
+            if (!r.getFechaFin().isAfter(r.getFechaInicio())) { // Fin debe ser > Inicio
+                throw new IllegalArgumentException("La fecha de fin debe ser posterior al inicio.");
             }
         }
     }
@@ -154,6 +133,24 @@ public class ReservaService {
     private long calcularDias(LocalDate inicio, LocalDate fin) {
         if (inicio == null || fin == null) return 0;
         long dias = ChronoUnit.DAYS.between(inicio, fin);
-        return dias < 1 ? 1 : dias; // Cobramos mínimo 1 noche
+        return dias < 1 ? 1 : dias;
+    }
+
+    private void crearFacturaAutomatica(Reserva reserva, Double importe) {
+        Factura f = new Factura();
+        f.setFechaEmision(LocalDate.now());
+        f.setImporte(importe);
+        f.setImpuestosMalignos(importe * 0.21);
+        f.setMetodoPago("Pendiente");
+        f.setReserva(reserva);
+        facturaRepository.save(f);
+    }
+
+    private void actualizarFactura(Reserva reserva, Double nuevoImporte) {
+        facturaRepository.findByReserva_Id(reserva.getId()).ifPresent(f -> {
+            f.setImporte(nuevoImporte);
+            f.setImpuestosMalignos(nuevoImporte * 0.21);
+            facturaRepository.save(f);
+        });
     }
 }

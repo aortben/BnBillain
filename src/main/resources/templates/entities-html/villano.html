@@ -1,58 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="fragments/head :: head ('Villanos - BnBillains')"></head>
-<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">
+<head th:replace="~{fragments/head :: head ('Villanos - BnBillains')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
 
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0" style="margin-top: 10%; padding: 2rem;">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">Gestión de Villanos</h1>
-            <a href="/villano/new" class="btn btn-danger">+ Nuevo Villano</a>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-striped table-hover table-dark">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Alias</th>
-                        <th>Carnet</th>
-                        <th>Email</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:if="${villanos.isEmpty()}">
-                        <td colspan="6" class="text-center text-muted">No hay villanos registrados</td>
-                    </tr>
-                    <tr th:each="villano : ${villanos}">
-                        <td th:text="${villano.id}"></td>
-                        <td>
-                            <a th:href="@{/villano/{id}(id=${villano.id})}" 
-                               class="text-decoration-none text-light" 
-                               style="font-weight: bold; cursor: pointer;">
-                                <span th:text="${villano.nombre}"></span>
-                            </a>
-                        </td>
-                        <td th:text="${villano.alias}"></td>
-                        <td th:text="${villano.carnetDeVillano}"></td>
-                        <td th:text="${villano.email}"></td>
-                        <td>
-                            <a th:href="@{/villano/{id}/edit(id=${villano.id})}" class="btn btn-sm btn-warning">Editar</a>
-                            <a th:href="@{/villano/{id}/delete(id=${villano.id})}" class="btn btn-sm btn-danger" 
-                               onclick="return confirm('¿Eliminar este villano?');">Eliminar</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<main class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🦹 Censo de Villanos</h2>
+        <a th:href="@{/villanos/new}" class="btn btn-success">+ Registrar Villano</a>
     </div>
+
+    <form th:action="@{/villanos}" method="get" class="row g-2 mb-4 p-3 bg-white border rounded">
+        <div class="col-md-8">
+            <input type="text" name="search" class="form-control" placeholder="Buscar por Nombre o Alias..." th:value="${search}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+        <div class="col-md-2">
+            <a th:href="@{/villanos}" class="btn btn-outline-secondary w-100">Limpiar</a>
+        </div>
+    </form>
+
+    <div class="table-responsive bg-white shadow-sm rounded">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th><a class="text-white text-decoration-none" th:href="@{/villanos(sort='idDesc', search=${search})}">ID ↕</a></th>
+                <th><a class="text-white text-decoration-none" th:href="@{/villanos(sort='nameAsc', search=${search})}">Nombre ↕</a></th>
+                <th><a class="text-white text-decoration-none" th:href="@{/villanos(sort='aliasAsc', search=${search})}">Alias ↕</a></th>
+                <th>Carnet</th>
+                <th>Email</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(villanos)}"><td colspan="6" class="text-center p-3">No hay villanos registrados.</td></tr>
+            <tr th:each="v : ${villanos}">
+                <td th:text="${v.id}">1</td>
+                <td th:text="${v.nombre}">Jack</td>
+                <td><span class="badge bg-dark" th:text="${v.alias}">Joker</span></td>
+                <td th:text="${v.carnetDeVillano}">V-001</td>
+                <td th:text="${v.email}">email@test.com</td>
+                <td class="text-center">
+                    <a th:href="@{/villano/{id}(id=${v.id})}" class="btn btn-sm btn-info text-white" title="Ver Expediente">📂</a>
+                    <a th:href="@{/villanos/{id}/edit(id=${v.id})}" class="btn btn-sm btn-warning">✏️</a>
+                    <a th:href="@{/villanos/delete/{id}(id=${v.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar villano?');">🗑️</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <nav class="mt-3" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/villanos(page=${currentPage - 1}, sort=${sort}, search=${search})}">Anterior</a>
+            </li>
+            <li class="page-item disabled"><span class="page-link" th:text="${currentPage} + ' / ' + ${totalPages}"></span></li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/villanos(page=${currentPage + 1}, sort=${sort}, search=${search})}">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
 </main>
 
-<footer th:replace="fragments/footer :: footer"></footer>
-
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
