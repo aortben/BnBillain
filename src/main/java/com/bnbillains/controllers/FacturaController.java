@@ -173,7 +173,7 @@ public class FacturaController {
         return facturaService.obtenerPorId(id)
                 .map(factura -> {
                     model.addAttribute("factura", factura); //mete la factura en la bandeja
-                    return "entities-html/factura-detalle"; // Nueva plantilla que crearemos
+                    return "entities-html/factura-detail"; // Nueva plantilla que crearemos
                 })
                 .orElseGet(() -> {
                     logger.warn("Factura no encontrada"); //dejamos constancia en el log

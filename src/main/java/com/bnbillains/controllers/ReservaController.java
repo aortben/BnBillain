@@ -24,9 +24,8 @@ public class ReservaController {
     private static final Logger logger = LoggerFactory.getLogger(ReservaController.class);
 
     private final ReservaService reservaService;
-    // Necesarios para cargar los desplegables en el formulario
-    private final VillanoRepository villanoRepository;
-    private final GuaridaRepository guaridaRepository;
+    private final VillanoRepository villanoRepository; // Para llenar el select de villanos
+    private final GuaridaRepository guaridaRepository; // Para llenar el select de guaridas
 
     public ReservaController(ReservaService reservaService,
                              VillanoRepository villanoRepository,
@@ -36,74 +35,56 @@ public class ReservaController {
         this.guaridaRepository = guaridaRepository;
     }
 
-    /**
-     * Listado de Reservas con Paginación Manual, Filtros (Villano/Estado) y Ordenación.
-     */
+    // LISTAR (Igual que antes)
     @GetMapping("/reservas")
     public String listar(@RequestParam(defaultValue = "1") int page,
-                         @RequestParam(required = false) Long villanoId, // Filtro por Cliente
-                         @RequestParam(required = false) Boolean estado, // Filtro Confirmada/Pendiente
+                         @RequestParam(required = false) Long villanoId,
+                         @RequestParam(required = false) Boolean estado,
                          @RequestParam(required = false) String sort,
                          Model model) {
 
-        logger.info("WEB: Listando reservas... Pag: {}, VillanoID: {}, Estado: {}", page, villanoId, estado);
-
         Sort sortObj = getSort(sort);
         List<Reserva> resultados;
-
-        // 1. Lógica de Filtrado
         if (villanoId != null) {
-            resultados = reservaService.obtenerReservasPorVillano(villanoId);
-        } else if (estado != null) {
+            resultados = reservaService.buscarPorVillano(villanoId, sortObj);
+        }  else if (estado != null){
             resultados = reservaService.buscarPorEstado(estado, sortObj);
-        } else {
+        } else{
             resultados = reservaService.obtenerTodas(sortObj);
         }
 
-        // 2. Paginación Manual
+        // Paginación manual...
         int pageSize = 5;
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        if (page > totalPages && totalPages > 0) page = totalPages;
         if (page < 1) page = 1;
-
+        if (page > totalPages && totalPages > 0) page = totalPages;
         int start = (page - 1) * pageSize;
         int end = Math.min(start + pageSize, totalItems);
+        List<Reserva> listaPaginada = (start > end || totalItems == 0) ? Collections.emptyList() : resultados.subList(start, end);
 
-        List<Reserva> listaPaginada = (start > end || totalItems == 0) ?
-                Collections.emptyList() : resultados.subList(start, end);
-
-        // 3. Pasar datos a la vista
         model.addAttribute("reservas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalItems", totalItems);
-
-        // Filtros para mantener en la vista
+        model.addAttribute("allVillanos", villanoRepository.findAll()); // Para el filtro
         model.addAttribute("villanoId", villanoId);
         model.addAttribute("estado", estado);
         model.addAttribute("sort", sort);
-
-        // Listas para los filtros (selects de búsqueda)
-        model.addAttribute("allVillanos", villanoRepository.findAll());
-
         return "entities-html/reserva";
     }
 
+    // FORMULARIO NUEVO
     @GetMapping("/reservas/new")
     public String formularioNuevo(Model model) {
-        logger.info("WEB: Nueva reserva.");
         model.addAttribute("reserva", new Reserva());
-        // Cargar listas para los desplegables del formulario
         model.addAttribute("allVillanos", villanoRepository.findAll());
         model.addAttribute("allGuaridas", guaridaRepository.findAll());
         return "forms-html/reserva-form";
     }
 
+    // FORMULARIO EDICIÓN
     @GetMapping("/reservas/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
-        logger.info("WEB: Editando reserva ID {}", id);
         Optional<Reserva> reserva = reservaService.obtenerPorId(id);
         if (reserva.isPresent()) {
             model.addAttribute("reserva", reserva.get());
@@ -114,13 +95,13 @@ public class ReservaController {
         return "redirect:/reservas";
     }
 
+    // GUARDAR (CREA RESERVA + FACTURA)
     @PostMapping("/reservas/save")
     public String guardar(@Valid @ModelAttribute Reserva reserva,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes,
                           Model model) {
 
-        // Si hay errores, hay que recargar los desplegables o el HTML se rompe
         if (bindingResult.hasErrors()) {
             model.addAttribute("allVillanos", villanoRepository.findAll());
             model.addAttribute("allGuaridas", guaridaRepository.findAll());
@@ -128,19 +109,16 @@ public class ReservaController {
         }
 
         try {
-            reservaService.guardar(reserva);
-            logger.info("Reserva registrada para villano ID: {}", reserva.getVillano().getId());
-            redirectAttributes.addFlashAttribute("successMessage", "Reserva creada con éxito.");
+            reservaService.guardar(reserva); // El servicio se encarga de todo
+            redirectAttributes.addFlashAttribute("successMessage", "Reserva confirmada y Factura generada.");
         } catch (IllegalArgumentException e) {
-            // Error de fechas cruzadas
-            logger.error("Error de validación: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/reservas/new";
         }
-
         return "redirect:/reservas";
     }
 
+    // ACTUALIZAR (RECALCULA FACTURA)
     @PostMapping("/reservas/update")
     public String actualizar(@Valid @ModelAttribute Reserva reserva,
                              BindingResult bindingResult,
@@ -155,34 +133,29 @@ public class ReservaController {
 
         try {
             reservaService.actualizar(reserva.getId(), reserva);
-            redirectAttributes.addFlashAttribute("successMessage", "Reserva modificada.");
+            redirectAttributes.addFlashAttribute("successMessage", "Reserva y Factura actualizadas.");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage()); // Fechas mal o ID no encontrado
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/reservas";
     }
 
     @GetMapping("/reservas/delete/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        logger.info("WEB: Cancelando reserva ID {}", id);
         try {
             reservaService.eliminar(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Reserva cancelada y eliminada.");
+            redirectAttributes.addFlashAttribute("successMessage", "Reserva cancelada.");
         } catch (Exception e) {
-            logger.error("Error al eliminar: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "No se pudo eliminar la reserva (¿Tiene factura?).");
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar.");
         }
         return "redirect:/reservas";
     }
 
-    // ordenacion
     private Sort getSort(String sort) {
-        if (sort == null) return Sort.by("id").descending(); // Por defecto las más nuevas primero
+        if (sort == null) return Sort.by("id").descending();
         return switch (sort) {
             case "dateAsc" -> Sort.by("fechaInicio").ascending();
             case "dateDesc" -> Sort.by("fechaInicio").descending();
-            case "costAsc" -> Sort.by("costeTotal").ascending();
-            case "costDesc" -> Sort.by("costeTotal").descending();
             default -> Sort.by("id").descending();
         };
     }
