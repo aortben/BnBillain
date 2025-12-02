@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,12 +28,14 @@ public class Comodidad {
     private Boolean autoDestruccion;
 
     // RELACIÓN N:M (Lado inverso)
-    // mappedBy = "comodidades" hace referencia a la lista en la clase Guarida
     @ManyToMany(mappedBy = "comodidades")
-    private List<Guarida> guaridas;
+    //Gracias a esta anotación se puede borrar aunque la entidad pertenezca a una tabla
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Guarida> guaridas = new ArrayList<>();
 
     public Comodidad(String nombre, Boolean autoDestruccion) {
         this.nombre = nombre;
         this.autoDestruccion = autoDestruccion;
     }
 }
+
