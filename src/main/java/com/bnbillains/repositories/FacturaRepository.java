@@ -20,8 +20,12 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
 
     List<Factura> findByReserva_Villano_Id(Long villanoId);
 
+    // ¡CRUCIAL! Necesario para que ReservaService encuentre la factura asociada
+    Optional<Factura> findByReserva_Id(Long reservaId);
 
-    // --- MÉTODOS DE SOPORTE ---
+
+
+    // --- MÉTODOS DE SOPORTE (validacion)---
     boolean existsByReserva_Id(Long reservaId);
 }
 
