@@ -162,6 +162,28 @@ public class FacturaController {
         return "redirect:/facturas";
     }
 
+
+    /**
+     * Muestra la vista de "Documento Factura" lista para imprimir.
+     */
+
+    @GetMapping("/facturas/{id}/verDetalle")
+    public String verDetalle(@PathVariable Long id, Model model) {
+        logger.info("WEB: Generando vista de factura ID {}", id);
+        return facturaService.obtenerPorId(id)
+                .map(factura -> {
+                    model.addAttribute("factura", factura); //mete la factura en la bandeja
+                    return "entities-html/factura-detalle"; // Nueva plantilla que crearemos
+                })
+                .orElseGet(() -> {
+                    logger.warn("Factura no encontrada"); //dejamos constancia en el log
+                    return "redirect:/facturas"; //redirigimos a facturas
+                });
+    }
+
+
+
+
     // ordenacion
     private Sort getSort(String sort) {
         if (sort == null) return Sort.by("id").descending();
