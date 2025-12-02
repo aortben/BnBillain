@@ -73,56 +73,56 @@ public class SalaSecretaController {
         model.addAttribute("search", search);
         model.addAttribute("sort", sort);
 
-        return "entities-html/sala-secreta"; // Ruta: templates/entities-html/sala-secreta.html
+        return "entities-html/salaSecreta"; // Ruta: templates/entities-html/salaSecreta.html
     }
 
-    @GetMapping("/salas-secretas/new")
+    @GetMapping("/salas_secretas/new")
     public String formularioNuevo(Model model) {
         logger.info("WEB: Formulario nueva sala secreta.");
         model.addAttribute("salaSecreta", new SalaSecreta());
-        return "forms-html/sala-secreta-form"; // Ruta: templates/forms-html/sala-secreta-form.html
+        return "forms-html/salaSecreta-form"; // Ruta: templates/forms-html/salaSecreta-form.html
     }
 
-    @GetMapping("/salas-secretas/{id}/edit")
+    @GetMapping("/salas_secretas/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
         logger.info("WEB: Editando sala secreta ID {}", id);
         Optional<SalaSecreta> sala = salaSecretaService.obtenerPorId(id);
         if (sala.isPresent()) {
             model.addAttribute("salaSecreta", sala.get());
-            return "forms-html/sala-secreta-form";
+            return "forms-html/salaSecreta-form";
         }
-        return "redirect:/salas-secretas";
+        return "redirect:/salas_secretas";
     }
 
-    @PostMapping("/salas-secretas/save")
+    @PostMapping("/salas_secretas/save")
     public String guardar(@Valid @ModelAttribute SalaSecreta salaSecreta,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            return "forms-html/sala-secreta-form";
+            return "forms-html/salaSecreta-form";
         }
 
         // Validación: Código de acceso único
         if (salaSecreta.getId() == null && salaSecretaService.existeCodigoAcceso(salaSecreta.getCodigoAcceso())) {
             logger.warn("Intento de duplicado código: {}", salaSecreta.getCodigoAcceso());
             redirectAttributes.addFlashAttribute("errorMessage", "El código de acceso ya está en uso.");
-            return "redirect:/salas-secretas/new";
+            return "redirect:/salas_secretas/new";
         }
 
         salaSecretaService.guardar(salaSecreta);
         logger.info("Sala secreta guardada: {}", salaSecreta.getCodigoAcceso());
         redirectAttributes.addFlashAttribute("successMessage", "Sala secreta registrada.");
-        return "redirect:/salas-secretas";
+        return "redirect:/salas_secretas";
     }
 
-    @PostMapping("/salas-secretas/update")
+    @PostMapping("/salas_secretas/update")
     public String actualizar(@Valid @ModelAttribute SalaSecreta salaSecreta,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            return "forms-html/sala-secreta-form";
+            return "forms-html/salaSecreta-form";
         }
 
         try {
@@ -131,10 +131,10 @@ public class SalaSecretaController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar.");
         }
-        return "redirect:/salas-secretas";
+        return "redirect:/salas_secretas";
     }
 
-    @GetMapping("/salas-secretas/delete/{id}")
+    @GetMapping("/salas_secretas/delete/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         logger.info("WEB: Eliminando sala secreta ID {}", id);
         try {
@@ -145,7 +145,7 @@ public class SalaSecretaController {
             logger.error("Error al eliminar: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "No se puede eliminar: Está vinculada a una guarida.");
         }
-        return "redirect:/salas-secretas";
+        return "redirect:/salas_secretas";
     }
 
     // Helper de ordenación
