@@ -9,7 +9,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0">Gestión de Comodidades</h1>
-            <a href="/comodidad/new" class="btn btn-primary">+ Nueva Comodidad</a>
+            <a href="/comodidades/new" class="btn btn-primary">+ Nueva Comodidad</a>
         </div>
 
         <div class="table-responsive">
@@ -34,8 +34,8 @@
                         <span th:unless="${comodidad.autoDestruccion}" class="badge bg-success">No</span>
                     </td>
                     <td>
-                        <a th:href="@{/comodidad/{id}/edit(id=${comodidad.id})}" class="btn btn-sm btn-warning">Editar</a>
-                        <a th:href="@{/comodidad/{id}/delete(id=${comodidad.id})}" class="btn btn-sm btn-danger"
+                        <a th:href="@{/comodidades/{id}/edit(id=${comodidad.id})}" class="btn btn-sm btn-warning">Editar</a>
+                        <a th:href="@{/comodidades/delete/{id}(id=${comodidad.id})}" class="btn btn-sm btn-danger"
                            onclick="return confirm('¿Eliminar esta comodidad?');">Eliminar</a>
                     </td>
                 </tr>
@@ -49,3 +49,4 @@
 
 </body>
 </html>
+
