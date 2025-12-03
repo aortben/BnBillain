@@ -1,0 +1,143 @@
+/* =========================================
+   TEMA VILLANESCO - BNBILLAINS
+   ========================================= */
+
+:root {
+    --color-bg-dark: #121212;       /* Fondo principal muy oscuro */
+    --color-bg-card: #1e1e1e;       /* Fondo de tarjetas */
+    --color-text-main: #e0e0e0;     /* Texto principal claro */
+    --color-text-muted: #a0a0a0;    /* Texto secundario */
+    --color-accent: #cf000f;        /* Rojo sangre para acentos */
+    --color-accent-hover: #a0000b;  /* Rojo más oscuro para hover */
+    --color-secondary: #4b0082;     /* Índigo/Violeta villano */
+    --font-title: 'Creepster', system-ui;
+    --font-body: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-main);
+    font-family: var(--font-body);
+}
+
+/* --- Títulos Siniestros --- */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: var(--font-title);
+    letter-spacing: 2px;
+    color: var(--color-accent);
+    text-shadow: 2px 2px 4px #000;
+}
+
+/* --- Navbar Personalizado --- */
+.navbar {
+    background: linear-gradient(to right, #000000 0%, #2c0000 50%, #000000 100%) !important;
+    border-bottom: 2px solid var(--color-accent);
+}
+
+.nav-link {
+    color: var(--color-text-main) !important;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--color-accent) !important;
+    text-shadow: 0 0 5px var(--color-accent);
+}
+
+.dropdown-menu {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-accent);
+}
+
+.dropdown-item {
+    color: var(--color-text-main);
+}
+
+.dropdown-item:hover {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+/* --- Tarjetas (Cards) --- */
+.card {
+    background-color: var(--color-bg-card);
+    border: 1px solid #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+}
+
+.card-header {
+    background-color: #2a2a2a !important;
+    border-bottom: 1px solid #444;
+    color: var(--color-accent);
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+}
+
+.list-group-item {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-main);
+    border-color: #333;
+}
+
+/* --- Tablas --- */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--color-text-main);
+    border-color: #444;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(207, 0, 15, 0.1); /* Rojo muy sutil al pasar el mouse */
+    color: white;
+}
+
+.table-dark {
+    background-color: #000 !important;
+}
+
+/* --- Botones --- */
+.btn-primary {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+.btn-primary:hover {
+    background-color: #32005c;
+    border-color: #32005c;
+}
+
+.btn-danger {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.btn-danger:hover {
+    background-color: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+}
+
+/* --- Formularios --- */
+.form-control, .form-select {
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    color: white;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #333;
+    color: white;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 0.25rem rgba(207, 0, 15, 0.25);
+}
+
+.form-control::placeholder {
+    color: #777;
+}
+
+/* --- Badges --- */
+.badge {
+    font-family: var(--font-body);
+}
