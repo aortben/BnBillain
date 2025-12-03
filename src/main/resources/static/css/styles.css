@@ -1,12 +1,11 @@
-
 :root {
-    --color-bg-dark: #121212;       /* Fondo principal muy oscuro */
-    --color-bg-card: #1e1e1e;       /* Fondo de tarjetas */
-    --color-text-main: #e0e0e0;     /* Texto principal claro */
-    --color-text-muted: #a0a0a0;    /* Texto secundario */
-    --color-accent: #cf000f;        /* Rojo sangre para acentos */
-    --color-accent-hover: #a0000b;  /* Rojo más oscuro para hover */
-    --color-secondary: #4b0082;     /* Índigo/Violeta villano */
+    --color-bg-dark: #ffffff;       /* Blanco */
+    --color-bg-card: #f3e4ef;       /* Morado muy claro */
+    --color-text-main: #91155b;     /* Morado medio */
+    --color-text-muted: #6b1144;    /* Morado medio oscuro */
+    --color-accent: #350e32;        /* Morado oscuro */
+    --color-accent-hover: #4d1447;  /* Morado medio oscuro para hover */
+    --color-secondary: #91155b;     /* Morado medio */
     --font-title: 'Creepster', system-ui;
     --font-body: 'Roboto', sans-serif;
 }
@@ -15,6 +14,11 @@ body {
     background-color: var(--color-bg-dark);
     color: var(--color-text-main);
     font-family: var(--font-body);
+
+    /* Evitar superposición con header y footer fixed */
+    padding-top: 70px; /* Ajusta según el alto real del header (ej. 60-80px) */
+    padding-bottom: 60px; /* Ajusta según el alto real del footer (ej. 50-70px) */
+    box-sizing: border-box; /* Asegura que padding no agregue ancho extra */
 }
 
 /* --- Títulos Siniestros --- */
@@ -27,7 +31,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 /* --- Navbar Personalizado --- */
 .navbar {
-    background: linear-gradient(to right, #270d2b 0%, #91155b 50%, #270d2b 100%) !important;
+    background: linear-gradient(to right, #350e32 0%, #91155b 50%, #350e32 100%) !important;
     border-bottom: 2px solid #91155b;
 }
 
@@ -40,8 +44,8 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 }
 
 .nav-link:hover {
-    color: #91155b !important;
-    text-shadow: 0 0 5px #91155b;
+    color: #f3e4ef !important;
+    text-shadow: 0 0 5px #f3e4ef;
 }
 
 .dropdown-menu {
@@ -57,22 +61,23 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     background-color: #91155b;
     color: white;
 }
+
 /* --- Footer --- */
 footer {
-    background: linear-gradient(to right, #270d2b 0%, #91155b 50%, #270d2b 100%) !important;
+    background: linear-gradient(to right, #350e32 0%, #91155b 50%, #350e32 100%) !important;
     border-bottom: 2px solid #91155b;
 }
 
 /* --- Tarjetas (Cards) --- */
 .card {
     background-color: var(--color-bg-card);
-    border: 1px solid #333;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+    border: 1px solid #91155b;
+    box-shadow: 0 4px 15px rgba(145, 21, 91, 0.8);
 }
 
 .card-header {
-    background-color: #2a2a2a !important;
-    border-bottom: 1px solid #444;
+    background-color: #f3e4ef !important;
+    border-bottom: 1px solid #91155b;
     color: var(--color-accent);
     font-family: var(--font-title);
     font-size: 1.5rem;
@@ -81,23 +86,23 @@ footer {
 .list-group-item {
     background-color: var(--color-bg-card);
     color: var(--color-text-main);
-    border-color: #333;
+    border-color: #91155b;
 }
 
 /* --- Tablas --- */
 .table {
     --bs-table-bg: transparent;
     --bs-table-color: var(--color-text-main);
-    border-color: #444;
+    border-color: #91155b;
 }
 
 .table-hover tbody tr:hover {
-    background-color: rgba(207, 0, 15, 0.1); /* Rojo muy sutil al pasar el mouse */
-    color: white;
+    background-color: rgba(145, 21, 91, 0.1);
+    color: #350e32;
 }
 
 .table-dark {
-    background-color: #000 !important;
+    background-color: #f3e4ef !important;
 }
 
 /* --- Botones --- */
@@ -107,8 +112,8 @@ footer {
 }
 
 .btn-primary:hover {
-    background-color: #32005c;
-    border-color: #32005c;
+    background-color: #91155b;
+    border-color: #91155b;
 }
 
 .btn-danger {
@@ -123,23 +128,42 @@ footer {
 
 /* --- Formularios --- */
 .form-control, .form-select {
-    background-color: #2c2c2c;
-    border: 1px solid #444;
-    color: white;
+    background-color: #f3e4ef;
+    border: 1px solid #91155b;
+    color: #350e32;
 }
 
 .form-control:focus, .form-select:focus {
-    background-color: #333;
-    color: white;
+    background-color: #ffffff;
+    color: #350e32;
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 0.25rem rgba(207, 0, 15, 0.25);
+    box-shadow: 0 0 0 0.25rem rgba(145, 21, 91, 0.25);
 }
 
 .form-control::placeholder {
-    color: #777;
+    color: #91155b;
 }
 
 /* --- Badges --- */
 .badge {
     font-family: var(--font-body);
+}
+
+/* --- Contenido centrado y consistente con header/footer --- */
+main {
+    width: 80%; /* Mismo ancho que header/footer */
+    margin: 0 auto; /* Centrado */
+    padding: 2rem; /* Espacio interno */
+    box-sizing: border-box; /* Previene overflows */
+}
+
+main .container {
+    max-width: 100%; /* Evita límite extra de .container de Bootstrap */
+    padding: 0; /* Remueve padding extra si no se necesita */
+}
+
+/* Para elementos que puedan "sobresalir" (ej. tablas anchas) */
+.table-responsive {
+    overflow-x: auto; /* Scroll horizontal si la tabla es muy ancha */
+    width: 100%; /* Limita al ancho del padre */
 }
