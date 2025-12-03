@@ -2,6 +2,7 @@ package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Villano;
 import com.bnbillains.services.VillanoService;
+import com.bnbillains.services.FacturaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -21,9 +22,11 @@ public class VillanoController {
 
     private static final Logger logger = LoggerFactory.getLogger(VillanoController.class);
     private final VillanoService villanoService;
+    private final FacturaService facturaService;
 
-    public VillanoController(VillanoService villanoService) {
+    public VillanoController(VillanoService villanoService, FacturaService facturaService) {
         this.villanoService = villanoService;
+        this.facturaService = facturaService;
     }
 
     /**
@@ -70,6 +73,24 @@ public class VillanoController {
         model.addAttribute("sort", sort);
 
         return "entities-html/villano"; // Ruta: templates/entities-html/villano.html
+    }
+
+    @GetMapping("/villanos/{id}")
+    public String detalle(@PathVariable Long id, Model model) {
+        logger.info("WEB: Mostrando detalle villano ID {}", id);
+        Optional<Villano> villano = villanoService.obtenerPorId(id);
+        
+        if (villano.isEmpty()) {
+            return "redirect:/villanos";
+        }
+        
+        Villano v = villano.get();
+        model.addAttribute("villano", v);
+        model.addAttribute("reservas", v.getReservasRealizadas() != null ? v.getReservasRealizadas() : Collections.emptyList());
+        model.addAttribute("resenas", v.getResenasEscritas() != null ? v.getResenasEscritas() : Collections.emptyList());
+        model.addAttribute("facturas", facturaService.obtenerFacturasPorVillano(id));
+        
+        return "entities-html/villano-detail";
     }
 
     @GetMapping("/villanos/new")

@@ -90,6 +90,24 @@ public class GuaridaController {
         return "entities-html/guarida";
     }
 
+    @GetMapping("/guaridas/{id}")
+    public String detalle(@PathVariable Long id, Model model) {
+        logger.info("WEB: Mostrando detalle guarida ID {}", id);
+        Optional<Guarida> guarida = guaridaService.obtenerPorId(id);
+        
+        if (guarida.isEmpty()) {
+            return "redirect:/guaridas";
+        }
+        
+        Guarida g = guarida.get();
+        model.addAttribute("guarida", g);
+        model.addAttribute("comodidades", g.getComodidades() != null ? g.getComodidades() : Collections.emptyList());
+        model.addAttribute("resenas", g.getResenas() != null ? g.getResenas() : Collections.emptyList());
+        model.addAttribute("salaSecreta", g.getSalaSecreta());
+        
+        return "entities-html/guarida-detail";
+    }
+
     @GetMapping("/guaridas/new")
     public String formularioNuevo(Model model) {
         logger.info("WEB: Formulario nueva guarida.");

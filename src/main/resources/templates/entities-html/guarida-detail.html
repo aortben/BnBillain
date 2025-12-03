@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Detalle de Guarida')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5 mb-5" style="padding-top: 20px;">
+    <div class="card shadow mb-4">
+        <!-- Header con imagen de fondo opcional o color sólido -->
+        <div class="position-relative" style="height: 200px; background-color: #343a40; overflow: hidden;">
+            <!-- Si usas subida de imágenes, ajusta la ruta. Si no hay imagen, se ve el fondo oscuro -->
+            <img th:if="${guarida.imagen != null and !guarida.imagen.isEmpty()}"
+                 th:src="@{'/uploads/' + ${guarida.imagen}}"
+                 class="w-100 h-100" style="object-fit: cover; opacity: 0.6;" alt="Foto Guarida">
+            <div class="position-absolute bottom-0 start-0 p-4 text-white">
+                <h1 class="display-4" th:text="${guarida.nombre}" style="text-shadow: 2px 2px 4px #000;">Nombre Guarida</h1>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3 class="text-success mb-3" th:text="${guarida.precioNoche} + ' € / noche'">0.0 €</h3>
+                    <p class="lead" th:text="${guarida.descripcion}">Descripción detallada de la guarida.</p>
+                    <p><strong>📍 Ubicación:</strong> <span th:text="${guarida.ubicacion}">Ubicación</span></p>
+
+                    <hr>
+
+                    <h5>✨ Comodidades</h5>
+                    <div th:if="${comodidades.isEmpty()}" class="text-muted fst-italic mb-3">Sin comodidades especificadas.</div>
+                    <div th:unless="${comodidades.isEmpty()}" class="mb-3">
+                        <span th:each="c : ${comodidades}" class="badge bg-info text-dark me-2 p-2" th:text="${c.nombre}">Wifi</span>
+                    </div>
+                </div>
+
+                <!-- Panel Lateral: Sala Secreta -->
+                <div class="col-md-4">
+                    <div class="card bg-dark text-white mb-3">
+                        <div class="card-header border-light">🔒 Sala Secreta</div>
+                        <div class="card-body">
+                            <div th:if="${salaSecreta == null}" class="text-center text-muted">
+                                <p>No dispone de sala secreta.</p>
+                            </div>
+                            <div th:if="${salaSecreta != null}">
+                                <p><strong>Función:</strong> <br> <span th:text="${salaSecreta.funcionPrincipal}">Bunker</span></p>
+                                <p><strong>Código Acceso:</strong> <br> <code class="text-warning" th:text="${salaSecreta.codigoAcceso}">****</code></p>
+                                <p><strong>Salida Emergencia:</strong>
+                                    <span th:if="${salaSecreta.salidaEmergencia}" class="text-success">✅ Sí</span>
+                                    <span th:unless="${salaSecreta.salidaEmergencia}" class="text-danger">❌ No</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/guaridas/{id}/edit(id=${guarida.id})}" class="btn btn-warning">Editar Guarida</a>
+                        <a th:href="@{/guaridas}" class="btn btn-outline-secondary">Volver al listado</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Reseñas Recibidas -->
+    <div class="card shadow">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">📢 Reseñas de Villanos</h4>
+        </div>
+        <div class="card-body">
+            <div th:if="${resenas.isEmpty()}" class="alert alert-secondary text-center">
+                Aún no hay reseñas para esta guarida.
+            </div>
+
+            <div th:unless="${resenas.isEmpty()}" class="row">
+                <div class="col-md-6 mb-3" th:each="resena : ${resenas}">
+                    <div class="card h-100 border-light shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title mb-0" th:text="${resena.villano != null ? resena.villano.alias : 'Anónimo'}">Villano</h5>
+                                <span class="badge bg-warning text-dark" th:text="${resena.puntuacion} + '⭐'">5⭐</span>
+                            </div>
+                            <p class="card-text text-muted" th:text="${resena.comentario}">Comentario...</p>
+                            <small class="text-muted" th:text="'Publicado el: ' + ${resena.fechaPublicacion}">Fecha</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

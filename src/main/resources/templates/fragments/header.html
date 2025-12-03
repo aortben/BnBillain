@@ -27,22 +27,23 @@
                         <a class="nav-link text-dark fw-semibold" th:href="@{/}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/villano}">Villanos</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/villanos}">👤 Villanos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/guarida}">Guaridas</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/guaridas}">🏰 Guaridas</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/comodidades}">Comodidades</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/facturas}">Facturas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/reservas}">Reservas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/salas_secretas}">Salas secretas</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark fw-semibold dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ⚙️ Más opciones
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" th:href="@{/comodidades}">Comodidades</a></li>
+                            <li><a class="dropdown-item" th:href="@{/salas_secretas}">Salas Secretas</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/resenas}">Reseñas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/reservas}">Reservas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/facturas}">Facturas</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
