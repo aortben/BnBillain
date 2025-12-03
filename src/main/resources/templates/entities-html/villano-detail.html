@@ -1,115 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="fragments/head :: head ('Detalle Villano - BnBillains')"></head>
-<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">
+<head th:replace="~{fragments/head :: head ('Detalle de Villano')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
 
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0" style="margin-top: 10%; padding: 2rem;">
-    <div class="container">
-        <div class="mb-4">
-            <a href="/villano" class="btn btn-secondary">← Volver a Villanos</a>
+<main class="container mt-5 mb-5" style="padding-top: 20px;">
+    <!-- Tarjeta Principal del Villano -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0" th:text="${villano.alias}">Alias del Villano</h2>
+            <span class="badge bg-warning text-dark">Villano</span>
         </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 th:text="${villano.nombre}">Nombre Real</h4>
+                    <p><strong>Email:</strong> <span th:text="${villano.email}">email@ejemplo.com</span></p>
+                    <p><strong>Carnet de Villano:</strong> <span th:text="${villano.carnetDeVillano}">0000</span></p>
 
-        <div class="card mb-4 border-danger">
-            <div class="card-header bg-danger text-white">
-                <h2 class="mb-0" th:text="${villano.nombre}"></h2>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Alias:</strong> <span th:text="${villano.alias}"></span></p>
-                        <p><strong>Carnet de Villano:</strong> <span th:text="${villano.carnetDeVillano}"></span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Email:</strong> <span th:text="${villano.email}"></span></p>
-                        <p><strong>ID:</strong> <span th:text="${villano.id}"></span></p>
+                    <div class="mt-3">
+                        <a th:href="@{/villanos/{id}/edit(id=${villano.id})}" class="btn btn-primary">Editar Perfil</a>
+                        <a th:href="@{/villanos}" class="btn btn-secondary">Volver a la lista</a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-lg-6 mb-4">
-                <div class="card border-primary">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Reservas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div th:if="${reservas.isEmpty()}" class="alert alert-info">
-                            No hay reservas realizadas
-                        </div>
-                        <div th:if="!${reservas.isEmpty()}">
-                            <div th:each="reserva : ${reservas}" class="mb-3 p-3 border rounded">
-                                <p><strong>Guarida:</strong> <span th:text="${reserva.guarida.nombre}"></span></p>
-                                <p><strong>Fecha Inicio:</strong> <span th:text="${reserva.fechaInicio}"></span></p>
-                                <p><strong>Fecha Fin:</strong> <span th:text="${reserva.fechaFin}"></span></p>
-                                <p><strong>Coste Total:</strong> <span th:text="${reserva.costeTotal}"></span>€</p>
-                                <p><strong>Estado:</strong> 
-                                    <span th:if="${reserva.estado}" class="badge bg-success">Confirmada</span>
-                                    <span th:unless="${reserva.estado}" class="badge bg-warning">Pendiente</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Grid de Relaciones -->
+    <div class="row">
+        <!-- 1. Reservas -->
+        <div class="col-md-12 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">Reservas Realizadas</div>
+                <div class="card-body">
+                    <div th:if="${reservas.isEmpty()}" class="alert alert-info">Este villano no ha realizado reservas.</div>
 
-            <div class="col-lg-6 mb-4">
-                <div class="card border-success">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Reseñas Escritas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div th:if="${resenas.isEmpty()}" class="alert alert-info">
-                            No hay reseñas escritas
-                        </div>
-                        <div th:if="!${resenas.isEmpty()}">
-                            <div th:each="resena : ${resenas}" class="mb-3 p-3 border rounded">
-                                <p><strong>Guarida:</strong> <span th:text="${resena.guarida.nombre}"></span></p>
-                                <p><strong>Puntuación:</strong> 
-                                    <span class="badge bg-warning" th:text="${resena.puntuacion} + '/5'"></span>
-                                </p>
-                                <p><strong>Comentario:</strong></p>
-                                <p th:text="${resena.comentario}"></p>
-                                <small class="text-muted" th:text="${resena.fechaPublicacion}"></small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card border-warning mb-4">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0">Facturas</h5>
-            </div>
-            <div class="card-body">
-                <div th:if="${facturas.isEmpty()}" class="alert alert-info">
-                    No hay facturas asociadas
-                </div>
-                <div th:if="!${facturas.isEmpty()}">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
+                    <div th:unless="${reservas.isEmpty()}" class="table-responsive">
+                        <table class="table table-hover">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha Emisión</th>
-                                    <th>Importe</th>
-                                    <th>Impuestos</th>
-                                    <th>Método Pago</th>
-                                    <th>Reserva</th>
-                                </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Guarida</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Estado</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="factura : ${facturas}">
-                                    <td th:text="${factura.id}"></td>
-                                    <td th:text="${factura.fechaEmision}"></td>
-                                    <td th:text="${factura.importe}"></td>
-                                    <td th:text="${factura.impuestosMalignos}"></td>
-                                    <td th:text="${factura.metodoPago}"></td>
-                                    <td th:text="${factura.reserva.guarida.nombre}"></td>
-                                </tr>
+                            <tr th:each="reserva : ${reservas}">
+                                <td th:text="${reserva.id}">1</td>
+                                <!-- Verificación de null por seguridad -->
+                                <td th:text="${reserva.guarida != null ? reserva.guarida.nombre : 'Guarida Eliminada'}">Nombre Guarida</td>
+                                <td th:text="${reserva.fechaInicio}">2023-01-01</td>
+                                <td th:text="${reserva.fechaFin}">2023-01-05</td>
+                                <td>
+                                    <span th:if="${reserva.estado}" class="badge bg-success">Confirmada</span>
+                                    <span th:unless="${reserva.estado}" class="badge bg-warning text-dark">Pendiente</span>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -117,15 +67,47 @@
             </div>
         </div>
 
-        <div class="mt-4">
-            <a th:href="@{/villano/{id}/edit(id=${villano.id})}" class="btn btn-warning">Editar Villano</a>
-            <a th:href="@{/villano/{id}/delete(id=${villano.id})}" class="btn btn-danger" 
-               onclick="return confirm('¿Eliminar este villano?');">Eliminar Villano</a>
+        <!-- 2. Reseñas (Comentarios Escritos) -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-success text-white">Historial de Reseñas</div>
+                <div class="card-body">
+                    <div th:if="${resenas.isEmpty()}" class="alert alert-info">No ha escrito reseñas.</div>
+                    <ul th:unless="${resenas.isEmpty()}" class="list-group list-group-flush">
+                        <li class="list-group-item" th:each="resena : ${resenas}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1" th:text="${resena.guarida != null ? resena.guarida.nombre : 'Guarida desconocida'}">Lugar</h6>
+                                <small class="text-warning" th:text="${resena.puntuacion} + ' ⭐'">5 ⭐</small>
+                            </div>
+                            <p class="mb-1 text-muted" th:text="'&quot;' + ${resena.comentario} + '&quot;'">Comentario</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Facturas -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-secondary text-white">Facturas</div>
+                <div class="card-body">
+                    <div th:if="${facturas.isEmpty()}" class="alert alert-info">No tiene facturas registradas.</div>
+                    <ul th:unless="${facturas.isEmpty()}" class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="factura : ${facturas}">
+                            <span>
+                                <strong>Factura #<span th:text="${factura.id}">1</span></strong>
+                                <br>
+                                <small class="text-muted" th:text="${factura.fechaEmision}">2023-01-01</small>
+                            </span>
+                            <span class="badge bg-dark rounded-pill" th:text="${factura.total} + ' €'">100 €</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </main>
 
-<footer th:replace="fragments/footer :: footer"></footer>
-
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
