@@ -66,7 +66,7 @@
 
 <main class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📅 Libro de Reservas</h2>
+        <h2>Libro de Reservas</h2>
         <a th:href="@{/reservas/new}" class="btn btn-success">+ Nueva Reserva</a>
     </div>
 
@@ -120,8 +120,8 @@
                     <span th:unless="${r.estado}" class="badge bg-warning text-dark">Pendiente</span>
                 </td>
                 <td>
-                    <a th:href="@{/reservas/{id}/edit(id=${r.id})}" class="btn btn-sm btn-warning">✏️</a>
-                    <a th:href="@{/reservas/delete/{id}(id=${r.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar reserva?');">❌</a>
+                    <a th:href="@{/reservas/{id}/edit(id=${r.id})}" class="btn btn-sm btn-warning"></a>
+                    <a th:href="@{/reservas/delete/{id}(id=${r.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar reserva?');"></a>
                 </td>
             </tr>
             </tbody>

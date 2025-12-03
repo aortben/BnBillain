@@ -7,7 +7,7 @@
 
 <main class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🏰 Catálogo de Guaridas</h2>
+        <h2>Catálogo de Guaridas</h2>
         <a th:href="@{/guaridas/new}" class="btn btn-success">+ Nueva Guarida</a>
     </div>
 
@@ -54,9 +54,9 @@
                         <span th:if="${guarida.imagen == null}" class="badge bg-secondary">Sin imagen</span>
                     </td>
                     <td class="text-center">
-                        <a th:href="@{/guaridas/{id}(id=${guarida.id})}" class="btn btn-sm btn-info text-white" title="Ver Detalle">👁️</a>
-                        <a th:href="@{/guaridas/{id}/edit(id=${guarida.id})}" class="btn btn-sm btn-warning">✏️</a>
-                        <a th:href="@{/guaridas/delete/{id}(id=${guarida.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar guarida?');">🗑️</a>
+                        <a th:href="@{/guaridas/{id}(id=${guarida.id})}" class="btn btn-sm btn-info text-white" title="Ver Detalle">Detalles</a>
+                        <a th:href="@{/guaridas/{id}/edit(id=${guarida.id})}" class="btn btn-sm btn-warning">Editar</a>
+                        <a th:href="@{/guaridas/delete/{id}(id=${guarida.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar guarida?');">Eliminar</a>
                     </td>
                 </tr>
             </tbody>
