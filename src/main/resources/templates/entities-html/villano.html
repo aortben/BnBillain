@@ -9,7 +9,7 @@
 
     <!-- Título y Botón Nuevo -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="display-5"><span style="font-size: 1.2em;">👤</span> Directorio de Villanos</h1>
+        <h1 class="display-5"><span style="font-size: 1.2em;"></span> Directorio de Villanos</h1>
         <a th:href="@{/villanos/new}" class="btn btn-danger btn-lg shadow-sm">
             + Nuevo Villano
         </a>
@@ -83,14 +83,14 @@
                             <div class="btn-group" role="group" th:if="${villano != null}">
                                 <a th:href="@{/villanos/{id}(id=${villano.id})}"
                                    class="btn btn-sm btn-info text-white"
-                                   title="Ver Detalles">👁️</a>
+                                   title="Ver Detalles">Detalles</a>
                                 <a th:href="@{/villanos/{id}/edit(id=${villano.id})}"
                                    class="btn btn-sm btn-warning"
-                                   title="Editar">✏️</a>
+                                   title="Editar">Editar</a>
                                 <a th:href="@{/villanos/delete/{id}(id=${villano.id})}"
                                    class="btn btn-sm btn-danger"
                                    onclick="return confirm('¿Eliminar este villano?');"
-                                   title="Eliminar">🗑️</a>
+                                   title="Eliminar">Eliminar</a>
                             </div>
                         </td>
                     </tr>
