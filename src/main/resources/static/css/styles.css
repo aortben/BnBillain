@@ -20,8 +20,6 @@ body {
     background-color: var(--color-bg-dark);
     color: var(--color-text-main);
     font-family: var(--font-body);
-    /* AJUSTE: Reducimos padding para recuperar espacio vertical */
-    /* Mantenemos el top suficiente para el navbar, pero quitamos exceso abajo */
     padding-top: 70px;
     padding-bottom: 20px;
 }
@@ -34,7 +32,7 @@ h1, h2, h3, h4, h5, h6 {
     text-shadow: 2px 2px 0px #000;
 }
 
-/* --- Navbar Personalizado --- */
+/* --- Navbar --- */
 .navbar {
     background-color: #050505 !important;
     background-image: none !important;
@@ -49,7 +47,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-brand img {
-    /* Efecto de resplandor para separar el logo oscuro del fondo negro */
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15))
             drop-shadow(0 0 10px var(--color-logo-dark));
     transition: transform 0.3s ease;
@@ -91,9 +88,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Footer --- */
 footer {
-    background: linear-gradient(to right, #000000 0%, var(--color-logo-dark) 50%, #000000 100%) !important;
-    border-top: 2px solid var(--color-logo-light);
+    background-color: #050505 !important;
+    border-top: 3px solid var(--color-logo-light);
     margin-top: auto;
+    box-shadow: 0 -4px 20px rgba(122, 0, 75, 0.4);
 }
 
 /* --- Tarjetas (Cards) --- */
@@ -118,13 +116,17 @@ footer {
     font-size: 1.5rem;
 }
 
-/* --- Botones --- */
+/* --- Botones Generales --- */
+.btn {
+    text-transform: none !important; /* Quitamos mayúsculas forzadas en todos los botones */
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
 .btn-primary {
     background-color: var(--color-logo-dark);
     border-color: var(--color-logo-light);
     color: #fff;
-    text-transform: uppercase;
-    font-weight: bold;
     box-shadow: 0 0 10px rgba(46, 0, 62, 0.5);
 }
 
@@ -145,7 +147,44 @@ footer {
     box-shadow: 0 0 15px var(--color-accent);
 }
 
-/* --- Tablas y Formularios --- */
+/* Botón Outline Light (Genérico) */
+.btn-outline-light {
+    color: var(--color-text-main);
+    border-color: var(--color-text-main);
+}
+.btn-outline-light:hover {
+    background-color: var(--color-text-main);
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* --- Botones Personalizados (Nuevos) --- */
+
+/* Botón "Detalles": Outline Magenta/Vino */
+.btn-outline-villain {
+    color: var(--color-logo-light);
+    border-color: var(--color-logo-light);
+    background-color: transparent;
+}
+.btn-outline-villain:hover {
+    background-color: var(--color-logo-light);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(122, 0, 75, 0.4);
+}
+
+/* Botón "Eliminar": Rojo Apagado */
+.btn-dull-danger {
+    background-color: #520b12; /* Rojo sangre seca */
+    border-color: #4a0a10;
+    color: #ccc;
+}
+.btn-dull-danger:hover {
+    background-color: #750f19;
+    border-color: #750f19;
+    color: white;
+}
+
+/* --- Tablas --- */
 .table {
     --bs-table-bg: transparent;
     --bs-table-color: var(--color-text-main);
@@ -156,10 +195,17 @@ footer {
     background-color: rgba(122, 0, 75, 0.15);
 }
 
+/* --- Formularios (Mejorados) --- */
 .form-control, .form-select {
     background-color: #121212;
     border: 1px solid #444;
     color: white;
+}
+
+/* Placeholder blanco grisáceo */
+.form-control::placeholder {
+    color: #d1d1d1 !important;
+    opacity: 1;
 }
 
 .form-control:focus, .form-select:focus {
@@ -173,9 +219,6 @@ footer {
    ELEMENTOS DE HOME (Logo y Carrusel)
    ========================================= */
 
-/* Estilos BASE (Tablets y pantallas medianas) */
-/* Esto arregla el "agujero" donde las cosas se veían muy chicas en tablets */
-
 .home-logo {
     max-width: 130px;
     height: auto;
@@ -188,7 +231,7 @@ footer {
 }
 
 .carousel-img-villano {
-    height: 220px;       /* Subido un poco (de 200px a 220px) */
+    height: 220px;
     width: auto;
     max-width: 100%;
     object-fit: cover;
@@ -198,46 +241,40 @@ footer {
     display: block;
 }
 
-/* Ajuste fino de controles del carrusel */
 .carousel-control-prev, .carousel-control-next {
-    width: 10%; /* Zona de clic cómoda */
+    width: 10%;
     opacity: 0.7;
 }
-
 
 /* =========================================
    MEDIA QUERIES (Unificadas)
    ========================================= */
 
-/* --- MÓVILES (Pantallas < 576px) --- */
 @media (max-width: 576px) {
     body {
-        padding-top: 60px; /* Suficiente para el navbar móvil */
-        padding-bottom: 20px; /* Poco padding abajo */
+        padding-top: 60px;
+        padding-bottom: 20px;
     }
     .home-logo {
-        max-width: 100px; /* Logo compacto */
+        max-width: 100px;
     }
     .carousel-img-villano {
-        height: 160px; /* Subido ligeramente (de 150px a 160px) */
+        height: 160px;
     }
     .carousel-control-prev { left: -5px; }
     .carousel-control-next { right: -5px; }
 }
 
-/* --- DESKTOPS (Pantallas > 992px) --- */
 @media (min-width: 992px) {
     body {
-        /* Ajuste fino: suficiente para librar navbar pero sin empujar demasiado */
         padding-top: 85px;
     }
     .home-logo {
         max-width: 160px;
     }
     .carousel-img-villano {
-        height: 320px; /* Subido (de 280px a 320px) para llenar mejor el espacio */
+        height: 320px;
     }
-    /* En PC alejamos las flechas de la imagen por estética */
     .carousel-control-prev { left: 5%; }
     .carousel-control-next { right: 5%; }
 }
