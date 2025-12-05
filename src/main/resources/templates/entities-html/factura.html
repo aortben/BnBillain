@@ -1,54 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="fragments/head :: head ('Facturas - BnBillains')"></head>
-<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">
+<head th:replace="~{fragments/head :: head ('Facturas - BnBillains')}"></head>
+<body class="d-flex flex-column h-100">
 
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0" style="margin-top: 10%; padding: 2rem;">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">Gestión de Facturas</h1>
-            <a href="/factura/new" class="btn btn-success">+ Nueva Factura</a>
-        </div>
+<main class="flex-shrink-0 flex-grow-1 container" style="margin-top: 100px; margin-bottom: 50px;">
 
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Fecha Emisión</th>
-                    <th>Importe</th>
-                    <th>Impuestos Malignos</th>
-                    <th>Total</th>
-                    <th>Método de Pago</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${facturas.isEmpty()}">
-                    <td colspan="7" class="text-center text-muted">No hay facturas registradas</td>
-                </tr>
-                <tr th:each="factura : ${facturas}">
-                    <td th:text="${factura.id}"></td>
-                    <td th:text="${factura.fechaEmision}"></td>
-                    <td th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'"></td>
-                    <td th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'"></td>
-                    <td th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'"></td>
-                    <td th:text="${factura.metodoPago != null ? factura.metodoPago : 'N/A'}"></td>
-                    <td>
-                        <a th:href="@{/factura/{id}/edit(id=${factura.id})}" class="btn btn-sm btn-warning">Editar</a>
-                        <a th:href="@{/factura/{id}/delete(id=${factura.id})}" class="btn btn-sm btn-danger"
-                           onclick="return confirm('¿Eliminar esta factura?');">Eliminar</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <!-- Título y Botón Nuevo -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="display-5">Gestión de Facturas</h2>
+        <!-- Botón Nuevo: Morado -->
+        <a th:href="@{/factura/new}" class="btn btn-primary btn-lg shadow-sm">
+            + Nueva Factura
+        </a>
+    </div>
+
+    <!-- Tabla de Resultados -->
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th style="background-color: #000; color: var(--color-logo-light);">ID</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Fecha Emisión</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Importe Base</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Impuestos Malignos</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Total</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Método de Pago</th>
+                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <!-- Mensaje si vacía -->
+                    <tr th:if="${facturas.isEmpty()}">
+                        <td colspan="7" class="text-center p-4 text-muted">
+                            <em>No hay facturas emitidas por el Departamento de Contabilidad del Mal.</em>
+                        </td>
+                    </tr>
+
+                    <tr th:each="factura : ${facturas}">
+                        <td th:text="${factura.id}">1</td>
+
+                        <td th:text="${factura.fechaEmision}">01/01/2024</td>
+
+                        <!-- Importe Base -->
+                        <td class="fw-bold text-white"
+                            th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'">100.00 €</td>
+
+                        <!-- Impuestos Malignos (Rojo sutil) -->
+                        <td style="color: #a71d2a;"
+                            th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'">21.00 €</td>
+
+                        <!-- Total (Resaltado) -->
+                        <td class="fw-bold text-white" style="font-size: 1.1em;"
+                            th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'">121.00 €</td>
+
+                        <td>
+                            <span class="badge" style="background-color: #333; border: 1px solid #555;"
+                                  th:text="${factura.metodoPago != null ? factura.metodoPago : 'N/A'}">Lingotes de Oro</span>
+                        </td>
+
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <!-- Editar: Morado -->
+                                <a th:href="@{/factura/{id}/edit(id=${factura.id})}"
+                                   class="btn btn-sm btn-primary">Editar</a>
+
+                                <!-- Eliminar: Rojo Apagado -->
+                                <a th:href="@{/factura/{id}/delete(id=${factura.id})}"
+                                   class="btn btn-sm btn-dull-danger"
+                                   onclick="return confirm('¿Eliminar esta factura? Esta acción no se puede deshacer.');">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </main>
 
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 
 </body>
 </html>
