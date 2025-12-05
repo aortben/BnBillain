@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*; // Importamos todo Lombok para usar EqualsAndHashCode
 
 import java.util.List;
 
@@ -33,10 +31,7 @@ public class Villano {
 
     @NotEmpty(message = "{msg.villano.carnet.notEmpty}")
     @Size(max = 20, message = "{msg.villano.carnet.size}")
-    @Pattern(
-            regexp = "^[0-9]{3}[A-Za-z][0-9]{6}$",
-            message = "El carnet debe ser 3 números, 1 letra y 6 números. Ejemplo: 123A123456"
-    )
+    @Pattern(regexp = "^[0-9]{3}[A-Za-z][0-9]{6}$", message = "Formato carnet inválido (Ej: 123A123456)")
     @Column(name = "carne_villano", nullable = false, length = 20, unique = true)
     private String carnetDeVillano;
 
@@ -45,11 +40,17 @@ public class Villano {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "villano", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Reserva> reservasRealizadas;
+    // --- RELACIONES PELIGROSAS (Corregidas) ---
 
-    @OneToMany(mappedBy = "villano", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Resena> resenasEscritas;
+    @OneToMany(mappedBy = "villano", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude // <--- ¡EL ESCUDO ANTIMISILES!
+    private List<Reserva> reservas;
+
+    @OneToMany(mappedBy = "villano", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude // <--- ¡EL ESCUDO ANTIMISILES!
+    private List<Resena> resenas;
 
     public Villano(String nombre, String alias, String carnetDeVillano, String email) {
         this.nombre = nombre;

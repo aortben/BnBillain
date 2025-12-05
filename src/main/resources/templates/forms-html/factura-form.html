@@ -1,10 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Gestión Factura')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
+<header th:replace="~{fragments/header :: header}"></header>
 
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="mb-0">
+                        <span th:if="${factura.id != null}">💸 Editar Factura #<span th:text="${factura.id}"></span></span>
+                        <span th:if="${factura.id == null}">Nueva Factura Manual</span>
+                    </h3>
+                </div>
+                <div class="card-body">
+
+                    <form th:action="@{${factura.id == null} ? '/facturas/save' : '/facturas/update'}"
+                          th:object="${factura}" method="post">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                        <div class="alert alert-secondary" th:if="${factura.reserva != null}">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Vinculada a Reserva:</strong>
+                            <span th:text="${factura.reserva.guarida.nombre}">Guarida</span> -
+                            <span th:text="${factura.reserva.villano.alias}">Villano</span>
+                            <input type="hidden" th:field="*{reserva}">
+                        </div>
+
+                        <div class="mb-3" th:if="${factura.reserva == null}">
+                            <label class="form-label">Vincular a Reserva</label>
+                            <select class="form-select" th:field="*{reserva}">
+                                <option value="">-- Seleccionar --</option>
+                                <option th:each="r : ${allReservas}" th:value="${r.id}"
+                                        th:text="'Reserva #' + ${r.id} + ' (' + ${r.costeTotal} + '€)'"></option>
+                            </select>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Fecha Emisión</label>
+                                <input type="date" class="form-control bg-white" th:field="*{fechaEmision}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Importe Base (€)</label>
+                                <input type="number" step="0.01" class="form-control bg-white" th:field="*{importe}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Impuestos Malignos (21%)</label>
+                            <input type="number" step="0.01" class="form-control bg-white" th:field="*{impuestosMalignos}" readonly>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-success">Método de Pago</label>
+                            <select class="form-select" th:field="*{metodoPago}">
+                                <option value="Pendiente">⏳ Pendiente de cobro</option>
+                                <option value="Transferencia Suiza">🏦 Transferencia Suiza</option>
+                                <option value="Bitcoin">₿ Bitcoin / Cripto</option>
+                                <option value="Lingotes de Oro">⚱️ Lingotes de Oro</option>
+                                <option value="Maletín">💼 Maletín de billetes</option>
+                            </select>
+                            <div class="form-text">Actualiza el estado cuando el villano pague.</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/facturas}" class="btn btn-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

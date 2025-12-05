@@ -1,21 +1,53 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head th:replace="fragments/head :: head ('DWES Pokedex - Home')"></head>-->
+<!--<body class="d-flex flex-column h-100">-->
+
+<!--<header th:replace="fragments/header :: header"></header>-->
+
+<!--<main class="flex-shrink-0 d-flex justify-content-center" style="margin-top: 5%;">-->
+<!--    <div class="container" style="max-width: 80%;">-->
+<!--        <div class="text-center">-->
+<!--            <img th:src="@{/images/Alola.png}"-->
+<!--                 alt="Alola"-->
+<!--                 class="img-fluid rounded"-->
+<!--                 style="border-radius: 20%; max-width: 50%; height: auto;">-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</main>-->
+
+<!--<footer th:replace="fragments/footer :: footer"></footer>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('DWES Pokedex - Home')"></head>
-<body class="d-flex flex-column h-100">
+<head th:replace="~{fragments/head :: head ('BnBillain - Inicio')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
 
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0 d-flex justify-content-center" style="margin-top: 5%;">
-    <div class="container" style="max-width: 80%;">
-        <div class="text-center">
-            <img th:src="@{/images/Alola.png}"
-                 alt="Alola"
-                 class="img-fluid rounded"
-                 style="border-radius: 20%; max-width: 50%; height: auto;">
+<main class="flex-shrink-0">
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-1 fw-bold text-danger">😈</h1>
+        <h1 class="display-5 fw-bold text-dark">Bienvenido a BnBillain</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4 text-secondary">
+                La plataforma líder en alquiler de guaridas secretas, volcanes activos y búnkeres nucleares.
+                Porque todo gran plan de dominación mundial empieza con una buena ubicación.
+            </p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a th:href="@{/guaridas}" class="btn btn-primary btn-lg px-4 gap-3 shadow">
+                    🌋 Explorar Guaridas
+                </a>
+                <a th:href="@{/villanos/new}" class="btn btn-outline-secondary btn-lg px-4 shadow-sm">
+                    🦹 Registrarme
+                </a>
+            </div>
         </div>
     </div>
 </main>
 
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

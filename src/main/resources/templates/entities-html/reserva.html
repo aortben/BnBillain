@@ -1,63 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org" lang="es">-->
-<!--<head th:replace="fragments/head :: head ('Reservas - BnBillains')"></head>-->
-<!--<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">-->
-
-<!--<header th:replace="fragments/header :: header"></header>-->
-
-<!--<main class="flex-shrink-0" style="margin-top: 10%; padding: 2rem;">-->
-<!--    <div class="container">-->
-<!--        <div class="d-flex justify-content-between align-items-center mb-4">-->
-<!--            <h1 class="mb-0">Gestión de Reservas</h1>-->
-<!--            <a href="/reserva/new" class="btn btn-info">+ Nueva Reserva</a>-->
-<!--        </div>-->
-
-<!--        <div class="table-responsive">-->
-<!--            <table class="table table-striped table-hover">-->
-<!--                <thead class="table-dark">-->
-<!--                <tr>-->
-<!--                    <th>ID</th>-->
-<!--                    <th>Villano</th>-->
-<!--                    <th>Guarida</th>-->
-<!--                    <th>Fecha Inicio</th>-->
-<!--                    <th>Fecha Fin</th>-->
-<!--                    <th>Coste Total</th>-->
-<!--                    <th>Estado</th>-->
-<!--                    <th>Acciones</th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody>-->
-<!--                <tr th:if="${reservas.isEmpty()}">-->
-<!--                    <td colspan="8" class="text-center text-muted">No hay reservas registradas</td>-->
-<!--                </tr>-->
-<!--                <tr th:each="reserva : ${reservas}">-->
-<!--                    <td th:text="${reserva.id}"></td>-->
-<!--                    <td th:text="${reserva.villano != null ? reserva.villano.nombre : 'N/A'}"></td>-->
-<!--                    <td th:text="${reserva.guarida != null ? reserva.guarida.nombre : 'N/A'}"></td>-->
-<!--                    <td th:text="${reserva.fechaInicio}"></td>-->
-<!--                    <td th:text="${reserva.fechaFin}"></td>-->
-<!--                    <td th:text="${reserva.costeTotal}"></td>-->
-<!--                    <td>-->
-<!--                        <span th:if="${reserva.estado}" class="badge bg-success">Confirmada</span>-->
-<!--                        <span th:unless="${reserva.estado}" class="badge bg-warning">Pendiente</span>-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        <a th:href="@{/reserva/{id}/edit(id=${reserva.id})}" class="btn btn-sm btn-warning">Editar</a>-->
-<!--                        <a th:href="@{/reserva/{id}/delete(id=${reserva.id})}" class="btn btn-sm btn-danger"-->
-<!--                           onclick="return confirm('¿Eliminar esta reserva?');">Eliminar</a>-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--            </table>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</main>-->
-
-<!--<footer th:replace="fragments/footer :: footer"></footer>-->
-
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head ('Reservas - BnBillains')}"></head>
@@ -67,66 +7,102 @@
 <main class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>📅 Libro de Reservas</h2>
-        <a th:href="@{/reservas/new}" class="btn btn-success">+ Nueva Reserva</a>
+        <a th:href="@{/reservas/new}" class="btn btn-success shadow">+ Nueva Reserva</a>
     </div>
 
-    <form th:action="@{/reservas}" method="get" class="row g-2 mb-4 p-3 bg-white border rounded">
-        <div class="col-md-4">
-            <select name="villanoId" class="form-select">
-                <option value="">-- Filtrar por Cliente --</option>
-                <option th:each="v : ${allVillanos}" th:value="${v.id}" th:text="${v.alias}"
-                        th:selected="${v.id == villanoId}"></option>
-            </select>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body bg-white">
+            <form th:action="@{/reservas}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Filtrar por Cliente</label>
+                    <select name="villanoId" class="form-select">
+                        <option value="">-- Todos los Villanos --</option>
+                        <option th:each="v : ${allVillanos}" th:value="${v.id}"
+                                th:text="${v.alias}" th:selected="${v.id == villanoId}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Estado</label>
+                    <select name="estado" class="form-select">
+                        <option value="">-- Todos --</option>
+                        <option value="true" th:selected="${estado == true}">Confirmada</option>
+                        <option value="false" th:selected="${estado == false}">Pendiente</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                    <a th:href="@{/reservas}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+                <input type="hidden" name="sort" th:value="${sort}">
+            </form>
         </div>
-        <div class="col-md-3">
-            <select name="estado" class="form-select">
-                <option value="">-- Estado --</option>
-                <option value="true" th:selected="${estado == true}">Confirmada</option>
-                <option value="false" th:selected="${estado == false}">Pendiente</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-        </div>
-    </form>
+    </div>
 
-    <div class="table-responsive bg-white shadow-sm rounded">
-        <table class="table table-hover mb-0">
+    <div class="table-responsive bg-white shadow rounded">
+        <table class="table table-hover mb-0 align-middle">
             <thead class="table-dark">
             <tr>
                 <th>ID</th>
-                <th><a class="text-white" th:href="@{/reservas(sort='dateDesc')}">Fechas ↕</a></th>
+                <th><a class="text-white text-decoration-none" th:href="@{/reservas(page=${currentPage}, sort='dateDesc', villanoId=${villanoId}, estado=${estado})}">Fechas ↕</a></th>
                 <th>Villano</th>
                 <th>Guarida</th>
-                <th><a class="text-white" th:href="@{/reservas(sort='costDesc')}">Coste ↕</a></th>
+                <th><a class="text-white text-decoration-none" th:href="@{/reservas(page=${currentPage}, sort='costDesc', villanoId=${villanoId}, estado=${estado})}">Coste ↕</a></th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th class="text-center">Acciones</th>
             </tr>
             </thead>
             <tbody>
+            <tr th:if="${#lists.isEmpty(reservas)}">
+                <td colspan="7" class="text-center py-4 text-muted">No hay reservas que coincidan.</td>
+            </tr>
             <tr th:each="r : ${reservas}">
-                <td th:text="${r.id}"></td>
+                <td th:text="${r.id}">1</td>
                 <td>
-                    <span class="fw-bold" th:text="${r.fechaInicio}"></span> <br>
-                    <span class="text-muted small" th:text="${r.fechaFin}"></span>
+                    <div class="fw-bold text-primary" th:text="${r.fechaInicio}"></div>
+                    <div class="small text-muted">hasta <span th:text="${r.fechaFin}"></span></div>
                 </td>
                 <td>
-                    <a th:href="@{/villano/{id}(id=${r.villano.id})}" th:text="${r.villano.alias}">Joker</a>
-                </td>
-                <td th:text="${r.guarida.nombre}">Volcán</td>
-                <td class="text-end" th:text="${r.costeTotal} + ' €'">1000€</td>
-                <td>
-                    <span th:if="${r.estado}" class="badge bg-success">Confirmada</span>
-                    <span th:unless="${r.estado}" class="badge bg-warning text-dark">Pendiente</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">🦹</span>
+                        <span th:text="${r.villano.alias}">Joker</span>
+                    </div>
                 </td>
                 <td>
-                    <a th:href="@{/reservas/{id}/edit(id=${r.id})}" class="btn btn-sm btn-warning">✏️</a>
-                    <a th:href="@{/reservas/delete/{id}(id=${r.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar reserva?');">❌</a>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">🌋</span>
+                        <span th:text="${r.guarida.nombre}">Volcán</span>
+                    </div>
+                </td>
+                <td class="text-end fw-bold text-success" th:text="${#numbers.formatDecimal(r.costeTotal, 1, 2)} + ' €'">1000 €</td>
+                <td>
+                    <span th:if="${r.estado}" class="badge bg-success">CONFIRMADA</span>
+                    <span th:unless="${r.estado}" class="badge bg-warning text-dark">PENDIENTE</span>
+                </td>
+                <td class="text-center">
+                    <div class="btn-group">
+                        <a th:href="@{/reservas/{id}/edit(id=${r.id})}" class="btn btn-sm btn-outline-warning" title="Editar">✏️</a>
+                        <a th:href="@{/reservas/delete/{id}(id=${r.id})}" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('¿Cancelar esta reserva? Se borrará la factura asociada.');" title="Cancelar">❌</a>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
+
+    <nav class="mt-4" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/reservas(page=${currentPage - 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Anterior</a>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link" th:text="${currentPage} + ' / ' + ${totalPages}"></span>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/reservas(page=${currentPage + 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
 
 </main>
 <footer th:replace="~{fragments/footer :: footer}"></footer>

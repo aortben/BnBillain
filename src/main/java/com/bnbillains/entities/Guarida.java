@@ -2,12 +2,9 @@ package com.bnbillains.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,24 +39,30 @@ public class Guarida {
     @Column(name = "imagen")
     private String imagen;
 
-    // --- RELACIÓN 1:1 ---
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sala_secreta_id", referencedColumnName = "id", unique = true)
     private SalaSecreta salaSecreta;
 
-    // --- RELACIÓN N:M ---
+    // --- RELACIONES ---
+
     @ManyToMany
     @JoinTable(
-            name = "guaridaComodidades", // CORREGIDO: Coincide con tu SQL 'CREATE TABLE guaridaComodidades'
+            name = "guarida_comodidades",
             joinColumns = @JoinColumn(name = "guarida_id"),
             inverseJoinColumns = @JoinColumn(name = "comodidades_id")
     )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude // <--- IMPRESCINDIBLE
     private List<Comodidad> comodidades = new ArrayList<>();
 
     @OneToMany(mappedBy = "guarida", cascade = CascadeType.ALL)
-    private List<Resena> resenas; // Nota: en SQL la tabla es 'resena'
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude // <--- IMPRESCINDIBLE
+    private List<Resena> resenas;
 
     @OneToMany(mappedBy = "guarida")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude // <--- IMPRESCINDIBLE
     private List<Reserva> reservas;
 
     public Guarida(String nombre, String descripcion, String ubicacion, Double precioNoche, String imagen, SalaSecreta salaSecreta) {
