@@ -1,69 +1,86 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${comodidad.id != null} ? 'Editar Comodidad' : 'Nueva Comodidad'">Comodidad</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body style="background-color: #f8f9fa;">
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h1 class="mb-4" th:text="${comodidad.id != null} ? 'Editar Comodidad' : 'Nueva Comodidad'"></h1>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Formulario Comodidad')}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center container"
+      style="margin-top: 100px; margin-bottom: 50px;">
+
+    <div class="card shadow col-md-6 border-secondary">
+        <!-- Cabecera: El estilo global se encarga del fondo y la fuente -->
+        <div class="card-header text-center">
+            <h2 class="mb-0 display-6" th:text="${comodidad.id != null} ? 'Editar Comodidad' : 'Nueva Comodidad'"></h2>
+        </div>
+
+        <div class="card-body p-4">
+
+            <!-- Alertas Estilizadas (Copiadas de Villanos) -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert"
+                 style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
+                 style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
 
             <!-- Formulario para editar -->
             <form th:if="${comodidad.id != null}" th:action="@{/comodidades/update}" th:object="${comodidad}" method="post">
                 <input type="hidden" th:field="*{id}" />
+
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre:</label>
-                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
-                    <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                    <label for="nombreEdit" class="form-label text-light">Nombre:</label>
+                    <input type="text" class="form-control" id="nombreEdit" th:field="*{nombre}" required
+                           placeholder="Ej. Trampa de foso con cocodrilos">
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
                 </div>
-                <div class="mb-3">
-                    <label for="autoDestruccion" class="form-label">Auto-Destrucción:</label>
-                    <select class="form-control" id="autoDestruccion" th:field="*{autoDestruccion}">
-                        <option th:value="true" th:text="'Sí'" th:selected="*{autoDestruccion} == true"></option>
-                        <option th:value="false" th:text="'No'" th:selected="*{autoDestruccion} == false"></option>
+
+                <div class="mb-4">
+                    <label for="autoDestruccionEdit" class="form-label text-light">¿Tiene Auto-Destrucción?</label>
+                    <select class="form-select" id="autoDestruccionEdit" th:field="*{autoDestruccion}">
+                        <option th:value="true" th:text="'Sí (Peligroso)'" th:selected="*{autoDestruccion} == true"></option>
+                        <option th:value="false" th:text="'No (Seguro)'" th:selected="*{autoDestruccion} == false"></option>
                     </select>
-                    <div class="text-danger" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
                 </div>
-                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <a href="/comodidades" class="btn btn-secondary">Cancelar</a>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/comodidades" class="btn btn-outline-light">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4">Guardar Cambios</button>
                 </div>
             </form>
 
             <!-- Formulario para crear nuevo -->
             <form th:if="${comodidad.id == null}" th:action="@{/comodidades/save}" th:object="${comodidad}" method="post">
+
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre:</label>
-                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
-                    <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                    <label for="nombreNew" class="form-label text-light">Nombre:</label>
+                    <input type="text" class="form-control" id="nombreNew" th:field="*{nombre}" required
+                           placeholder="Ej. Sistema de rayos láser">
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
                 </div>
-                <div class="mb-3">
-                    <label for="autoDestruccion" class="form-label">Auto-Destrucción:</label>
-                    <select class="form-control" id="autoDestruccion" th:field="*{autoDestruccion}">
-                        <option th:value="true" th:text="'Sí'" th:selected="*{autoDestruccion} == true"></option>
-                        <option th:value="false" th:text="'No'" th:selected="*{autoDestruccion} == false"></option>
+
+                <div class="mb-4">
+                    <label for="autoDestruccionNew" class="form-label text-light">¿Tiene Auto-Destrucción?</label>
+                    <select class="form-select" id="autoDestruccionNew" th:field="*{autoDestruccion}">
+                        <option th:value="true" th:text="'Sí (Peligroso)'"></option>
+                        <option th:value="false" th:text="'No (Seguro)'" selected></option>
                     </select>
-                    <div class="text-danger" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
                 </div>
-                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <a href="/comodidades" class="btn btn-secondary">Cancelar</a>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/comodidades" class="btn btn-outline-light">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4">Crear Comodidad</button>
                 </div>
             </form>
 
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
-
-
