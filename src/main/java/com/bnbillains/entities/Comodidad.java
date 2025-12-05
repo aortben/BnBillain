@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString; // Importante
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +28,16 @@ public class Comodidad {
     @Column(name = "auto_destruccion")
     private Boolean autoDestruccion;
 
-    // RELACIÓN N:M (Lado inverso)
+    // --- RELACIÓN N:M (Lado inverso) ---
+    // Aquí fusionamos todo: mappedBy, ToString.Exclude y OnDelete
     @ManyToMany(mappedBy = "comodidades")
-    //Gracias a esta anotación se puede borrar aunque la entidad pertenezca a una tabla
-    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    @ToString.Exclude // 1. Evita el bucle infinito (StackOverflow)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE) // 2. Permite borrado en cascada
     private List<Guarida> guaridas = new ArrayList<>();
 
+    // Constructor personalizado
     public Comodidad(String nombre, Boolean autoDestruccion) {
         this.nombre = nombre;
         this.autoDestruccion = autoDestruccion;
     }
 }
-

@@ -40,7 +40,7 @@ public class ReservaService {
         // 1. Validar lógica de fechas (Fin > Inicio)
         validarFechasLogicas(reserva);
 
-        // 2. 🔥 VALIDAR DISPONIBILIDAD (EL CAMBIO IMPORTANTE)
+        // 2.VALIDAR DISPONIBILIDAD (EL CAMBIO IMPORTANTE)
         List<Reserva> conflictos = reservaRepository.encontrarConflictos(
                 reserva.getGuarida().getId(),
                 reserva.getFechaInicio(),
@@ -48,8 +48,16 @@ public class ReservaService {
         );
 
         if (!conflictos.isEmpty()) {
-            throw new IllegalArgumentException("¡Imposible! La guarida está ocupada en esas fechas. Prueba a partir del "
-                    + conflictos.get(0).getFechaFin().plusDays(1));
+            // Cogemos la primera reserva que estorba para chivarnos de las fechas
+            Reserva ocupante = conflictos.get(0);
+
+
+            throw new IllegalArgumentException(
+                    "¡Conflicto de Agendas! La guarida '" + ocupante.getGuarida().getNombre() +
+                            "' ya está reservada por otro villano desde el " +
+                            ocupante.getFechaInicio() + " hasta el " + ocupante.getFechaFin() +
+                            ". Busca fechas libres."
+            );
         }
 
         // 3. Recuperar Guarida Real (Precio)
@@ -152,5 +160,14 @@ public class ReservaService {
             f.setImpuestosMalignos(nuevoImporte * 0.21);
             facturaRepository.save(f);
         });
+    }
+
+    public List<Reserva> buscarPorGuarida(Long guaridaId, Sort sort) {
+        // Protección: Si el controlador nos pasa 'null' en el sort (como hace el calendario),
+        // usamos Sort.unsorted() para que JPA no se queje.
+        if (sort == null) {
+            sort = Sort.unsorted();
+        }
+        return reservaRepository.findByGuarida_Id(guaridaId, sort);
     }
 }

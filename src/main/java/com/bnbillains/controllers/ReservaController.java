@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -158,5 +159,34 @@ public class ReservaController {
             case "dateDesc" -> Sort.by("fechaInicio").descending();
             default -> Sort.by("id").descending();
         };
+    }
+
+
+    // -------------------------------------------------------------
+    // API JSON PARA EL CALENDARIO (AJAX)
+    // -------------------------------------------------------------
+    @GetMapping("/api/reservas/ocupadas/{guaridaId}")
+    @ResponseBody // Esto dice: "No busques un HTML, devuelve los datos tal cual"
+    public List<String> obtenerFechasOcupadas(@PathVariable Long guaridaId) {
+        // 1. Buscamos todas las reservas de esa guarida
+        // Nota: Usamos null en sort porque no nos importa el orden para pintar
+        List<Reserva> reservas = reservaService.buscarPorGuarida(guaridaId, null);
+
+        // 2. Extraemos todos los días ocupados en una lista plana
+        java.util.List<String> fechasOcupadas = new java.util.ArrayList<>();
+
+        for (Reserva r : reservas) {
+            LocalDate start = r.getFechaInicio();
+            LocalDate end = r.getFechaFin();
+
+            // Bucle para añadir cada día del intervalo a la lista negra
+            // stream()... o un while sencillo:
+            while (!start.isAfter(end)) {
+                fechasOcupadas.add(start.toString()); // Formato "YYYY-MM-DD"
+                start = start.plusDays(1);
+            }
+        }
+
+        return fechasOcupadas;
     }
 }
