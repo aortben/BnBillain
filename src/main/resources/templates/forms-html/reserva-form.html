@@ -1,165 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Gestión Reserva')}"></head>
-
+<head th:replace="~{fragments/head :: head ('Formulario Reserva')}"></head>
 <body class="d-flex flex-column h-100 bg-light">
-
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow border-0">
-                <div class="card-header bg-primary text-white py-3">
-                    <h4 class="mb-0 card-title fw-bold">
-                        <span th:if="${reserva.id == null}">📝 Nueva Reserva</span>
-                        <span th:if="${reserva.id != null}">✏️ Editar Reserva #<span th:text="${reserva.id}"></span></span>
-                    </h4>
+    <div class="card shadow col-md-8 mx-auto">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Gestión de Reserva</h3>
+        </div>
+        <div class="card-body">
+            <form th:action="@{${reserva.id == null} ? '/reservas/save' : '/reservas/update'}" th:object="${reserva}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Cliente (Villano)</label>
+                    <select class="form-select" th:field="*{villano}" required>
+                        <option value="">Seleccione un villano...</option>
+                        <option th:each="v : ${allVillanos}" th:value="${v.id}"
+                                th:text="${v.alias} + ' (' + ${v.nombre} + ')'"></option>
+                    </select>
                 </div>
-                <div class="card-body p-4">
 
-                    <form th:action="@{${reserva.id == null} ? '/reservas/save' : '/reservas/update'}"
-                          th:object="${reserva}" method="post">
-
-                        <input type="hidden" th:field="*{id}">
-
-                        <div th:if="${errorMessage}" class="alert alert-danger shadow-sm">
-                            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${errorMessage}">Error</span>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Cliente (Villano)</label>
-                                <select class="form-select" th:field="*{villano}" required>
-                                    <option value="">Seleccione un villano...</option>
-                                    <option th:each="v : ${allVillanos}" th:value="${v.id}"
-                                            th:text="${v.alias} + ' (' + ${v.nombre} + ')'"></option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Guarida a Reservar</label>
-                                <select class="form-select" th:field="*{guarida}" id="selectGuarida" required>
-                                    <option value="">Seleccione una guarida...</option>
-                                    <option th:each="g : ${allGuaridas}" th:value="${g.id}"
-                                            th:text="${g.nombre} + ' (' + ${g.precioNoche} + '€/noche)'"></option>
-                                </select>
-                                <div class="form-text text-muted small">⚠️ Al seleccionar la guarida se cargarán sus días ocupados en rojo.</div>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Fecha Entrada</label>
-                                <input type="text" class="form-control bg-white" th:field="*{fechaInicio}"
-                                       id="fechaInicio" placeholder="Selecciona fecha..." required readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Fecha Salida</label>
-                                <input type="text" class="form-control bg-white" th:field="*{fechaFin}"
-                                       id="fechaFin" placeholder="Selecciona fecha..." required readonly>
-                            </div>
-                        </div>
-
-                        <div class="mb-4 bg-light p-3 rounded border">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="estadoSwitch" th:field="*{estado}">
-                                <label class="form-check-label fw-bold" for="estadoSwitch">Reserva Confirmada (Pago completado)</label>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info d-flex align-items-center">
-                            <div class="me-3 fs-4">ℹ️</div>
-                            <div>
-                                Al guardar, el sistema <strong>calculará el coste total</strong> y generará/actualizará la <strong>factura</strong> automáticamente.
-                                <br><small>El método de pago se define editando la factura posteriormente.</small>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a th:href="@{/reservas}" class="btn btn-secondary me-md-2">Cancelar</a>
-                            <button type="submit" class="btn btn-primary px-5">Confirmar Reserva</button>
-                        </div>
-
-                    </form>
+                <div class="mb-3">
+                    <label class="form-label">Guarida a Reservar</label>
+                    <select class="form-select" th:field="*{guarida}" required>
+                        <option value="">Seleccione una guarida...</option>
+                        <option th:each="g : ${allGuaridas}" th:value="${g.id}"
+                                th:text="${g.nombre} + ' - ' + ${g.precioNoche} + '€/noche'"></option>
+                    </select>
                 </div>
-            </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Entrada</label>
+                        <input type="date" class="form-control" th:field="*{fechaInicio}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Salida</label>
+                        <input type="date" class="form-control" th:field="*{fechaFin}" required>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" th:field="*{estado}">
+                    <label class="form-check-label">Reserva Confirmada (Pagada)</label>
+                </div>
+
+                <div class="alert alert-info">
+                    ℹ️ Al guardar, se generará/actualizará automáticamente la factura correspondiente.
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Confirmar Reserva</button>
+            </form>
         </div>
     </div>
 </main>
-
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Referencias a los elementos del DOM
-        const selectGuarida = document.getElementById('selectGuarida');
-        const inputInicio = document.getElementById('fechaInicio');
-        const inputFin = document.getElementById('fechaFin');
-
-        // 2. Configuración base del calendario (Flatpickr)
-        const configBase = {
-            locale: "es",          // Idioma español
-            dateFormat: "Y-m-d",   // Formato compatible con Java LocalDate
-            minDate: "today",      // No permitir viajar al pasado
-            disable: []            // Array vacío inicialmente (se llenará con la API)
-        };
-
-        // 3. Inicializamos los calendarios en las cajas de texto
-        let fpInicio = flatpickr(inputInicio, configBase);
-        let fpFin = flatpickr(inputFin, configBase);
-
-        // 4. Función para consultar al Backend qué días están ocupados
-        function cargarDisponibilidad(guaridaId) {
-            if (!guaridaId) return;
-
-            // Bloquear inputs mientras carga para evitar errores
-            inputInicio.disabled = true;
-            inputFin.disabled = true;
-
-            // Llamada AJAX a nuestro Controller
-            fetch(`/api/reservas/ocupadas/${guaridaId}`)
-                .then(response => response.json()) // Convertir respuesta a JSON
-                .then(fechasOcupadas => {
-                    console.log("Días ocupados recibidos del servidor:", fechasOcupadas);
-
-                    // Actualizar la configuración de 'disable' en ambos calendarios
-                    fpInicio.set('disable', fechasOcupadas);
-                    fpFin.set('disable', fechasOcupadas);
-
-                    // Desbloquear inputs
-                    inputInicio.disabled = false;
-                    inputFin.disabled = false;
-                })
-                .catch(err => {
-                    console.error("Error al cargar disponibilidad:", err);
-                    alert("⚠️ Error de conexión: No se pudo comprobar la disponibilidad.");
-                });
-        }
-
-        // 5. Evento: Cuando el usuario cambia la Guarida en el desplegable
-        selectGuarida.addEventListener('change', function() {
-            // this.value contiene el ID numérico gracias a th:value="${g.id}"
-            cargarDisponibilidad(this.value);
-
-            // Limpiar las fechas seleccionadas anteriormente porque podrían estar ocupadas en la nueva guarida
-            fpInicio.clear();
-            fpFin.clear();
-        });
-
-        // 6. Carga Inicial (Para cuando entramos en modo "Editar")
-        // Si el select ya tiene un valor seleccionado, cargamos el calendario inmediatamente
-        if (selectGuarida.value) {
-            cargarDisponibilidad(selectGuarida.value);
-        } else {
-            // Si es nueva, desactivar fechas hasta que elija guarida
-            inputInicio.disabled = true;
-            inputFin.disabled = true;
-        }
-    });
-</script>
-
 </body>
 </html>
