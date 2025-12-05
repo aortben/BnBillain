@@ -23,10 +23,10 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/villanos}">Villanos</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/villanos}" th:text="#{msg.header.villains}"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/guaridas}">Guaridas</a>
+                        <a class="nav-link text-dark fw-semibold" th:href="@{/guaridas}" th:text="#{msg.header.lair}"></a>
                     </li>
                 </ul>
 
@@ -36,15 +36,21 @@
                             Más opciones
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" th:href="@{/comodidades}">Comodidades</a></li>
-                            <li><a class="dropdown-item" th:href="@{/salas_secretas}">Salas Secretas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/comodidades}" th:text="#{msg.header.comfort}"></a></li>
+                            <li><a class="dropdown-item" th:href="@{/salas_secretas}" th:text="#{msg.header.secretRooms}"></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" th:href="@{/resenas}">Reseñas</a></li>
-                            <li><a class="dropdown-item" th:href="@{/reservas}">Reservas</a></li>
-                            <li><a class="dropdown-item" th:href="@{/facturas}">Facturas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/resenas}" th:text="#{msg.header.reviews}">Reseñas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/reservas}" th:text="#{msg.header.reservations}">Reservas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/facturas}" th:text="#{msg.header.invoices}">Facturas</a></li>
                         </ul>
                     </li>
                 </ul>
+                <form class="d-flex form-inline" method="get" th:action="@{/}">
+                    <select class="form-select" name="lang" onchange="this.form.submit()">
+                        <option th:selected="${#locale.language == 'es'}" value="es">Español</option>
+                        <option th:selected="${#locale.language == 'en'}" value="en">English</option>
+                    </select>
+                </form>
             </div>
         </div>
     </nav>
