@@ -1,38 +1,62 @@
 :root {
-    --color-bg-dark: #ffffff;       /* Blanco */
-    --color-bg-card: #f3e4ef;       /* Morado muy claro */
-    --color-text-main: #91155b;     /* Morado medio */
-    --color-text-muted: #6b1144;    /* Morado medio oscuro */
-    --color-accent: #350e32;        /* Morado oscuro */
-    --color-accent-hover: #4d1447;  /* Morado medio oscuro para hover */
-    --color-secondary: #91155b;     /* Morado medio */
+    /* --- Paleta Villana --- */
+    --color-bg-dark: #0f0f10;       /* Negro casi absoluto */
+    --color-bg-card: #1a1a1d;       /* Gris carbón */
+    --color-text-main: #e0e0e0;     /* Blanco sucio */
+    --color-text-muted: #95a5a6;    /* Gris metalizado */
+
+    /* Colores de marca */
+    --color-logo-dark: #2e003e;     /* Morado oscuro */
+    --color-logo-light: #7a004b;    /* Magenta/Vino */
+    --color-accent: #cf000f;        /* Rojo sangre */
+    --color-secondary: #581c87;     /* Índigo */
+
     --font-title: 'Creepster', system-ui;
     --font-body: 'Roboto', sans-serif;
 }
 
+/* --- Base --- */
 body {
     background-color: var(--color-bg-dark);
     color: var(--color-text-main);
     font-family: var(--font-body);
-
-    /* Evitar superposición con header y footer fixed */
-    padding-top: 70px; /* Ajusta según el alto real del header (ej. 60-80px) */
-    padding-bottom: 60px; /* Ajusta según el alto real del footer (ej. 50-70px) */
-    box-sizing: border-box; /* Asegura que padding no agregue ancho extra */
+    /* AJUSTE: Reducimos padding para recuperar espacio vertical */
+    /* Mantenemos el top suficiente para el navbar, pero quitamos exceso abajo */
+    padding-top: 70px;
+    padding-bottom: 20px;
 }
 
-/* --- Títulos Siniestros --- */
-h1, h2, h3, h4, h5, h6, .navbar-brand {
+/* --- Tipografía --- */
+h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-title);
     letter-spacing: 2px;
-    color: var(--color-accent);
-    text-shadow: 2px 2px 4px #000;
+    color: var(--color-logo-light);
+    text-shadow: 2px 2px 0px #000;
 }
 
 /* --- Navbar Personalizado --- */
 .navbar {
-    background: linear-gradient(to right, #350e32 0%, #91155b 50%, #350e32 100%) !important;
-    border-bottom: 2px solid #91155b;
+    background-color: #050505 !important;
+    background-image: none !important;
+    border-bottom: 3px solid var(--color-logo-light);
+    box-shadow: 0 4px 20px rgba(122, 0, 75, 0.4);
+}
+
+.navbar-brand {
+    font-family: var(--font-title);
+    color: var(--color-accent) !important;
+    font-size: 1.8rem;
+}
+
+.navbar-brand img {
+    /* Efecto de resplandor para separar el logo oscuro del fondo negro */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15))
+            drop-shadow(0 0 10px var(--color-logo-dark));
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.05);
 }
 
 .nav-link {
@@ -40,17 +64,20 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     font-family: var(--font-body);
     text-transform: uppercase;
     font-weight: bold;
-    transition: color 0.3s;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: #f3e4ef !important;
-    text-shadow: 0 0 5px #f3e4ef;
+    color: var(--color-logo-light) !important;
+    text-shadow: 0 0 8px var(--color-logo-light);
 }
 
+/* --- Dropdowns --- */
 .dropdown-menu {
-    background-color: var(--color-bg-card);
-    border: 1px solid #91155b;
+    background-color: #000;
+    border: 1px solid var(--color-logo-light);
+    box-shadow: 0 0 15px rgba(122, 0, 75, 0.3);
 }
 
 .dropdown-item {
@@ -58,112 +85,159 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 }
 
 .dropdown-item:hover {
-    background-color: #91155b;
+    background-color: var(--color-logo-dark);
     color: white;
 }
 
 /* --- Footer --- */
 footer {
-    background: linear-gradient(to right, #350e32 0%, #91155b 50%, #350e32 100%) !important;
-    border-bottom: 2px solid #91155b;
+    background: linear-gradient(to right, #000000 0%, var(--color-logo-dark) 50%, #000000 100%) !important;
+    border-top: 2px solid var(--color-logo-light);
+    margin-top: auto;
 }
 
 /* --- Tarjetas (Cards) --- */
 .card {
     background-color: var(--color-bg-card);
-    border: 1px solid #91155b;
-    box-shadow: 0 4px 15px rgba(145, 21, 91, 0.8);
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-logo-light);
+    box-shadow: 0 10px 30px rgba(122, 0, 75, 0.2);
 }
 
 .card-header {
-    background-color: #f3e4ef !important;
-    border-bottom: 1px solid #91155b;
-    color: var(--color-accent);
+    background-color: rgba(46, 0, 62, 0.4) !important;
+    border-bottom: 1px solid #444;
+    color: var(--color-text-main);
     font-family: var(--font-title);
     font-size: 1.5rem;
 }
 
-.list-group-item {
-    background-color: var(--color-bg-card);
-    color: var(--color-text-main);
-    border-color: #91155b;
-}
-
-/* --- Tablas --- */
-.table {
-    --bs-table-bg: transparent;
-    --bs-table-color: var(--color-text-main);
-    border-color: #91155b;
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(145, 21, 91, 0.1);
-    color: #350e32;
-}
-
-.table-dark {
-    background-color: #f3e4ef !important;
-}
-
 /* --- Botones --- */
 .btn-primary {
-    background-color: var(--color-secondary);
-    border-color: var(--color-secondary);
+    background-color: var(--color-logo-dark);
+    border-color: var(--color-logo-light);
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(46, 0, 62, 0.5);
 }
 
 .btn-primary:hover {
-    background-color: #91155b;
-    border-color: #91155b;
+    background-color: var(--color-logo-light);
+    border-color: var(--color-logo-light);
+    box-shadow: 0 0 20px rgba(122, 0, 75, 0.8);
 }
 
 .btn-danger {
     background-color: var(--color-accent);
-    border-color: var(--color-accent);
+    border: none;
+    box-shadow: 0 0 5px var(--color-accent);
 }
 
 .btn-danger:hover {
-    background-color: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
+    background-color: #a0000b;
+    box-shadow: 0 0 15px var(--color-accent);
 }
 
-/* --- Formularios --- */
+/* --- Tablas y Formularios --- */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--color-text-main);
+    border-color: #444;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(122, 0, 75, 0.15);
+}
+
 .form-control, .form-select {
-    background-color: #f3e4ef;
-    border: 1px solid #91155b;
-    color: #350e32;
+    background-color: #121212;
+    border: 1px solid #444;
+    color: white;
 }
 
 .form-control:focus, .form-select:focus {
-    background-color: #ffffff;
-    color: #350e32;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 0.25rem rgba(145, 21, 91, 0.25);
+    background-color: #000;
+    color: white;
+    border-color: var(--color-logo-light);
+    box-shadow: 0 0 0 0.25rem rgba(122, 0, 75, 0.25);
 }
 
-.form-control::placeholder {
-    color: #91155b;
+/* =========================================
+   ELEMENTOS DE HOME (Logo y Carrusel)
+   ========================================= */
+
+/* Estilos BASE (Tablets y pantallas medianas) */
+/* Esto arregla el "agujero" donde las cosas se veían muy chicas en tablets */
+
+.home-logo {
+    max-width: 130px;
+    height: auto;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
 }
 
-/* --- Badges --- */
-.badge {
-    font-family: var(--font-body);
+.home-logo:hover {
+    transform: scale(1.05);
 }
 
-/* --- Contenido centrado y consistente con header/footer --- */
-main {
-    width: 80%; /* Mismo ancho que header/footer */
-    margin: 0 auto; /* Centrado */
-    padding: 2rem; /* Espacio interno */
-    box-sizing: border-box; /* Previene overflows */
+.carousel-img-villano {
+    height: 220px;       /* Subido un poco (de 200px a 220px) */
+    width: auto;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    margin: 0 auto;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+    display: block;
 }
 
-main .container {
-    max-width: 100%; /* Evita límite extra de .container de Bootstrap */
-    padding: 0; /* Remueve padding extra si no se necesita */
+/* Ajuste fino de controles del carrusel */
+.carousel-control-prev, .carousel-control-next {
+    width: 10%; /* Zona de clic cómoda */
+    opacity: 0.7;
 }
 
-/* Para elementos que puedan "sobresalir" (ej. tablas anchas) */
-.table-responsive {
-    overflow-x: auto; /* Scroll horizontal si la tabla es muy ancha */
-    width: 100%; /* Limita al ancho del padre */
+
+/* =========================================
+   MEDIA QUERIES (Unificadas)
+   ========================================= */
+
+/* --- MÓVILES (Pantallas < 576px) --- */
+@media (max-width: 576px) {
+    body {
+        padding-top: 60px; /* Suficiente para el navbar móvil */
+        padding-bottom: 20px; /* Poco padding abajo */
+    }
+    .home-logo {
+        max-width: 100px; /* Logo compacto */
+    }
+    .carousel-img-villano {
+        height: 160px; /* Subido ligeramente (de 150px a 160px) */
+    }
+    .carousel-control-prev { left: -5px; }
+    .carousel-control-next { right: -5px; }
+}
+
+/* --- DESKTOPS (Pantallas > 992px) --- */
+@media (min-width: 992px) {
+    body {
+        /* Ajuste fino: suficiente para librar navbar pero sin empujar demasiado */
+        padding-top: 85px;
+    }
+    .home-logo {
+        max-width: 160px;
+    }
+    .carousel-img-villano {
+        height: 320px; /* Subido (de 280px a 320px) para llenar mejor el espacio */
+    }
+    /* En PC alejamos las flechas de la imagen por estética */
+    .carousel-control-prev { left: 5%; }
+    .carousel-control-next { right: 5%; }
 }
