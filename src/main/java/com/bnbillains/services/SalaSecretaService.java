@@ -1,9 +1,12 @@
 package com.bnbillains.services;
 
+import com.bnbillains.entities.Guarida;
 import com.bnbillains.entities.SalaSecreta;
+import com.bnbillains.repositories.GuaridaRepository;
 import com.bnbillains.repositories.SalaSecretaRepository;
-import org.springframework.data.domain.Sort; // IMPORTANTE
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +15,11 @@ import java.util.Optional;
 public class SalaSecretaService {
 
     private final SalaSecretaRepository salaSecretaRepository;
+    private final GuaridaRepository guaridaRepository; // Necesario para romper el vínculo
 
-    public SalaSecretaService(SalaSecretaRepository salaSecretaRepository) {
+    public SalaSecretaService(SalaSecretaRepository salaSecretaRepository, GuaridaRepository guaridaRepository) {
         this.salaSecretaRepository = salaSecretaRepository;
+        this.guaridaRepository = guaridaRepository;
     }
 
     public List<SalaSecreta> obtenerTodas() {
@@ -44,7 +49,24 @@ public class SalaSecretaService {
                 .orElseThrow(() -> new IllegalArgumentException("Sala Secreta no encontrada"));
     }
 
+    @Transactional // Asegura que la desvinculación y el borrado sean atómicos
     public void eliminar(Long id) {
+        // 1. Verificar existencia
+        SalaSecreta sala = salaSecretaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Sala Secreta no encontrada con ID: " + id));
+
+        // 2. Buscar si hay una Guarida vinculada a esta sala
+        // (Esto requiere que GuaridaRepository tenga el método findBySalaSecreta)
+        Optional<Guarida> guaridaAsociada = guaridaRepository.findBySalaSecreta(sala);
+
+        // 3. Romper el vínculo si existe
+        if (guaridaAsociada.isPresent()) {
+            Guarida g = guaridaAsociada.get();
+            g.setSalaSecreta(null); // Liberamos la sala
+            guaridaRepository.save(g); // Actualizamos la guarida
+        }
+
+        // 4. Ahora sí, borrar la sala sin violar FK
         salaSecretaRepository.deleteById(id);
     }
 

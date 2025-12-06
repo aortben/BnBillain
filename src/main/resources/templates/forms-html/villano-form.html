@@ -1,41 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head ('Formulario Villano')}"></head>
-<body class="d-flex flex-column h-100 bg-light">
+<body class="d-flex flex-column h-100">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="container mt-5">
-    <div class="card shadow col-md-6 mx-auto">
-        <div class="card-header bg-dark text-white">
-            <h3 class="mb-0" th:text="${villano.id == null ? 'Nuevo Villano' : 'Editar Villano'}">Villano</h3>
+<main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center container"
+      style="margin-top: 100px; margin-bottom: 50px;">
+
+    <div class="card shadow col-md-6 border-secondary">
+        <!-- Cabecera: Estilo global (Morado + Creepster) -->
+        <div class="card-header text-center">
+            <h2 class="mb-0 display-6" th:text="${villano.id == null ? 'Nuevo Villano' : 'Editar Villano'}">Villano</h2>
         </div>
-        <div class="card-body">
-            <form th:action="@{${villano.id == null} ? '/villanos/save' : '/villanos/update'}" th:object="${villano}" method="post">
+
+        <div class="card-body p-4">
+
+            <!-- Alertas de Error Global -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
+                 style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form th:action="@{${villano.id == null} ? '/villanos/save' : '/villanos/update'}"
+                  th:object="${villano}"
+                  method="post">
+
                 <input type="hidden" th:field="*{id}">
 
-                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-
+                <!-- Nombre Real -->
                 <div class="mb-3">
-                    <label class="form-label">Nombre Real</label>
-                    <input type="text" class="form-control" th:field="*{nombre}" required>
-                    <small class="text-danger" th:errors="*{nombre}"></small>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Alias de Supervillano</label>
-                    <input type="text" class="form-control" th:field="*{alias}" required>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Carnet (V-000)</label>
-                        <input type="text" class="form-control" th:field="*{carnetDeVillano}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" th:field="*{email}" required>
-                    </div>
+                    <label for="nombre" class="form-label text-light">Nombre Real:</label>
+                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required
+                           placeholder="Ej. Jack Napier">
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Guardar Ficha</button>
+                <!-- Alias -->
+                <div class="mb-3">
+                    <label for="alias" class="form-label text-light">Alias de Supervillano:</label>
+                    <input type="text" class="form-control" id="alias" th:field="*{alias}" required
+                           placeholder="Ej. El Joker">
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('alias')}" th:errors="*{alias}"></div>
+                </div>
+
+                <div class="row mb-4">
+                    <!-- Carnet -->
+                    <div class="col-md-6">
+                        <label for="carnetDeVillano" class="form-label text-light">Carnet (Ej: 123A123456):</label>
+                        <input type="text" class="form-control" id="carnetDeVillano" th:field="*{carnetDeVillano}" required
+                               placeholder="123A123456">
+                        <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('carnetDeVillano')}" th:errors="*{carnetDeVillano}"></div>
+                    </div>
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label for="email" class="form-label text-light">Email:</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}" required
+                               placeholder="villano@mal.com">
+                        <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/villanos" class="btn btn-outline-light">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4">Guardar Ficha</button>
+                </div>
             </form>
         </div>
     </div>

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +27,11 @@ public class SalaSecretaController {
         this.salaSecretaService = salaSecretaService;
     }
 
-
     /**
-     * Listado de Salas Secretas con Paginación Manual, Filtro y Ordenación.
+     * Listado de Salas Secretas
+     * CORRECCIÓN: Cambiado "/salas_secretas" a "/salas-secretas" para coincidir con el HTML
      */
-    @GetMapping("/salas_secretas")
+    @GetMapping("/salas-secretas")
     public String listar(@RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) String search,
                          @RequestParam(required = false) String sort,
@@ -43,9 +42,7 @@ public class SalaSecretaController {
         Sort sortObj = getSort(sort);
         List<SalaSecreta> resultados;
 
-        // Obtención de datos
         if (search != null && !search.isBlank()) {
-            // Buscamos por la función principal (ej: "Laboratorio")
             resultados = salaSecretaService.buscarFlexible(search, sortObj);
         } else {
             resultados = salaSecretaService.obtenerTodasOrdenadas(sortObj);
@@ -65,7 +62,6 @@ public class SalaSecretaController {
         List<SalaSecreta> listaPaginada = (start > end || totalItems == 0) ?
                 Collections.emptyList() : resultados.subList(start, end);
 
-        // Modelo para la vista
         model.addAttribute("salas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
@@ -73,17 +69,19 @@ public class SalaSecretaController {
         model.addAttribute("search", search);
         model.addAttribute("sort", sort);
 
-        return "entities-html/salaSecreta"; // Ruta: templates/entities-html/salaSecreta.html
+        return "entities-html/salaSecreta";
     }
 
-    @GetMapping("/salas_secretas/new")
+    // CORRECCIÓN: Cambiado a "/salas-secretas/new"
+    @GetMapping("/salas-secretas/new")
     public String formularioNuevo(Model model) {
         logger.info("WEB: Formulario nueva sala secreta.");
         model.addAttribute("salaSecreta", new SalaSecreta());
-        return "forms-html/salaSecreta-form"; // Ruta: templates/forms-html/salaSecreta-form.html
+        return "forms-html/salaSecreta-form";
     }
 
-    @GetMapping("/salas_secretas/{id}/edit")
+    // CORRECCIÓN: Cambiado a "/salas-secretas/{id}/edit"
+    @GetMapping("/salas-secretas/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
         logger.info("WEB: Editando sala secreta ID {}", id);
         Optional<SalaSecreta> sala = salaSecretaService.obtenerPorId(id);
@@ -91,10 +89,11 @@ public class SalaSecretaController {
             model.addAttribute("salaSecreta", sala.get());
             return "forms-html/salaSecreta-form";
         }
-        return "redirect:/salas_secretas";
+        return "redirect:/salas-secretas";
     }
 
-    @PostMapping("/salas_secretas/save")
+    // CORRECCIÓN: Cambiado a "/salas-secretas/save"
+    @PostMapping("/salas-secretas/save")
     public String guardar(@Valid @ModelAttribute SalaSecreta salaSecreta,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes) {
@@ -103,20 +102,20 @@ public class SalaSecretaController {
             return "forms-html/salaSecreta-form";
         }
 
-        // Validación: Código de acceso único
         if (salaSecreta.getId() == null && salaSecretaService.existeCodigoAcceso(salaSecreta.getCodigoAcceso())) {
             logger.warn("Intento de duplicado código: {}", salaSecreta.getCodigoAcceso());
             redirectAttributes.addFlashAttribute("errorMessage", "El código de acceso ya está en uso.");
-            return "redirect:/salas_secretas/new";
+            return "redirect:/salas-secretas/new";
         }
 
         salaSecretaService.guardar(salaSecreta);
         logger.info("Sala secreta guardada: {}", salaSecreta.getCodigoAcceso());
         redirectAttributes.addFlashAttribute("successMessage", "Sala secreta registrada.");
-        return "redirect:/salas_secretas";
+        return "redirect:/salas-secretas";
     }
 
-    @PostMapping("/salas_secretas/update")
+    // CORRECCIÓN: Cambiado a "/salas-secretas/update"
+    @PostMapping("/salas-secretas/update")
     public String actualizar(@Valid @ModelAttribute SalaSecreta salaSecreta,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
@@ -131,24 +130,23 @@ public class SalaSecretaController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar.");
         }
-        return "redirect:/salas_secretas";
+        return "redirect:/salas-secretas";
     }
 
-    @GetMapping("/salas_secretas/delete/{id}")
+    // CORRECCIÓN: Cambiado a "/salas-secretas/delete/{id}"
+    @GetMapping("/salas-secretas/delete/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         logger.info("WEB: Eliminando sala secreta ID {}", id);
         try {
             salaSecretaService.eliminar(id);
             redirectAttributes.addFlashAttribute("successMessage", "Sala secreta destruida.");
         } catch (Exception e) {
-            // Seguramente falle si la sala está asignada a una Guarida (Integridad referencial)
             logger.error("Error al eliminar: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "No se puede eliminar: Está vinculada a una guarida.");
         }
-        return "redirect:/salas_secretas";
+        return "redirect:/salas-secretas";
     }
 
-    // Helper de ordenación
     private Sort getSort(String sort) {
         if (sort == null) return Sort.by("id").ascending();
         return switch (sort) {
@@ -159,6 +157,4 @@ public class SalaSecretaController {
             default -> Sort.by("id").ascending();
         };
     }
-
-        //ver api rest
 }
