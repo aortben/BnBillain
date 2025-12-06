@@ -131,13 +131,12 @@
     </div>
 
     <!-- Paginación (si existe) -->
-    <!-- (Añadido bloque de paginación similar a las otras vistas por si lo necesitas) -->
-    <nav class="mt-4" th:if="${totalPages != null and totalPages > 1}">
+    <nav th:if="${totalPages != null and totalPages > 1}" class="mt-4">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link"
                    style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/reservas(page=${currentPage - 1})}">Anterior</a>
+                   th:href="@{/reservas(page=${currentPage - 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Anterior</a>
             </li>
             <li class="page-item disabled">
                 <span class="page-link"
@@ -147,7 +146,7 @@
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
                 <a class="page-link"
                    style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/reservas(page=${currentPage + 1})}">Siguiente</a>
+                   th:href="@{/reservas(page=${currentPage + 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Siguiente</a>
             </li>
         </ul>
     </nav>
