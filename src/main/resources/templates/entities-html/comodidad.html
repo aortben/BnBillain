@@ -74,8 +74,29 @@
             </div>
         </div>
     </div>
-</main>
 
+    <nav th:if="${totalPages != null and totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
+                   th:href="@{/comodidades(page=${currentPage - 1})}">Anterior</a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link"
+                      style="background-color: #0f0f10; border-color: #333; color: var(--color-logo-light);"
+                      th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
+                   th:href="@{/comodidades(page=${currentPage + 1})}">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+</main>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 </body>

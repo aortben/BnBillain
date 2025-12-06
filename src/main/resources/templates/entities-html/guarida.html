@@ -120,7 +120,7 @@
             <li class="page-item disabled">
                 <span class="page-link"
                       style="background-color: #0f0f10; border-color: #333; color: var(--color-logo-light);"
-                      th:text="${currentPage} + ' / ' + ${totalPages}"></span>
+                      th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
             </li>
 
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
