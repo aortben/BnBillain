@@ -18,17 +18,17 @@ public class Factura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "{msg.factura.fecha.notNull}")
+    @NotNull(message = "La fecha es obligatoria")
     @Column(name = "fecha_emision", nullable = false)
     private LocalDate fechaEmision;
 
-    @NotNull(message = "{msg.factura.importe.notNull}")
-    @Positive(message = "{msg.factura.importe.positive}")
+    @NotNull(message = "El importe es obligatorio")
+    @Positive(message = "El importe debe ser positivo")
     @Column(name = "importe", nullable = false)
     private Double importe;
 
-    @NotNull(message = "{msg.factura.impuestos.notNull}")
-    @Min(value = 0, message = "{msg.factura.impuestos.min}")
+    @NotNull(message = "Los impuestos son obligatorios")
+    @Min(value = 0, message = "Los impuestos no pueden ser negativos")
     @Column(name = "impuestos_malignos", nullable = false)
     private Double impuestosMalignos;
 
@@ -37,8 +37,8 @@ public class Factura {
 
     @OneToOne
     @JoinColumn(name = "reserva_id", unique = true)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- ROMPE EL CICLO FINAL
+    @ToString.Exclude // <--- VITAL PARA EVITAR BUCLES
+    @EqualsAndHashCode.Exclude
     private Reserva reserva;
 
     public Factura(LocalDate fechaEmision, Double importe, Double impuestosMalignos, String metodoPago, Reserva reserva) {

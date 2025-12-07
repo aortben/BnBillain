@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
+import java.time.LocalDate; // IMPORTANTE
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,31 +24,25 @@ public class FacturaController {
     private static final Logger logger = LoggerFactory.getLogger(FacturaController.class);
 
     private final FacturaService facturaService;
-    private final ReservaRepository reservaRepository; // Para el select de reservas
+    private final ReservaRepository reservaRepository;
 
     public FacturaController(FacturaService facturaService, ReservaRepository reservaRepository) {
         this.facturaService = facturaService;
         this.reservaRepository = reservaRepository;
     }
 
-
-    /**
-     * Listado de Facturas: Paginación Manual + Filtros (Método Pago / Importe) + Ordenación.
-     */
+    // --- LISTAR ---
     @GetMapping("/facturas")
     public String listar(@RequestParam(defaultValue = "1") int page,
-                         @RequestParam(required = false) String metodoPago, // Filtro texto
-                         @RequestParam(required = false) Double minImporte, // Filtro rango
+                         @RequestParam(required = false) String metodoPago,
+                         @RequestParam(required = false) Double minImporte,
                          @RequestParam(required = false) Double maxImporte,
                          @RequestParam(required = false) String sort,
                          Model model) {
 
-        logger.info("WEB: Listando facturas... Pag: {}, Metodo: {}, Sort: {}", page, metodoPago, sort);
-
         Sort sortObj = getSort(sort);
         List<Factura> resultados;
 
-        // 1. Lógica de Filtro
         if (minImporte != null && maxImporte != null) {
             resultados = facturaService.buscarPorRangoImporte(minImporte, maxImporte, sortObj);
         } else if (metodoPago != null && !metodoPago.isBlank()) {
@@ -56,27 +51,19 @@ public class FacturaController {
             resultados = facturaService.obtenerTodas(sortObj);
         }
 
-        // 2. Paginación Manual
         int pageSize = 5;
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        if (page > totalPages && totalPages > 0) page = totalPages;
         if (page < 1) page = 1;
-
+        if (page > totalPages && totalPages > 0) page = totalPages;
         int start = (page - 1) * pageSize;
         int end = Math.min(start + pageSize, totalItems);
+        List<Factura> listaPaginada = (start > end || totalItems == 0) ? Collections.emptyList() : resultados.subList(start, end);
 
-        List<Factura> listaPaginada = (start > end || totalItems == 0) ?
-                Collections.emptyList() : resultados.subList(start, end);
-
-        // 3. Pasar datos a la vista
         model.addAttribute("facturas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalItems", totalItems);
-
-        // Mantener filtros
         model.addAttribute("metodoPago", metodoPago);
         model.addAttribute("minImporte", minImporte);
         model.addAttribute("maxImporte", maxImporte);
@@ -85,26 +72,38 @@ public class FacturaController {
         return "entities-html/factura";
     }
 
+    // --- FORMULARIOS ---
+
     @GetMapping("/facturas/new")
     public String formularioNuevo(Model model) {
-        logger.info("WEB: Nueva factura.");
-        model.addAttribute("factura", new Factura());
-        model.addAttribute("allReservas", reservaRepository.findAll()); // Select de reservas
+        Factura f = new Factura();
+        // CORRECCIÓN 1: Inicializamos fecha HOY para que no salga vacía
+        f.setFechaEmision(LocalDate.now());
+
+        model.addAttribute("factura", f);
+        model.addAttribute("allReservas", reservaRepository.findAll());
         return "forms-html/factura-form";
     }
 
     @GetMapping("/facturas/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
-        logger.info("WEB: Editando factura ID {}", id);
-        Optional<Factura> factura = facturaService.obtenerPorId(id);
-        if (factura.isPresent()) {
-            model.addAttribute("factura", factura.get());
+        Optional<Factura> facturaOpt = facturaService.obtenerPorId(id);
+        if (facturaOpt.isPresent()) {
+            Factura f = facturaOpt.get();
+
+            // CORRECCIÓN 2: Si por algún motivo la base de datos tiene fecha null (raro), ponemos hoy
+            if (f.getFechaEmision() == null) {
+                f.setFechaEmision(LocalDate.now());
+            }
+
+            model.addAttribute("factura", f);
             model.addAttribute("allReservas", reservaRepository.findAll());
             return "forms-html/factura-form";
         }
         return "redirect:/facturas";
     }
 
+    // --- GUARDAR ---
     @PostMapping("/facturas/save")
     public String guardar(@Valid @ModelAttribute Factura factura,
                           BindingResult bindingResult,
@@ -117,42 +116,67 @@ public class FacturaController {
         }
 
         try {
+            if (factura.getFechaEmision() == null) factura.setFechaEmision(LocalDate.now()); // Seguridad extra
             facturaService.guardar(factura);
-            logger.info("Factura emitida ID: {}", factura.getId());
             redirectAttributes.addFlashAttribute("successMessage", "Factura emitida correctamente.");
         } catch (IllegalArgumentException e) {
-            // Error: Reserva ya facturada
-            logger.error("Error negocio: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/facturas/new";
         }
-
         return "redirect:/facturas";
     }
 
+    // --- ACTUALIZAR (ESTE ES EL QUE DABA PROBLEMAS) ---
     @PostMapping("/facturas/update")
     public String actualizar(@Valid @ModelAttribute Factura factura,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
                              Model model) {
 
+        // 1. FILTRO INTELIGENTE DE ERRORES
+        // Si hay errores, comprobamos si son "reales" o solo porque los campos readonly no llegaron bien.
         if (bindingResult.hasErrors()) {
-            model.addAttribute("allReservas", reservaRepository.findAll());
-            return "forms-html/factura-form";
+
+            // Lista de campos que NO editamos y que recuperaremos de la BD si fallan
+            List<String> camposSoloLectura = List.of("fechaEmision", "importe", "impuestosMalignos", "reserva");
+
+            // ¿Hay algún error en un campo que SÍ sea importante (como metodoPago)?
+            boolean errorCritico = bindingResult.getFieldErrors().stream()
+                    .anyMatch(err -> !camposSoloLectura.contains(err.getField()));
+
+            if (errorCritico) {
+                // Si el error es real (ej: metodoPago vacío), mostramos el error
+                logger.warn("Errores de validación críticos: {}", bindingResult.getAllErrors());
+
+                // Recargamos datos para que no explote la vista
+                model.addAttribute("allReservas", reservaRepository.findAll());
+                // Rellenamos huecos con datos originales si es posible
+                if(factura.getId() != null) {
+                    facturaService.obtenerPorId(factura.getId()).ifPresent(orig -> {
+                        if(factura.getReserva() == null) factura.setReserva(orig.getReserva());
+                        if(factura.getFechaEmision() == null) factura.setFechaEmision(orig.getFechaEmision());
+                    });
+                }
+                return "forms-html/factura-form";
+            }
+            // Si llegamos aquí, los errores eran solo de fecha/importes. Los ignoramos y seguimos.
+            logger.info("Saltando validación estricta de campos readonly.");
         }
 
         try {
             facturaService.actualizar(factura.getId(), factura);
-            redirectAttributes.addFlashAttribute("successMessage", "Factura rectificada.");
+            redirectAttributes.addFlashAttribute("successMessage", "✅ Estado de pago actualizado.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar.");
+            logger.error("Error al actualizar: ", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+            return "redirect:/facturas/" + factura.getId() + "/edit";
         }
         return "redirect:/facturas";
     }
 
+    // --- EXTRAS ---
     @GetMapping("/facturas/delete/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        logger.info("WEB: Eliminando factura ID {}", id);
         try {
             facturaService.eliminar(id);
             redirectAttributes.addFlashAttribute("successMessage", "Factura eliminada.");
@@ -162,29 +186,16 @@ public class FacturaController {
         return "redirect:/facturas";
     }
 
-
-    /**
-     * Muestra la vista de "Documento Factura" lista para imprimir.
-     */
-
     @GetMapping("/facturas/{id}/verDetalle")
     public String verDetalle(@PathVariable Long id, Model model) {
-        logger.info("WEB: Generando vista de factura ID {}", id);
         return facturaService.obtenerPorId(id)
                 .map(factura -> {
-                    model.addAttribute("factura", factura); //mete la factura en la bandeja
-                    return "entities-html/factura-detail"; // Nueva plantilla que crearemos
+                    model.addAttribute("factura", factura);
+                    return "entities-html/factura-detail";
                 })
-                .orElseGet(() -> {
-                    logger.warn("Factura no encontrada"); //dejamos constancia en el log
-                    return "redirect:/facturas"; //redirigimos a facturas
-                });
+                .orElseGet(() -> "redirect:/facturas");
     }
 
-
-
-
-    // ordenacion
     private Sort getSort(String sort) {
         if (sort == null) return Sort.by("id").descending();
         return switch (sort) {

@@ -2,9 +2,8 @@ package com.bnbillains.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.*; // Importamos todo Lombok
 import java.time.LocalDate;
 
 @Entity
@@ -18,40 +17,39 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "{msg.reserva.fechaInicio.notNull}")
+    @NotNull(message = "La fecha de inicio es obligatoria")
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
-    @NotNull(message = "{msg.reserva.fechaFin.notNull}")
-    @Future(message = "{msg.reserva.fechaFin.future}")
+    @NotNull(message = "La fecha de fin es obligatoria")
+    @Future(message = "La fecha de fin debe ser futura")
     @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
 
-    @NotNull(message = "{msg.reserva.coste.notNull}")
-    @Min(value = 0, message = "{msg.reserva.coste.min}")
-    @Column(name = "coste_total", nullable = false)
+    // --- CORRECCIÓN 1: QUITADO @NotNull ---
+    // Este campo se calcula en el servicio, así que entra como null al principio.
+    @Column(name = "coste_total")
     private Double costeTotal;
 
     @Column(name = "estado")
     private Boolean estado;
 
-    // --- RELACIONES (Protección Total) ---
-
+    // --- CORRECCIÓN 2: AÑADIDOS EXCLUDES ---
     @ManyToOne
     @JoinColumn(name = "villano_id")
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- Evita que Reserva compruebe el hashCode de Villano
+    @EqualsAndHashCode.Exclude
     private Villano villano;
 
     @ManyToOne
     @JoinColumn(name = "guarida_id")
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- Evita bucle con Guarida
+    @EqualsAndHashCode.Exclude
     private Guarida guarida;
 
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- Evita bucle con Factura
+    @EqualsAndHashCode.Exclude
     private Factura factura;
 
     public Reserva(LocalDate fechaInicio, LocalDate fechaFin, Double costeTotal, Boolean estado, Villano villano, Guarida guarida) {

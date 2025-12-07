@@ -1,14 +1,168 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="fragments/head :: head ('Detalle Villano - BnBillains')"></head>
-<body class="d-flex flex-column h-100" style="background-color: #f8f9fa;">
+<head th:replace="~{fragments/head :: head ('Factura #' + ${factura.id})}"></head>
+<body style="background-color: #555;">
 
-<header th:replace="fragments/header :: header"></header>
+<style>
+    .invoice-box {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 40px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        font-size: 16px;
+        line-height: 24px;
+        font-family: 'Courier New', Courier, monospace;
+        background-color: #fff;
+        color: #333;
+    }
 
+    .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+        border-collapse: collapse;
+    }
 
+    .invoice-box table td {
+        padding: 10px;
+        vertical-align: top;
+    }
 
+    .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+    }
 
-<footer th:replace="fragments/footer :: footer"></footer>
+    .invoice-box table tr.heading td {
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .invoice-box table tr.item td {
+        border-bottom: 1px solid #eee;
+    }
+
+    .invoice-box table tr.total td:nth-child(3) {
+        border-top: 2px solid #333;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    /* Botones de acción (No imprimir) */
+    .actions {
+        text-align: right;
+        margin-bottom: 20px;
+    }
+
+    @media print {
+        body {
+            background-color: #fff;
+            margin: 0;
+        }
+        .invoice-box {
+            box-shadow: none;
+            margin: 0;
+            border: none;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+        header, footer {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="invoice-box">
+
+    <div class="actions no-print">
+        <a th:href="@{/facturas}" class="btn btn-secondary btn-sm">⬅ Volver al listado</a>
+        <button onclick="window.print()" class="btn btn-danger btn-sm shadow">🖨️ Imprimir / PDF</button>
+    </div>
+
+    <table cellpadding="0" cellspacing="0">
+        <tr class="top">
+            <td colspan="3">
+                <table>
+                    <tr>
+                        <td class="title">
+                            <h1 style="color: #d9534f; margin: 0;">BnBillain</h1>
+                            <small style="color: #777;">Dominación Mundial S.L.</small>
+                        </td>
+                        <td style="text-align: right;">
+                            <strong>Factura #:</strong> <span th:text="${factura.id}">001</span><br>
+                            <strong>Fecha:</strong> <span th:text="${factura.fechaEmision}">2025-01-01</span><br>
+                            <strong>Estado:</strong>
+                            <span th:if="${factura.metodoPago == 'Pendiente'}" style="color: red;">PENDIENTE</span>
+                            <span th:unless="${factura.metodoPago == 'Pendiente'}" style="color: green;">PAGADO</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="information">
+            <td colspan="3">
+                <table>
+                    <tr>
+                        <td>
+                            <strong>EMISOR:</strong><br>
+                            BnBillain Inc.<br>
+                            Monte del Destino, s/n<br>
+                            Mordor, Tierra Media
+                        </td>
+                        <td style="text-align: right;">
+                            <strong>CLIENTE:</strong><br>
+                            <span th:text="${factura.reserva.villano.nombre}">Nombre</span><br>
+                            Alias: <span th:text="${factura.reserva.villano.alias}">Alias</span><br>
+                            ID: <span th:text="${factura.reserva.villano.carnetDeVillano}">V-000</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td>Concepto / Guarida</td>
+            <td style="text-align: center;">Método Pago</td>
+            <td style="text-align: right;">Importe</td>
+        </tr>
+
+        <tr class="item">
+            <td>
+                Alquiler: <strong th:text="${factura.reserva.guarida.nombre}">Volcán</strong><br>
+                <small style="color: #666;">
+                    Del <span th:text="${factura.reserva.fechaInicio}"></span>
+                    al <span th:text="${factura.reserva.fechaFin}"></span>
+                </small>
+            </td>
+            <td style="text-align: center;" th:text="${factura.metodoPago}">Oro</td>
+            <td style="text-align: right;" th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'">100.00 €</td>
+        </tr>
+
+        <tr class="item">
+            <td>Impuestos Malignos (21%)</td>
+            <td></td>
+            <td style="text-align: right;" th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'">21.00 €</td>
+        </tr>
+
+        <tr class="total">
+            <td></td>
+            <td style="text-align: right;">TOTAL A PAGAR:</td>
+            <td style="text-align: right;"
+                th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'">
+                121.00 €
+            </td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #aaa; border-top: 1px dashed #ccc; padding-top: 10px;">
+        <p>Gracias por confiar en nuestros servicios. No se aceptan devoluciones si el héroe destruye la guarida.</p>
+    </div>
+</div>
 
 </body>
 </html>

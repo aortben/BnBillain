@@ -1,10 +1,8 @@
 package com.bnbillains.services;
 
 import com.bnbillains.entities.Factura;
-import com.bnbillains.entities.Resena;
-import com.bnbillains.entities.Reserva;
 import com.bnbillains.repositories.FacturaRepository;
-import org.springframework.data.domain.Sort; // IMPORTANTE
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +27,6 @@ public class FacturaService {
 
     // --- ESCRITURA ---
     public Factura guardar(Factura factura) {
-        // Regla de negocio: Una reserva solo puede tener UNA factura
-        // Verificamos si es nueva (id null) y si la reserva ya tiene factura
         if (factura.getId() == null && factura.getReserva() != null) {
             if (facturaRepository.existsByReserva_Id(factura.getReserva().getId())) {
                 throw new IllegalArgumentException("Esta reserva ya ha sido facturada. ¡No seas avaricioso!");
@@ -39,15 +35,27 @@ public class FacturaService {
         return facturaRepository.save(factura);
     }
 
-    public Factura actualizar(Long id, Factura factura) {
+    // --- MÉTODO ACTUALIZAR BLINDADO ---
+    public Factura actualizar(Long id, Factura facturaDatosNuevos) {
         return facturaRepository.findById(id)
-                .map(f -> {
-                    f.setFechaEmision(factura.getFechaEmision());
-                    f.setImporte(factura.getImporte());
-                    f.setImpuestosMalignos(factura.getImpuestosMalignos());
-                    f.setMetodoPago(factura.getMetodoPago());
-                    f.setReserva(factura.getReserva());
-                    return facturaRepository.save(f);
+                .map(facturaExistente -> {
+                    // 1. Actualizamos SOLO lo que el usuario puede cambiar (Método de Pago)
+                    facturaExistente.setMetodoPago(facturaDatosNuevos.getMetodoPago());
+
+                    // 2. Protegemos los datos sensibles: Solo actualizamos si vienen datos reales
+                    // (Esto evita que se pongan a 0 o null si el formulario no los envía)
+                    if (facturaDatosNuevos.getImporte() != null) {
+                        facturaExistente.setImporte(facturaDatosNuevos.getImporte());
+                    }
+                    if (facturaDatosNuevos.getImpuestosMalignos() != null) {
+                        facturaExistente.setImpuestosMalignos(facturaDatosNuevos.getImpuestosMalignos());
+                    }
+
+                    // 3. ⛔ IMPORTANTE: NO tocamos la reserva (facturaExistente.setReserva(...))
+                    // Mantenemos la relación que ya existe en la base de datos.
+                    // Así, aunque el formulario envíe la reserva mal o null, no la perdemos.
+
+                    return facturaRepository.save(facturaExistente);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Factura no encontrada"));
     }
@@ -68,5 +76,4 @@ public class FacturaService {
     public List<Factura> obtenerFacturasPorVillano(Long villanoId) {
         return facturaRepository.findByReserva_Villano_Id(villanoId);
     }
-
 }
