@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Escribir Reseña')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.resenaForm.title})}"></head>
 <body class="d-flex flex-column h-100">
 <header th:replace="~{fragments/header :: header}"></header>
 
@@ -8,14 +8,15 @@
       style="margin-top: 100px; margin-bottom: 50px;">
 
     <div class="card shadow col-md-6 border-secondary">
-        <!-- Cabecera: Estilo global -->
         <div class="card-header text-center">
-            <h2 class="mb-0 display-6" th:text="${resena.id != null ? 'Editar Opinión' : 'Escribir Opinión'}"></h2>
+            <h2 class="mb-0 display-6"
+                th:text="${resena.id != null} ? #{msg.resenaForm.edit} : #{msg.resenaForm.new}">
+                Escribir/Editar Opinión
+            </h2>
         </div>
 
         <div class="card-body p-4">
 
-            <!-- Alertas Estilizadas -->
             <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert"
                  style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
                 <span th:text="${successMessage}"></span>
@@ -27,60 +28,53 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <!-- Formulario -->
             <form th:action="@{${resena.id == null} ? '/resenas/save' : '/resenas/update'}"
                   th:object="${resena}"
                   method="post">
 
                 <input type="hidden" th:field="*{id}">
 
-                <!-- Selección de Autor -->
                 <div class="mb-3">
-                    <label for="villano" class="form-label text-light">Autor:</label>
+                    <label for="villano" class="form-label text-light" th:text="#{msg.resenaForm.author}">Autor:</label>
                     <select class="form-select" id="villano" th:field="*{villano}">
-                        <option value="" disabled selected>-- Selecciona quién escribe --</option>
+                        <option value="" disabled selected th:text="#{msg.resenaForm.selectAuthor}">-- Selecciona quién escribe --</option>
                         <option th:each="v : ${allVillanos}" th:value="${v.id}" th:text="${v.alias}"></option>
                     </select>
                     <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('villano')}" th:errors="*{villano}"></div>
                 </div>
 
-                <!-- Selección de Guarida -->
                 <div class="mb-3">
-                    <label for="guarida" class="form-label text-light">Guarida Visitada:</label>
+                    <label for="guarida" class="form-label text-light" th:text="#{msg.resenaForm.visitedLair}">Guarida Visitada:</label>
                     <select class="form-select" id="guarida" th:field="*{guarida}">
-                        <option value="" disabled selected>-- Selecciona la guarida --</option>
+                        <option value="" disabled selected th:text="#{msg.resenaForm.selectLair}">-- Selecciona la guarida --</option>
                         <option th:each="g : ${allGuaridas}" th:value="${g.id}" th:text="${g.nombre}"></option>
                     </select>
                     <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('guarida')}" th:errors="*{guarida}"></div>
                 </div>
 
-                <!-- Puntuación -->
                 <div class="mb-3">
-                    <label for="puntuacion" class="form-label text-light">Puntuación (1-5 Estrellas):</label>
+                    <label for="puntuacion" class="form-label text-light" th:text="#{msg.resenaForm.scoreLabel}">Puntuación (1-5 Estrellas):</label>
                     <input type="number" id="puntuacion" min="1" max="5" class="form-control" th:field="*{puntuacion}" required
                            placeholder="5">
                     <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('puntuacion')}" th:errors="*{puntuacion}"></div>
                 </div>
 
-                <!-- Comentario -->
                 <div class="mb-3">
-                    <label for="comentario" class="form-label text-light">Comentario:</label>
+                    <label for="comentario" class="form-label text-light" th:text="#{msg.resenaForm.comment}">Comentario:</label>
                     <textarea class="form-control" id="comentario" rows="4" th:field="*{comentario}"
-                              placeholder="Describe tu experiencia malvada..."></textarea>
+                              th:placeholder="#{msg.resenaForm.commentPlaceholder}"></textarea>
                     <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('comentario')}" th:errors="*{comentario}"></div>
                 </div>
 
-                <!-- Fecha -->
                 <div class="mb-4">
-                    <label for="fechaPublicacion" class="form-label text-light">Fecha de Publicación:</label>
+                    <label for="fechaPublicacion" class="form-label text-light" th:text="#{msg.resenaForm.date}">Fecha de Publicación:</label>
                     <input type="date" class="form-control" id="fechaPublicacion" th:field="*{fechaPublicacion}">
                     <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('fechaPublicacion')}" th:errors="*{fechaPublicacion}"></div>
                 </div>
 
-                <!-- Botones -->
                 <div class="d-flex gap-2 justify-content-end">
-                    <a href="/resenas" class="btn btn-outline-light">Cancelar</a>
-                    <button type="submit" class="btn btn-primary px-4">Publicar</button>
+                    <a href="/resenas" class="btn btn-outline-light" th:text="#{msg.guaridaForm.cancel}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4" th:text="#{msg.resenaForm.publish}">Publicar</button>
                 </div>
             </form>
         </div>

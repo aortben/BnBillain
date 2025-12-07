@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Comodidades - BnBillains')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.comodidad.title} + ' - BnBillains')}"></head>
 <body class="d-flex flex-column h-100">
 
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="flex-shrink-0 flex-grow-1 container" style="margin-top: 100px; margin-bottom: 50px;">
 
-    <!-- Título y Botón Nuevo -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="display-5">Gestión de Comodidades</h2>
-        <!-- Botón Nuevo: Morado -->
-        <a th:href="@{/comodidades/new}" class="btn btn-primary btn-lg shadow-sm">
+        <h2 class="display-5" th:text="#{msg.comodidad.title}">Gestión de Comodidades</h2>
+        <a th:href="@{/comodidades/new}" class="btn btn-primary btn-lg shadow-sm"
+           th:text="#{msg.comodidad.new}">
             + Nueva Comodidad
         </a>
     </div>
 
-    <!-- Tabla de Resultados -->
     <div class="card shadow">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-dark">
                     <tr>
-                        <th style="background-color: #000; color: var(--color-logo-light);">ID</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Nombre</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Auto-Destrucción</th>
-                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.comodidad.id}">ID</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.comodidad.name}">Nombre</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.comodidad.destruction}">Auto-Destrucción</th>
+                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.comodidad.actions}">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
 
-                    <!-- Mensaje si vacía -->
                     <tr th:if="${comodidades.isEmpty()}">
                         <td colspan="4" class="text-center p-4 text-muted">
-                            <em>No hay comodidades registradas en el inventario.</em>
+                            <em th:text="#{msg.comodidad.noRegis}">No hay comodidades registradas.</em>
                         </td>
                     </tr>
 
@@ -43,29 +44,28 @@
                         <td class="fw-bold" th:text="${comodidad.nombre}">Trampa de Osos</td>
 
                         <td>
-                            <!-- Badges personalizados -->
-                            <!-- Sí (Peligroso): Rojo oscuro -->
                             <span th:if="${comodidad.autoDestruccion}" class="badge"
-                                  style="background-color: #5a0000; border: 1px solid #8a0000; color: #ffcccc;">
+                                  style="background-color: #5a0000; border: 1px solid #8a0000; color: #ffcccc;"
+                                  th:text="#{msg.comodidad.yes}">
                                 Sí
                             </span>
-                            <!-- No (Seguro): Verde oscuro -->
                             <span th:unless="${comodidad.autoDestruccion}" class="badge"
-                                  style="background-color: #1e4620; border: 1px solid #2e7d32; color: #cfebce;">
+                                  style="background-color: #1e4620; border: 1px solid #2e7d32; color: #cfebce;"
+                                  th:text="#{msg.comodidad.no}">
                                 No
                             </span>
                         </td>
 
                         <td class="text-center">
                             <div class="btn-group" role="group">
-                                <!-- Editar: Morado -->
                                 <a th:href="@{/comodidades/{id}/edit(id=${comodidad.id})}"
-                                   class="btn btn-sm btn-primary">Editar</a>
+                                   class="btn btn-sm btn-primary"
+                                   th:text="#{msg.comodidad.edit}">Editar</a>
 
-                                <!-- Eliminar: Rojo Apagado -->
                                 <a th:href="@{/comodidades/delete/{id}(id=${comodidad.id})}"
                                    class="btn btn-sm btn-dull-danger"
-                                   onclick="return confirm('¿Eliminar esta comodidad?');">Eliminar</a>
+                                   th:onclick="'return confirm(\'' + #{msg.comodidad.deleteCon} + '\');'"
+                                   th:text="#{msg.comodidad.delete}">Eliminar</a>
                             </div>
                         </td>
                     </tr>
@@ -80,19 +80,22 @@
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link"
                    style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/comodidades(page=${currentPage - 1})}">Anterior</a>
+                   th:href="@{/comodidades(page=${currentPage - 1})}"
+                   th:text="#{msg.pagination.previous}">Anterior</a>
             </li>
 
             <li class="page-item disabled">
                 <span class="page-link"
                       style="background-color: #0f0f10; border-color: #333; color: var(--color-logo-light);"
-                      th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
+                      th:text="#{msg.pagination.page} + ' ' + ${currentPage} + ' ' + #{msg.pagination.of} + ' ' + ${totalPages}">
+                </span>
             </li>
 
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
                 <a class="page-link"
                    style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/comodidades(page=${currentPage + 1})}">Siguiente</a>
+                   th:href="@{/comodidades(page=${currentPage + 1})}"
+                   th:text="#{msg.pagination.next}">Siguiente</a>
             </li>
         </ul>
     </nav>
@@ -101,4 +104,3 @@
 
 </body>
 </html>
-

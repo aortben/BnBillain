@@ -1,6 +1,4 @@
-<!-- header.html -->
 <header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
-    <!-- Pokedex-style navbar -->
     <nav class="navbar navbar-expand-md fixed-top"
          style="width: 80%; margin: 0 auto;
                 background: linear-gradient(to right,
@@ -9,43 +7,90 @@
                                             #ff9999 50%,
                                             #ffe6e6 75%,
                                             #ffffff 100%);
-                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+                border-bottom: 2px solid #000;
                 border-radius: 0 0 15px 15px;">
         <div class="container-fluid">
-            <!-- Logo / brand -->
-            <a class="navbar-brand text-white fw-bold" href="#" th:href="@{/}" style="text-shadow: 1px 1px #000;"><img
-                    src="/images/logo2.png" alt="BnBillains Logo" width="150"></a>
+
+            <a class="navbar-brand text-white fw-bold hover-scale" th:href="@{/}"
+               style="text-shadow: 2px 2px 0 #000; transition: transform 0.3s;">
+                <img src="/images/logo2.png" alt="BnBillains Logo" width="150" style="filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));">
+            </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
+                    style="border: 2px solid #000;">
+                <span class="navbar-toggler-icon" style="filter: invert(0);"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/villanos}">Villanos</a>
+                        <a class="nav-link text-dark fw-bold text-uppercase" th:href="@{/villanos}"
+                           style="letter-spacing: 1px;"
+                           th:text="#{msg.header.villains}">Villanos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-semibold" th:href="@{/guaridas}">Guaridas</a>
+                        <a class="nav-link text-dark fw-bold text-uppercase" th:href="@{/guaridas}"
+                           style="letter-spacing: 1px;"
+                           th:text="#{msg.header.lair}">Guaridas</a>
                     </li>
                 </ul>
 
-                <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center gap-3">
+
                     <li class="nav-item dropdown">
-                        <a class="nav-link text-dark fw-semibold dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Más opciones
+                        <a class="nav-link text-dark fw-bold dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span th:text="#{msg.header.options} ?: 'Opciones'">Más opciones</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" th:href="@{/comodidades}">Comodidades</a></li>
-                            <li><a class="dropdown-item" th:href="@{/salas-secretas}">Salas Secretas</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-dark" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" th:href="@{/comodidades}" th:text="#{msg.header.comfort}">Comodidades</a></li>
+                            <li><a class="dropdown-item" th:href="@{/salas-secretas}" th:text="#{msg.header.secretRooms}">Salas Secretas</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" th:href="@{/resenas}">Reseñas</a></li>
-                            <li><a class="dropdown-item" th:href="@{/reservas}">Reservas</a></li>
-                            <li><a class="dropdown-item" th:href="@{/facturas}">Facturas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/resenas}" th:text="#{msg.header.reviews}">Reseñas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/reservas}" th:text="#{msg.header.reservations}">Reservas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/facturas}" th:text="#{msg.header.invoices}">Facturas</a></li>
                         </ul>
                     </li>
+
+                    <li class="nav-item">
+                        <div class="d-flex align-items-center bg-white border border-dark rounded-pill shadow-sm px-2 py-1"
+                             style="transform: scale(0.95);">
+
+                            <a th:href="@{''(lang=es)}"
+                               class="btn btn-sm btn-link text-decoration-none fw-bold text-dark px-2 lang-btn"
+                               title="Español"
+                               style="transition: all 0.2s;">
+                                <span style="font-size: 1.2em;">🇪🇸</span> <span class="small">ES</span>
+                            </a>
+
+                            <div style="width: 1px; height: 15px; background-color: #ccc;"></div>
+
+                            <a th:href="@{''(lang=en)}"
+                               class="btn btn-sm btn-link text-decoration-none fw-bold text-dark px-2 lang-btn"
+                               title="English"
+                               style="transition: all 0.2s;">
+                                <span class="small">EN</span> <span style="font-size: 1.2em;">🇬🇧</span>
+                            </a>
+                        </div>
+                    </li>
+
                 </ul>
             </div>
         </div>
     </nav>
+
+    <style>
+        .lang-btn:hover {
+            transform: scale(1.15);
+            text-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        .nav-link:hover {
+            color: #d90429 !important; /* Rojo intenso al pasar el ratón */
+            text-shadow: 0 0 1px rgba(0,0,0,0.3);
+        }
+    </style>
 </header>

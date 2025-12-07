@@ -52,19 +52,22 @@ public class Guarida {
             inverseJoinColumns = @JoinColumn(name = "comodidades_id")
     )
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- IMPRESCINDIBLE
+    @EqualsAndHashCode.Exclude
     private List<Comodidad> comodidades = new ArrayList<>();
 
-    @OneToMany(mappedBy = "guarida", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "guarida", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- IMPRESCINDIBLE
-    private List<Resena> resenas;
+    @EqualsAndHashCode.Exclude
+    private List<Resena> resenas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "guarida")
+    // ✅ CORRECCIÓN DEL ERROR SQL AQUÍ:
+    // Añadido cascade ALL y orphanRemoval. Al borrar la guarida, se borran las reservas.
+    @OneToMany(mappedBy = "guarida", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- IMPRESCINDIBLE
-    private List<Reserva> reservas;
+    @EqualsAndHashCode.Exclude
+    private List<Reserva> reservas = new ArrayList<>();
 
+    // Constructor personalizado (sin ID ni listas)
     public Guarida(String nombre, String descripcion, String ubicacion, Double precioNoche, String imagen, SalaSecreta salaSecreta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -75,9 +78,13 @@ public class Guarida {
     }
 
     public String getPathImagen() {
-        if (this.imagen != null && !this.imagen.isEmpty()) {
-
+        // Si es nulo o cadena vacía, devuelve la imagen por defecto
+        if (this.imagen == null || this.imagen.trim().isEmpty()) {
+            // Spring Boot "ignora" la parte de src/main/resources/static
+            // y sirve lo de adentro directamente.
+            return "/images/guarida-default.jpg";
         }
+        // Si hay imagen, devuelve la ruta de subida configurada
         return "/uploads/" + this.imagen;
     }
 }
