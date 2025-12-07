@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Expediente del Villano')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.villanoD.title} + ' - ' + ${villano.alias})}"></head>
 <body class="d-flex flex-column h-100">
 
 <header th:replace="~{fragments/header :: header}"></header>
@@ -11,7 +11,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h2 class="mb-0 display-6" th:text="${villano.alias}">Alias del Villano</h2>
             <span class="badge" style="background-color: var(--color-accent); font-size: 1rem;">
-                <i class="bi bi-person-bounding-box"></i> Villano
+                <i class="bi bi-person-bounding-box"></i> <span th:text="#{msg.resena.villain}">Villano</span>
             </span>
         </div>
         <div class="card-body">
@@ -21,20 +21,22 @@
 
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <strong style="color: var(--color-logo-light);">Email:</strong>
+                            <strong style="color: var(--color-logo-light);" th:text="#{msg.villano.email} + ':'">Email:</strong>
                             <span th:text="${villano.email}" class="text-white">email@ejemplo.com</span>
                         </li>
                         <li class="mb-2">
-                            <strong style="color: var(--color-logo-light);">Carnet de Villano:</strong>
+                            <strong style="color: var(--color-logo-light);" th:text="#{msg.villano.carnet} + ':'">Carnet de Villano:</strong>
                             <code class="fs-5" style="color: var(--color-accent);" th:text="${villano.carnetDeVillano}">0000</code>
                         </li>
                     </ul>
 
                     <div class="mt-4 d-flex gap-2">
-                        <a th:href="@{/villanos/{id}/edit(id=${villano.id})}" class="btn btn-primary shadow">
+                        <a th:href="@{/villanos/{id}/edit(id=${villano.id})}" class="btn btn-primary shadow"
+                           th:text="#{msg.villanoD.edit}">
                             Editar Perfil
                         </a>
-                        <a th:href="@{/villanos}" class="btn btn-outline-light">
+                        <a th:href="@{/villanos}" class="btn btn-outline-light"
+                           th:text="#{msg.villanoD.comeback}">
                             Volver a la lista
                         </a>
                     </div>
@@ -50,21 +52,21 @@
 
         <div class="col-12">
             <div class="card h-100 shadow">
-                <div class="card-header">Historial de Reservas</div>
+                <div class="card-header" th:text="#{msg.villanoD.reservas}">Historial de Reservas</div>
                 <div class="card-body p-0">
                     <div th:if="${reservas.isEmpty()}" class="p-4 text-center text-white">
-                        <em>Este villano aún no ha planeado ninguna maldad (sin reservas).</em>
+                        <em th:text="#{msg.villanoD.reserEmty}">Este villano aún no ha planeado ninguna maldad (sin reservas).</em>
                     </div>
 
                     <div th:unless="${reservas.isEmpty()}" class="table-responsive">
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="table-dark">
                             <tr>
-                                <th class="ps-3">ID</th>
-                                <th>Guarida</th>
-                                <th>Entrada</th>
-                                <th>Salida</th>
-                                <th>Estado</th>
+                                <th class="ps-3" th:text="#{msg.reserva.id}">ID</th>
+                                <th th:text="#{msg.reserva.lair}">Guarida</th>
+                                <th th:text="#{msg.reserva.dateini}">Entrada</th>
+                                <th th:text="#{msg.reserva.datefin}">Salida</th>
+                                <th th:text="#{msg.reserva.estado}">Estado</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -76,15 +78,18 @@
                                        class="text-decoration-none fw-bold" style="color: var(--color-text-main);">
                                         <span th:text="${reserva.guarida.nombre}">Volcán</span>
                                     </a>
-                                    <span th:unless="${reserva.guarida != null}" class="text-danger fst-italic">Guarida Destruida</span>
+                                    <span th:unless="${reserva.guarida != null}" class="text-danger fst-italic"
+                                          th:text="#{msg.guarida.destroyed}">Guarida Destruida</span>
                                 </td>
                                 <td th:text="${reserva.fechaInicio}">2023-01-01</td>
                                 <td th:text="${reserva.fechaFin}">2023-01-05</td>
                                 <td>
                                     <span th:if="${reserva.estado}" class="badge"
-                                          style="background-color: #1e4620; border: 1px solid #2e7d32; color: #cfebce;">Confirmada</span>
+                                          style="background-color: #1e4620; border: 1px solid #2e7d32; color: #cfebce;"
+                                          th:text="#{msg.reserva.confirm}">Confirmada</span>
                                     <span th:unless="${reserva.estado}" class="badge"
-                                          style="background-color: #5e4b00; border: 1px solid #8f7200; color: #fff3cd;">Pendiente</span>
+                                          style="background-color: #5e4b00; border: 1px solid #8f7200; color: #fff3cd;"
+                                          th:text="#{msg.reserva.pendi}">Pendiente</span>
                                 </td>
                             </tr>
                             </tbody>
@@ -96,19 +101,20 @@
 
         <div class="col-md-6">
             <div class="card h-100 shadow">
-                <div class="card-header" style="border-bottom-color: var(--color-secondary);">
+                <div class="card-header" style="border-bottom-color: var(--color-secondary);"
+                     th:text="#{msg.villanoD.resenas}">
                     Reseñas Publicadas
                 </div>
                 <div class="card-body">
                     <div th:if="${resenas.isEmpty()}" class="text-center text-white py-3">
-                        <em>El silencio es oro... no hay reseñas.</em>
+                        <em th:text="#{msg.villanoD.resenaEmty}">El silencio es oro... no hay reseñas.</em>
                     </div>
 
                     <ul th:unless="${resenas.isEmpty()}" class="list-group list-group-flush bg-transparent">
                         <li class="list-group-item bg-transparent border-secondary" th:each="resena : ${resenas}">
                             <div class="d-flex w-100 justify-content-between align-items-center mb-1">
                                 <strong style="color: var(--color-logo-light);"
-                                        th:text="${resena.guarida != null ? resena.guarida.nombre : 'Lugar Desconocido'}">
+                                        th:text="${resena.guarida != null ? resena.guarida.nombre : #messages.msg('msg.guarida.unknown')}">
                                     Lugar
                                 </strong>
                                 <span class="badge bg-black border border-warning text-warning">
@@ -126,21 +132,24 @@
 
         <div class="col-md-6">
             <div class="card h-100 shadow">
-                <div class="card-header" style="border-bottom-color: var(--color-accent);">
+                <div class="card-header" style="border-bottom-color: var(--color-accent);"
+                     th:text="#{msg.villanoD.fact}">
                     Facturas
                 </div>
                 <div class="card-body">
                     <div th:if="${facturas.isEmpty()}" class="text-center text-white py-3">
-                        <em>No debe nada (por ahora).</em>
+                        <em th:text="#{msg.villanoD.factEmty}">No debe nada (por ahora).</em>
                     </div>
 
                     <ul th:unless="${facturas.isEmpty()}" class="list-group list-group-flush bg-transparent">
                         <li class="list-group-item bg-transparent border-secondary d-flex justify-content-between align-items-center"
                             th:each="factura : ${facturas}">
                             <div>
-                                <strong class="text-white">Factura #<span th:text="${factura.id}">1</span></strong>
+                                <strong class="text-white">
+                                    <span th:text="#{msg.factura.id}">Factura</span> #<span th:text="${factura.id}">1</span>
+                                </strong>
                                 <div class="small text-white">
-                                    Emisión: <span th:text="${factura.fechaEmision}">2023-01-01</span>
+                                    <span th:text="#{msg.factura.date} + ':'">Emisión:</span> <span th:text="${factura.fechaEmision}">2023-01-01</span>
                                 </div>
                             </div>
 
@@ -151,7 +160,8 @@
                                 </span>
                                 <br>
                                 <a th:href="@{/facturas/{id}/verDetalle(id=${factura.id})}"
-                                   class="text-decoration-none small" style="color: var(--color-logo-light);">
+                                   class="text-decoration-none small" style="color: var(--color-logo-light);"
+                                   th:text="#{msg.factura.receipt}">
                                     Ver PDF
                                 </a>
                             </div>

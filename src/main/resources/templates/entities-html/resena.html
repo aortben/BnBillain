@@ -1,53 +1,57 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Reseñas - BnBillains')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.resena.title} + ' - BnBillains')}"></head>
 <body class="d-flex flex-column h-100">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="flex-shrink-0 flex-grow-1 container" style="margin-top: 100px; margin-bottom: 50px;">
 
-    <!-- Título y Botón Nuevo -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="display-5">Opiniones de Clientes</h2>
-        <!-- Botón Nuevo: Morado -->
-        <a th:href="@{/resenas/new}" class="btn btn-primary btn-lg shadow-sm">
+        <h2 class="display-5" th:text="#{msg.resena.clientOpinions}">Opiniones de Clientes</h2>
+        <a th:href="@{/resenas/new}" class="btn btn-primary btn-lg shadow-sm"
+           th:text="#{msg.resena.new}">
             + Nueva Reseña
         </a>
     </div>
 
-    <!-- Barra de Filtros -->
     <div class="mb-4 p-3 card shadow-sm flex-row align-items-center gap-2">
-        <span class="fw-bold me-2" style="color: #ccc;">Filtrar por:</span>
-        <a th:href="@{/resenas(puntuacion=5)}" class="btn btn-sm btn-outline-warning">★★★★★ (Excelencia)</a>
-        <a th:href="@{/resenas(puntuacion=1)}" class="btn btn-sm btn-outline-danger">★ (Quejas)</a>
-        <a th:href="@{/resenas}" class="btn btn-sm btn-outline-light">Ver Todas</a>
+        <span class="fw-bold me-2" style="color: #ccc;" th:text="#{msg.filter.by}">Filtrar por:</span>
+
+        <a th:href="@{/resenas(puntuacion=5)}" class="btn btn-sm btn-outline-warning">
+            ★★★★★ (<span th:text="#{msg.filter.excellence}">Excelencia</span>)
+        </a>
+
+        <a th:href="@{/resenas(puntuacion=1)}" class="btn btn-sm btn-outline-danger">
+            ★ (<span th:text="#{msg.filter.complaints}">Quejas</span>)
+        </a>
+
+        <a th:href="@{/resenas}" class="btn btn-sm btn-outline-light"
+           th:text="#{msg.filter.seeAll}">Ver Todas</a>
     </div>
 
-    <!-- Grid de Reseñas -->
     <div class="row g-4">
-        <!-- Mensaje si no hay reseñas -->
         <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(resenas)}">
-            <h4 class="fst-italic" style="color: #888;">Aún no hay opiniones. Los villanos son gente reservada...</h4>
+            <h4 class="fst-italic" style="color: #888;" th:text="#{msg.resena.empty.funny}">
+                Aún no hay opiniones. Los villanos son gente reservada...
+            </h4>
         </div>
 
         <div class="col-md-6" th:each="r : ${resenas}">
             <div class="card h-100 shadow" style="border: 1px solid #444;">
-                <!-- Cabecera de Tarjeta: Fondo oscuro transparente -->
                 <div class="card-header d-flex justify-content-between align-items-center"
                      style="border-bottom: 1px solid #444;">
-                    <!-- Alias del Villano: Color MAGENTA CLARO para que se lea bien -->
                     <span class="fs-5" style="color: var(--color-logo-light); letter-spacing: 1px;"
                           th:text="${r.villano.alias}">Autor</span>
 
-                    <!-- Fecha: Gris CLARO (#aaa) en vez de muted -->
                     <small class="fs-6" style="color: #aaa; font-family: var(--font-body);"
                            th:text="${r.fechaPublicacion}">Fecha</small>
                 </div>
 
                 <div class="card-body">
-                    <!-- Subtítulo: Gris claro y borde suave -->
                     <h6 class="card-subtitle mb-3" style="color: #ccc; border-bottom: 1px solid #444; padding-bottom: 10px;">
-                        Estancia en: <span class="fw-bold text-white" th:text="${r.guarida.nombre}">Guarida</span>
+                        <span th:text="#{msg.resena.stayAt}">Estancia en:</span>
+                        <span class="fw-bold text-white" th:text="${r.guarida.nombre}">Guarida</span>
                     </h6>
 
                     <div class="d-flex align-items-center mb-3">
@@ -56,7 +60,6 @@
                         <span style="color: #888;" class="ms-1">/ 5</span>
                     </div>
 
-                    <!-- Comentario: Blanco brillante para lectura fácil -->
                     <p class="card-text fst-italic" style="color: #fff; font-size: 1.05em;">
                         "<span th:text="${r.comentario}"></span>"
                     </p>
@@ -64,10 +67,14 @@
 
                 <div class="card-footer bg-transparent border-0 text-end pb-3">
                     <div class="btn-group">
-                        <a th:href="@{/resenas/{id}/edit(id=${r.id})}" class="btn btn-sm btn-primary">Editar</a>
+                        <a th:href="@{/resenas/{id}/edit(id=${r.id})}"
+                           class="btn btn-sm btn-primary"
+                           th:text="#{msg.resena.edit}">Editar</a>
+
                         <a th:href="@{/resenas/delete/{id}(id=${r.id})}"
                            class="btn btn-sm btn-dull-danger"
-                           onclick="return confirm('¿Borrar esta opinión para siempre?');">Borrar</a>
+                           th:onclick="'return confirm(\'' + #{msg.resena.deleteConfirm} + '\');'"
+                           th:text="#{msg.resena.delete}">Borrar</a>
                     </div>
                 </div>
             </div>

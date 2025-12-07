@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Formulario Guarida - BnBillains')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.guaridaForm.title} + ' - BnBillains')}"></head>
 <body class="d-flex flex-column h-100">
 <header th:replace="~{fragments/header :: header}"></header>
 
@@ -9,7 +9,10 @@
 
     <div class="card shadow col-lg-8 border-secondary">
         <div class="card-header text-center">
-            <h2 class="mb-0 display-6" th:text="${guarida.id != null ? 'Editar Guarida' : 'Nueva Guarida'}"></h2>
+            <h2 class="mb-0 display-6"
+                th:text="${guarida.id != null} ? #{msg.guaridaForm.edit} : #{msg.guaridaForm.new}">
+                Nueva/Editar Guarida
+            </h2>
         </div>
 
         <div class="card-body p-4">
@@ -35,31 +38,31 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="nombre" class="form-label text-light fw-bold">Nombre:</label>
+                        <label for="nombre" class="form-label text-light fw-bold" th:text="#{msg.guaridaForm.name}">Nombre:</label>
                         <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required
-                               placeholder="Ej. Volcán del Mal">
+                               th:placeholder="#{msg.guaridaForm.placeholder.name}">
                     </div>
 
                     <div class="col-md-6">
-                        <label for="ubicacion" class="form-label text-light fw-bold">Ubicación:</label>
+                        <label for="ubicacion" class="form-label text-light fw-bold" th:text="#{msg.guaridaForm.location}">Ubicación:</label>
                         <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}" required
-                               placeholder="Ej. Isla Calavera">
+                               th:placeholder="#{msg.guaridaForm.placeholder.location}">
                     </div>
 
                     <div class="col-md-12">
-                        <label for="precioNoche" class="form-label text-light fw-bold">Precio por Noche (€):</label>
+                        <label for="precioNoche" class="form-label text-light fw-bold" th:text="#{msg.guaridaForm.price}">Precio por Noche (€):</label>
                         <input type="number" class="form-control" id="precioNoche" th:field="*{precioNoche}" step="0.01" required
                                placeholder="0.00">
                     </div>
 
                     <div class="col-md-12">
-                        <label for="descripcion" class="form-label text-light fw-bold">Descripción:</label>
+                        <label for="descripcion" class="form-label text-light fw-bold" th:text="#{msg.guaridaForm.description}">Descripción:</label>
                         <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"
-                                  placeholder="Detalles siniestros..."></textarea>
+                                  th:placeholder="#{msg.guaridaForm.placeholder.desc}"></textarea>
                     </div>
 
                     <div class="col-md-12">
-                        <label class="form-label text-light fw-bold" for="imageFile">Imagen:</label>
+                        <label class="form-label text-light fw-bold" for="imageFile" th:text="#{msg.guaridaForm.image}">Imagen:</label>
                         <input accept="image/*" class="form-control" id="imageFile" name="imageFile" type="file"/>
                     </div>
                 </div>
@@ -67,7 +70,8 @@
                 <hr class="my-4" style="border-color: var(--color-logo-light); opacity: 0.5;">
 
                 <div class="mb-4">
-                    <h5 class="mb-3" style="color: var(--color-logo-light); font-family: var(--font-title);">
+                    <h5 class="mb-3" style="color: var(--color-logo-light); font-family: var(--font-title);"
+                        th:text="#{msg.guaridaForm.amenitiesTitle}">
                         🛠️ Inventario de Comodidades
                     </h5>
 
@@ -89,32 +93,37 @@
 
                                         <span th:if="${comodidad.autoDestruccion}"
                                               class="badge rounded-pill bg-danger"
-                                              style="font-size: 0.65rem;">PELIGROSO</span>
+                                              style="font-size: 0.65rem;"
+                                              th:text="#{msg.comodidad.dangerous}">PELIGROSO</span>
                                     </label>
                                 </div>
                             </div>
 
-                            <div th:if="${#lists.isEmpty(allComodidades)}" class="col-12 text-muted fst-italic">
-                                No hay comodidades registradas en el sistema. <a href="/comodidades/new">Crea una aquí</a>.
+                            <div th:if="${#lists.isEmpty(allComodidades)}" class="col-12 text-white fst-italic">
+                                <span th:text="#{msg.guaridaForm.noAmenities}">No hay comodidades registradas.</span>
+                                <a href="/comodidades/new" th:text="#{msg.guaridaForm.createHere}">Crea una aquí</a>.
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="p-3 rounded mb-4" style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed var(--color-logo-light);">
-                    <h4 class="text-center mb-3" style="font-family: var(--font-title); color: var(--color-accent); letter-spacing: 1px;">
-                        ⚠️ Sala Secreta
+                    <h4 class="text-center mb-3"
+                        style="font-family: var(--font-title); color: var(--color-accent); letter-spacing: 1px;"
+                        th:text="#{msg.guaridaForm.secretRoomTitle}">
+                        Sala Secreta
                     </h4>
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label text-muted small text-uppercase fw-bold">Código Acceso</label>
+                            <label class="form-label text-white small text-uppercase fw-bold" th:text="#{msg.salasecreta.code}">Código Acceso</label>
                             <input type="text" class="form-control" th:field="*{salaSecreta.codigoAcceso}"
                                    maxlength="8" required placeholder="Ej. 666-XYZ"
                                    style="font-family: monospace;">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label text-muted small text-uppercase fw-bold">Función Principal</label>
+                            <label class="form-label text-white small text-uppercase fw-bold" th:text="#{msg.salasecreta.funtion}">Función Principal</label>
                             <input type="text" class="form-control" th:field="*{salaSecreta.funcionPrincipal}"
                                    required placeholder="Ej. Laboratorio">
                         </div>
@@ -124,7 +133,8 @@
                                 <input class="form-check-input" type="checkbox" id="salidaEmergencia"
                                        th:field="*{salaSecreta.salidaEmergencia}"
                                        style="background-color: #333; border-color: #666;">
-                                <label class="form-check-label text-light" for="salidaEmergencia">
+                                <label class="form-check-label text-light" for="salidaEmergencia"
+                                       th:text="#{msg.guaridaForm.emergencyExit}">
                                     Cuenta con Salida de Emergencia
                                 </label>
                             </div>
@@ -133,8 +143,8 @@
                 </div>
 
                 <div class="d-flex gap-2 justify-content-end">
-                    <a href="/guaridas" class="btn btn-outline-light">Cancelar</a>
-                    <button type="submit" class="btn btn-primary px-5 shadow">Guardar Guarida</button>
+                    <a href="/guaridas" class="btn btn-outline-light" th:text="#{msg.guaridaForm.cancel}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-5 shadow" th:text="#{msg.guaridaForm.save}">Guardar Guarida</button>
                 </div>
             </form>
         </div>

@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Lista de Villanos')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.villano.title} + ' - BnBillains')}"></head>
 <body class="d-flex flex-column h-100">
 
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="flex-shrink-0 container" style="margin-top: 100px; margin-bottom: 50px;">
 
-    <!-- Título y Botón Nuevo -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="display-5">Lista de Villanos</h1>
-        <!-- CAMBIO: Botón Nuevo ahora es Morado (btn-primary) -->
-        <a th:href="@{/villanos/new}" class="btn btn-primary btn-lg shadow-sm">
+        <h1 class="display-5" th:text="#{msg.villano.title}">Lista de Villanos</h1>
+        <a th:href="@{/villanos/new}" class="btn btn-primary btn-lg shadow-sm"
+           th:text="#{msg.villano.new}">
             + Nuevo Villano
         </a>
     </div>
 
-    <!-- Alertas -->
     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert"
          style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
         <span th:text="${successMessage}"></span>
@@ -28,48 +26,51 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <!-- Buscador y Filtros -->
     <div class="card shadow-sm mb-4 p-3">
         <form th:action="@{/villanos}" method="get" class="row g-3">
             <div class="col-md-8">
                 <input type="text" name="search" class="form-control"
-                       placeholder="Buscar por nombre o alias..."
+                       th:placeholder="#{msg.villano.searchPlaceholder}"
                        th:value="${search}"
                        style="background-color: #2c2c2c; color: white; border: 1px solid #444;">
             </div>
             <div class="col-md-2">
                 <select name="sort" class="form-select" onchange="this.form.submit()"
                         style="background-color: #2c2c2c; color: white; border: 1px solid #444;">
-                    <option value="" disabled selected>Ordenar por...</option>
-                    <option value="aliasAsc" th:selected="${sort == 'aliasAsc'}">Alias (A-Z)</option>
-                    <option value="aliasDesc" th:selected="${sort == 'aliasDesc'}">Alias (Z-A)</option>
-                    <option value="nameAsc" th:selected="${sort == 'nameAsc'}">Nombre (A-Z)</option>
+                    <option value="" disabled selected th:text="#{msg.sort.placeholder}">Ordenar por...</option>
+                    <option value="aliasAsc" th:selected="${sort == 'aliasAsc'}" th:text="#{msg.sort.aliasAsc}">Alias (A-Z)</option>
+                    <option value="aliasDesc" th:selected="${sort == 'aliasDesc'}" th:text="#{msg.sort.aliasDesc}">Alias (Z-A)</option>
+                    <option value="nameAsc" th:selected="${sort == 'nameAsc'}" th:text="#{msg.sort.nameAsc}">Nombre (A-Z)</option>
                 </select>
             </div>
             <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Buscar</button>
+                <button type="submit" class="btn btn-primary" th:text="#{msg.search.button}">Buscar</button>
             </div>
         </form>
     </div>
 
-    <!-- Tabla de Resultados -->
     <div class="card shadow">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-dark">
                     <tr>
-                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);">ID</th>
-                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);">Alias</th>
-                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);">Nombre Real</th>
-                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);">Carnet</th>
-                        <th scope="col" class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
+                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.villano.id}">ID</th>
+                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.villano.alias}">Alias</th>
+                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.villano.name}">Nombre Real</th>
+                        <th scope="col" style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.villano.carnet}">Carnet</th>
+                        <th scope="col" class="text-center" style="background-color: #000; color: var(--color-logo-light);"
+                            th:text="#{msg.villano.actions}">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:if="${villanos == null or villanos.isEmpty()}">
                         <td colspan="5" class="text-center py-4 text-muted">
-                            <em>No se encontraron villanos registrados.</em>
+                            <em th:text="#{msg.villano.emty}">No se encontraron villanos registrados.</em>
                         </td>
                     </tr>
 
@@ -78,9 +79,9 @@
 
                         <td class="fw-bold"
                             style="color: var(--color-logo-light); font-size: 1.1em;"
-                            th:text="${villano?.alias ?: 'Sin Alias'}">Joker</td>
+                            th:text="${villano?.alias ?: #messages.msg('msg.villano.noAlias')}">Joker</td>
 
-                        <td th:text="${villano?.nombre ?: 'Desconocido'}">Jack Napier</td>
+                        <td th:text="${villano?.nombre ?: #messages.msg('msg.villano.unknown')}">Jack Napier</td>
 
                         <td>
                             <span class="badge" style="background-color: #333; border: 1px solid #555;"
@@ -89,21 +90,21 @@
 
                         <td class="text-center">
                             <div class="btn-group" role="group" th:if="${villano != null}">
-                                <!-- DETALLES: Estilo Outline Villano (Magenta claro) -->
                                 <a th:href="@{/villanos/{id}(id=${villano.id})}"
                                    class="btn btn-sm btn-outline-villain"
-                                   title="Ver Detalles">Detalles</a>
+                                   th:title="#{msg.guarida.details}"
+                                   th:text="#{msg.guarida.details}">Detalles</a>
 
-                                <!-- EDITAR: Estilo Primary (Morado), sin mayúsculas -->
                                 <a th:href="@{/villanos/{id}/edit(id=${villano.id})}"
                                    class="btn btn-sm btn-primary"
-                                   title="Editar">Editar</a>
+                                   th:title="#{msg.villano.edit}"
+                                   th:text="#{msg.villano.edit}">Editar</a>
 
-                                <!-- ELIMINAR: Rojo apagado -->
                                 <a th:href="@{/villanos/delete/{id}(id=${villano.id})}"
                                    class="btn btn-sm btn-dull-danger"
-                                   onclick="return confirm('¿Eliminar este villano permanentemente?');"
-                                   title="Eliminar">Eliminar</a>
+                                   th:onclick="'return confirm(\'' + #{msg.villano.deleteLiar} + '\');'"
+                                   th:title="#{msg.villano.delete}"
+                                   th:text="#{msg.villano.delete}">Eliminar</a>
                             </div>
                         </td>
                     </tr>
@@ -113,25 +114,26 @@
         </div>
     </div>
 
-    <!-- Paginación -->
     <nav th:if="${totalPages > 1}" class="mt-4">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link"
                    style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/villanos(page=${currentPage - 1}, search=${search}, sort=${sort})}">Anterior</a>
+                   th:href="@{/villanos(page=${currentPage - 1}, search=${search}, sort=${sort})}"
+                   th:text="#{msg.pagination.previous}">Anterior</a>
             </li>
 
             <li class="page-item disabled">
                 <span class="page-link"
                       style="background-color: #0f0f10; border-color: #333; color: var(--color-logo-light);"
-                      th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
+                      th:text="#{msg.pagination.page} + ' ' + ${currentPage} + ' ' + #{msg.pagination.of} + ' ' + ${totalPages}"></span>
             </li>
 
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
                 <a class="page-link"
                    style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/villanos(page=${currentPage + 1}, search=${search}, sort=${sort})}">Siguiente</a>
+                   th:href="@{/villanos(page=${currentPage + 1}, search=${search}, sort=${sort})}"
+                   th:text="#{msg.pagination.next}">Siguiente</a>
             </li>
         </ul>
     </nav>

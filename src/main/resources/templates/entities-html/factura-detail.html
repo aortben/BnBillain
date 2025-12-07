@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Factura #' + ${factura.id})}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.factura.title} + ' #' + ${factura.id})}"></head>
 <body style="background-color: #555;">
 
 <style>
@@ -79,8 +79,11 @@
 <div class="invoice-box">
 
     <div class="actions no-print">
-        <a th:href="@{/facturas}" class="btn btn-secondary btn-sm">⬅ Volver al listado</a>
-        <button onclick="window.print()" class="btn btn-danger btn-sm shadow">🖨️ Imprimir / PDF</button>
+        <a th:href="@{/facturas}" class="btn btn-secondary btn-sm"
+           th:text="'⬅ ' + #{msg.guaridaD.comeback}">⬅ Volver al listado</a>
+
+        <button onclick="window.print()" class="btn btn-danger btn-sm shadow"
+                th:text="'🖨️ ' + #{msg.factura.print}">🖨️ Imprimir / PDF</button>
     </div>
 
     <table cellpadding="0" cellspacing="0">
@@ -90,14 +93,17 @@
                     <tr>
                         <td class="title">
                             <h1 style="color: #d9534f; margin: 0;">BnBillain</h1>
-                            <small style="color: #777;">Dominación Mundial S.L.</small>
+                            <small style="color: #777;" th:text="#{msg.factura.slogan}">Dominación Mundial S.L.</small>
                         </td>
                         <td style="text-align: right;">
-                            <strong>Factura #:</strong> <span th:text="${factura.id}">001</span><br>
-                            <strong>Fecha:</strong> <span th:text="${factura.fechaEmision}">2025-01-01</span><br>
-                            <strong>Estado:</strong>
-                            <span th:if="${factura.metodoPago == 'Pendiente'}" style="color: red;">PENDIENTE</span>
-                            <span th:unless="${factura.metodoPago == 'Pendiente'}" style="color: green;">PAGADO</span>
+                            <strong th:text="#{msg.factura.id} + ':'">Factura #:</strong> <span th:text="${factura.id}">001</span><br>
+                            <strong th:text="#{msg.factura.date} + ':'">Fecha:</strong> <span th:text="${factura.fechaEmision}">2025-01-01</span><br>
+                            <strong th:text="#{msg.reserva.estado} + ':'">Estado:</strong>
+
+                            <span th:if="${factura.metodoPago == 'Pendiente'}" style="color: red;"
+                                  th:text="#{msg.factura.status.pending}">PENDIENTE</span>
+                            <span th:unless="${factura.metodoPago == 'Pendiente'}" style="color: green;"
+                                  th:text="#{msg.factura.status.paid}">PAGADO</span>
                         </td>
                     </tr>
                 </table>
@@ -109,16 +115,16 @@
                 <table>
                     <tr>
                         <td>
-                            <strong>EMISOR:</strong><br>
+                            <strong th:text="#{msg.factura.issuer} + ':'">EMISOR:</strong><br>
                             BnBillain Inc.<br>
-                            Monte del Destino, s/n<br>
+                            <span th:text="#{msg.factura.address}">Monte del Destino, s/n</span><br>
                             Mordor, Tierra Media
                         </td>
                         <td style="text-align: right;">
-                            <strong>CLIENTE:</strong><br>
+                            <strong th:text="#{msg.factura.client} + ':'">CLIENTE:</strong><br>
                             <span th:text="${factura.reserva.villano.nombre}">Nombre</span><br>
-                            Alias: <span th:text="${factura.reserva.villano.alias}">Alias</span><br>
-                            ID: <span th:text="${factura.reserva.villano.carnetDeVillano}">V-000</span>
+                            <span th:text="#{msg.villano.alias}">Alias</span>: <span th:text="${factura.reserva.villano.alias}">Alias</span><br>
+                            <span th:text="#{msg.villano.id}">ID</span>: <span th:text="${factura.reserva.villano.carnetDeVillano}">V-000</span>
                         </td>
                     </tr>
                 </table>
@@ -126,17 +132,19 @@
         </tr>
 
         <tr class="heading">
-            <td>Concepto / Guarida</td>
-            <td style="text-align: center;">Método Pago</td>
-            <td style="text-align: right;">Importe</td>
+            <td th:text="#{msg.factura.concept}">Concepto / Guarida</td>
+            <td style="text-align: center;" th:text="#{msg.factura.metod}">Método Pago</td>
+            <td style="text-align: right;" th:text="#{msg.factura.import}">Importe</td>
         </tr>
 
         <tr class="item">
             <td>
-                Alquiler: <strong th:text="${factura.reserva.guarida.nombre}">Volcán</strong><br>
+                <span th:text="#{msg.factura.rent}">Alquiler</span>: <strong th:text="${factura.reserva.guarida.nombre}">Volcán</strong><br>
                 <small style="color: #666;">
-                    Del <span th:text="${factura.reserva.fechaInicio}"></span>
-                    al <span th:text="${factura.reserva.fechaFin}"></span>
+                    <span th:text="#{msg.factura.from}">Del</span>
+                    <span th:text="${factura.reserva.fechaInicio}"></span>
+                    <span th:text="#{msg.factura.to}">al</span>
+                    <span th:text="${factura.reserva.fechaFin}"></span>
                 </small>
             </td>
             <td style="text-align: center;" th:text="${factura.metodoPago}">Oro</td>
@@ -144,14 +152,16 @@
         </tr>
 
         <tr class="item">
-            <td>Impuestos Malignos (21%)</td>
+            <td>
+                <span th:text="#{msg.factura.taxes}">Impuestos Malignos</span> (21%)
+            </td>
             <td></td>
             <td style="text-align: right;" th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'">21.00 €</td>
         </tr>
 
         <tr class="total">
             <td></td>
-            <td style="text-align: right;">TOTAL A PAGAR:</td>
+            <td style="text-align: right;" th:text="#{msg.factura.totalPay} + ':'">TOTAL A PAGAR:</td>
             <td style="text-align: right;"
                 th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'">
                 121.00 €
@@ -160,7 +170,7 @@
     </table>
 
     <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #aaa; border-top: 1px dashed #ccc; padding-top: 10px;">
-        <p>Gracias por confiar en nuestros servicios. No se aceptan devoluciones si el héroe destruye la guarida.</p>
+        <p th:text="#{msg.factura.footer.disclaimer}">Gracias por confiar en nuestros servicios. No se aceptan devoluciones si el héroe destruye la guarida.</p>
     </div>
 </div>
 

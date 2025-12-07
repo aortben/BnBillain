@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Formulario Reserva - BnBillains')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.reservaForm.tabTitle} + ' - BnBillains')}"></head>
 <body class="d-flex flex-column h-100">
 
 <header th:replace="~{fragments/header :: header}"></header>
@@ -9,7 +9,7 @@
 
     <div class="card shadow col-lg-8 mx-auto">
         <div class="card-header text-center">
-            <h3 class="mb-0">Gestión de Reserva</h3>
+            <h3 class="mb-0" th:text="#{msg.reservaForm.title}">Gestión de Reserva</h3>
         </div>
 
         <div class="card-body p-4">
@@ -23,18 +23,18 @@
                      th:text="${errorMessage}"></div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold text-white">Cliente (Villano)</label>
+                    <label class="form-label fw-bold text-white" th:text="#{msg.reservaForm.client}">Cliente (Villano)</label>
                     <select class="form-select" th:field="*{villano}" required>
-                        <option value="">-- Seleccione un villano --</option>
+                        <option value="" th:text="#{msg.reservaForm.selectClient}">-- Seleccione un villano --</option>
                         <option th:each="v : ${allVillanos}" th:value="${v.id}"
                                 th:text="${v.alias} + ' (' + ${v.nombre} + ')'"></option>
                     </select>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold text-white">Guarida a Reservar</label>
+                    <label class="form-label fw-bold text-white" th:text="#{msg.reservaForm.lair}">Guarida a Reservar</label>
                     <select class="form-select" th:field="*{guarida}" required>
-                        <option value="">-- Seleccione una guarida --</option>
+                        <option value="" th:text="#{msg.reservaForm.selectLair}">-- Seleccione una guarida --</option>
                         <option th:each="g : ${allGuaridas}" th:value="${g.id}"
                                 th:text="${g.nombre} + ' - ' + ${g.precioNoche} + '€/noche'"></option>
                     </select>
@@ -42,12 +42,12 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-white">Fecha Entrada</label>
+                        <label class="form-label fw-bold text-white" th:text="#{msg.reservaForm.checkIn}">Fecha Entrada</label>
                         <input type="date" class="form-control" th:field="*{fechaInicio}" required
                                style="color-scheme: dark;">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-white">Fecha Salida</label>
+                        <label class="form-label fw-bold text-white" th:text="#{msg.reservaForm.checkOut}">Fecha Salida</label>
                         <input type="date" class="form-control" th:field="*{fechaFin}" required
                                style="color-scheme: dark;">
                     </div>
@@ -57,7 +57,8 @@
                     <input class="form-check-input" type="checkbox" th:field="*{estado}"
                            style="background-color: #121212; border-color: #666;">
                     <label class="form-check-label text-white">
-                        Reserva Confirmada <span class="text-muted small">(Pago procesado)</span>
+                        <span th:text="#{msg.reservaForm.confirmed}">Reserva Confirmada</span>
+                        <span class="text-muted small" th:text="#{msg.reservaForm.paymentProcessed}">(Pago procesado)</span>
                     </label>
                 </div>
 
@@ -65,16 +66,18 @@
                      style="background-color: rgba(46, 0, 62, 0.3); border-color: var(--color-logo-light) !important;">
                     <span class="fs-4 me-3">📜</span>
                     <div class="small text-light">
-                        <strong style="color: var(--color-logo-light);">Aviso del sistema:</strong><br>
-                        Al guardar esta operación, nuestros minions generarán o actualizarán automáticamente la factura correspondiente.
+                        <strong style="color: var(--color-logo-light);" th:text="#{msg.reservaForm.systemNotice}">Aviso del sistema:</strong><br>
+                        <span th:text="#{msg.reservaForm.minionsMsg}">
+                            Al guardar esta operación, nuestros minions generarán o actualizarán automáticamente la factura correspondiente.
+                        </span>
                     </div>
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg shadow">
+                    <button type="submit" class="btn btn-primary btn-lg shadow" th:text="#{msg.reservaForm.btnConfirm}">
                         Confirmar Reserva
                     </button>
-                    <a th:href="@{/reservas}" class="btn btn-outline-light btn-sm mt-2">
+                    <a th:href="@{/reservas}" class="btn btn-outline-light btn-sm mt-2" th:text="#{msg.reservaForm.btnCancel}">
                         Cancelar y Volver
                     </a>
                 </div>

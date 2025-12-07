@@ -1,30 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('BnBillains - Home')"></head>
+<head th:replace="~{fragments/head :: head (#{msg.header.home} + ' - BnBillains')}"></head>
 <body class="d-flex flex-column h-100">
 
-<!-- ... existing code ... -->
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
-<!-- Eliminamos margin-top: 3%; y usamos flex-grow-1 para que ocupe la altura disponible y centre verticalmente -->
 <main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center">
     <div class="container">
         <div class="text-center">
 
-            <!-- LOGO: Usa la clase .home-logo definida en CSS -->
             <img th:src="@{/images/logo.png}"
-                 alt="Logo BnBillains"
+                 th:alt="#{msg.home.logoAlt}"
                  class="img-fluid home-logo mb-3">
 
-            <!-- TEXTO: He quitado el margin-bottom: 40px y puesto mb-3 (espacio más pequeño) -->
             <p class="lead mb-3 text-white" style="font-size: 1.1em; color: var(--color-text-muted);">
-                Bienvenido a BnBillains, el lugar ideal para villanos y sus guaridas secretas. <br>
-                ¡Ahora con un 65% más de niebla tenebrosa!
+                <span th:text="#{msg.home.welcome}">Bienvenido...</span> <br>
+                <span th:text="#{msg.home.fog}">¡Ahora con niebla!</span>
             </p>
 
-            <!-- CARRUSEL -->
             <div id="carouselGuaridas" class="carousel slide mb-4" data-bs-ride="carousel">
-                <!-- ... existing code ... -->
                 <div class="carousel-indicators">
                     <button type="button" data-bs-target="#carouselGuaridas" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                     <button type="button" data-bs-target="#carouselGuaridas" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -34,7 +28,6 @@
                 </div>
 
                 <div class="carousel-inner">
-                    <!-- He quitado los estilos inline y añadido la clase .carousel-img-villano -->
                     <div class="carousel-item active">
                         <img th:src="@{/images/guarida_castillo_bowser.jpg}" class="d-block carousel-img-villano" alt="Guarida 1">
                     </div>
@@ -66,6 +59,6 @@
     </div>
 </main>
 
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
