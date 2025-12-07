@@ -18,7 +18,7 @@
         <div class="card-body">
             <form th:action="@{/reservas}" method="get" class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold text-uppercase text-muted">Filtrar por Cliente</label>
+                    <label class="form-label small fw-bold text-uppercase text-white">Filtrar por Cliente</label>
                     <select name="villanoId" class="form-select">
                         <option value="">-- Todos los Villanos --</option>
                         <option th:each="v : ${allVillanos}" th:value="${v.id}" th:text="${v.alias}"
@@ -26,7 +26,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold text-uppercase text-muted">Estado</label>
+                    <label class="form-label small fw-bold text-uppercase text-white">Estado</label>
                     <select name="estado" class="form-select">
                         <option value="">-- Todos --</option>
                         <option value="true" th:selected="${estado == true}">Confirmada</option>
@@ -74,13 +74,13 @@
                     <tbody>
 
                     <tr th:if="${#lists.isEmpty(reservas)}">
-                        <td colspan="7" class="text-center p-4 text-muted">
+                        <td colspan="7" class="text-center p-4 text-white">
                             <em>No hay reservas que coincidan con los criterios.</em>
                         </td>
                     </tr>
 
                     <tr th:each="r : ${reservas}">
-                        <td th:text="${r.id}" class="text-muted">1</td>
+                        <td th:text="${r.id}" class="text-white">1</td>
 
                         <td>
                             <div class="fw-bold" style="color: #e0e0e0;" th:text="${r.fechaInicio}"></div>

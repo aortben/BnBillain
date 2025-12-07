@@ -57,7 +57,7 @@
 
                     <div class="mt-5">
                         <h5 class="text-secondary mb-3"><i class="fas fa-concierge-bell me-2"></i>Comodidades Malignas</h5>
-                        <div th:if="${guarida.comodidades.isEmpty()}" class="text-muted fst-italic">Esta guarida es austera (sin comodidades).</div>
+                        <div th:if="${guarida.comodidades.isEmpty()}" class="text-white fst-italic">Esta guarida es austera (sin comodidades).</div>
                         <div th:unless="${guarida.comodidades.isEmpty()}" class="d-flex flex-wrap gap-2">
                             <span th:each="c : ${guarida.comodidades}"
                                   class="badge border border-secondary p-2 d-flex align-items-center"
@@ -134,7 +134,7 @@
                                 <div>
                                     <h5 class="card-title mb-0 text-warning"
                                         th:text="${resena.villano != null ? resena.villano.alias : 'Anónimo'}">Villano</h5>
-                                    <small class="text-muted" th:text="'Publicado el: ' + ${resena.fechaPublicacion}">Fecha</small>
+                                    <small class="text-white" th:text="'Publicado el: ' + ${resena.fechaPublicacion}">Fecha</small>
                                 </div>
                                 <span class="badge bg-warning text-dark fs-6" th:text="${resena.puntuacion} + ' ★'">5 ★</span>
                             </div>

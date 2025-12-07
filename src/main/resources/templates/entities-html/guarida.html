@@ -57,7 +57,7 @@
 
             <!-- Ordenación (Fila inferior) -->
             <div class="col-12 mt-3 d-flex justify-content-end align-items-center gap-3 border-top border-secondary pt-3">
-                <span class="text-muted small">Ordenar resultados por:</span>
+                <span class="text-white small">Ordenar resultados por:</span>
                 <div class="btn-group" role="group">
                     <a th:href="@{/guaridas(sort='priceAsc', search=${search}, minPrice=${minPrice}, maxPrice=${maxPrice})}"
                        class="btn btn-sm btn-outline-secondary"
@@ -77,8 +77,8 @@
 
     <!-- MENSAJE SI NO HAY RESULTADOS -->
     <div th:if="${#lists.isEmpty(guaridas)}" class="text-center py-5">
-        <h3 class="text-muted">No se encontraron guaridas disponibles.</h3>
-        <p class="text-muted">Quizás los héroes las han desmantelado todas...</p>
+        <h3 class="text-white">No se encontraron guaridas disponibles.</h3>
+        <p class="text-white">Quizás los héroes las han desmantelado todas...</p>
     </div>
 
     <!-- GRID DE TARJETAS (ESTILO INMOBILIARIA) -->
@@ -99,14 +99,14 @@
                         <div class="position-absolute bottom-0 end-0 bg-dark text-white px-3 py-1 m-2 rounded shadow-sm border border-secondary">
                             <span class="fw-bold fs-5" style="color: var(--color-logo-light);"
                                   th:text="${#numbers.formatDecimal(guarida.precioNoche, 1, 0)} + ' €'">500 €</span>
-                            <span class="small text-muted">/noche</span>
+                            <span class="small text-white">/noche</span>
                         </div>
                     </div>
 
                     <div class="card-body">
                         <!-- Título y Ubicación -->
                         <h4 class="card-title text-white mb-1" th:text="${guarida.nombre}">Volcán del Mal</h4>
-                        <p class="card-text text-muted mb-3">
+                        <p class="card-text text-white mb-3">
                             <span style="color: #a0a0a0;"><span th:text="${guarida.ubicacion}">Isla Calavera</span></span>
                         </p>
 
