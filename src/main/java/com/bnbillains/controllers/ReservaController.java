@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +24,8 @@ public class ReservaController {
     private static final Logger logger = LoggerFactory.getLogger(ReservaController.class);
 
     private final ReservaService reservaService;
-    private final VillanoRepository villanoRepository; // Para llenar el select de villanos
-    private final GuaridaRepository guaridaRepository; // Para llenar el select de guaridas
+    private final VillanoRepository villanoRepository;
+    private final GuaridaRepository guaridaRepository;
 
     public ReservaController(ReservaService reservaService,
                              VillanoRepository villanoRepository,
@@ -36,7 +35,6 @@ public class ReservaController {
         this.guaridaRepository = guaridaRepository;
     }
 
-    // LISTAR (Igual que antes)
     @GetMapping("/reservas")
     public String listar(@RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) Long villanoId,
@@ -54,7 +52,6 @@ public class ReservaController {
             resultados = reservaService.obtenerTodas(sortObj);
         }
 
-        // Paginación manual...
         int pageSize = 5;
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -67,14 +64,13 @@ public class ReservaController {
         model.addAttribute("reservas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        model.addAttribute("allVillanos", villanoRepository.findAll()); // Para el filtro
+        model.addAttribute("allVillanos", villanoRepository.findAll());
         model.addAttribute("villanoId", villanoId);
         model.addAttribute("estado", estado);
         model.addAttribute("sort", sort);
         return "entities-html/reserva";
     }
 
-    // FORMULARIO NUEVO
     @GetMapping("/reservas/new")
     public String formularioNuevo(Model model) {
         model.addAttribute("reserva", new Reserva());
@@ -83,7 +79,6 @@ public class ReservaController {
         return "forms-html/reserva-form";
     }
 
-    // FORMULARIO EDICIÓN
     @GetMapping("/reservas/{id}/edit")
     public String formularioEditar(@PathVariable Long id, Model model) {
         Optional<Reserva> reserva = reservaService.obtenerPorId(id);
@@ -96,7 +91,6 @@ public class ReservaController {
         return "redirect:/reservas";
     }
 
-    // GUARDAR (CREA RESERVA + FACTURA)
     @PostMapping("/reservas/save")
     public String guardar(@Valid @ModelAttribute Reserva reserva,
                           BindingResult bindingResult,
@@ -110,16 +104,16 @@ public class ReservaController {
         }
 
         try {
-            reservaService.guardar(reserva); // El servicio se encarga de todo
+            reservaService.guardar(reserva);
             redirectAttributes.addFlashAttribute("successMessage", "Reserva confirmada y Factura generada.");
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) { // CAMBIO: Capturamos cualquier error para verlo en pantalla
+            e.printStackTrace(); // Imprime error en consola
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return "redirect:/reservas/new";
         }
         return "redirect:/reservas";
     }
 
-    // ACTUALIZAR (RECALCULA FACTURA)
     @PostMapping("/reservas/update")
     public String actualizar(@Valid @ModelAttribute Reserva reserva,
                              BindingResult bindingResult,
@@ -135,8 +129,9 @@ public class ReservaController {
         try {
             reservaService.actualizar(reserva.getId(), reserva);
             redirectAttributes.addFlashAttribute("successMessage", "Reserva y Factura actualizadas.");
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+            return "redirect:/reservas/" + reserva.getId() + "/edit";
         }
         return "redirect:/reservas";
     }
@@ -159,34 +154,5 @@ public class ReservaController {
             case "dateDesc" -> Sort.by("fechaInicio").descending();
             default -> Sort.by("id").descending();
         };
-    }
-
-
-    // -------------------------------------------------------------
-    // API JSON PARA EL CALENDARIO (AJAX)
-    // -------------------------------------------------------------
-    @GetMapping("/api/reservas/ocupadas/{guaridaId}")
-    @ResponseBody // Esto dice: "No busques un HTML, devuelve los datos tal cual"
-    public List<String> obtenerFechasOcupadas(@PathVariable Long guaridaId) {
-        // 1. Buscamos todas las reservas de esa guarida
-        // Nota: Usamos null en sort porque no nos importa el orden para pintar
-        List<Reserva> reservas = reservaService.buscarPorGuarida(guaridaId, null);
-
-        // 2. Extraemos todos los días ocupados en una lista plana
-        java.util.List<String> fechasOcupadas = new java.util.ArrayList<>();
-
-        for (Reserva r : reservas) {
-            LocalDate start = r.getFechaInicio();
-            LocalDate end = r.getFechaFin();
-
-            // Bucle para añadir cada día del intervalo a la lista negra
-            // stream()... o un while sencillo:
-            while (!start.isAfter(end)) {
-                fechasOcupadas.add(start.toString()); // Formato "YYYY-MM-DD"
-                start = start.plusDays(1);
-            }
-        }
-
-        return fechasOcupadas;
     }
 }

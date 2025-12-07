@@ -1,88 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head ('Formulario Reserva')}"></head>
-<body class="d-flex flex-column h-100">
+<body class="d-flex flex-column h-100 bg-light">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center container"
-      style="margin-top: 100px; margin-bottom: 50px;">
-
-    <div class="card shadow col-md-6 border-secondary">
-        <!-- Cabecera: Estilo global -->
-        <div class="card-header text-center">
-            <h2 class="mb-0 display-6" th:text="${reserva.id == null ? 'Nueva Reserva' : 'Editar Reserva'}"></h2>
+<main class="container mt-5">
+    <div class="card shadow col-md-8 mx-auto">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Gestión de Reserva</h3>
         </div>
-
-        <div class="card-body p-4">
-
-            <!-- Alertas de Error (Rojo Oscuro) -->
-            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
-                 style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
-                <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-
-            <form th:action="@{${reserva.id == null} ? '/reservas/save' : '/reservas/update'}"
-                  th:object="${reserva}"
-                  method="post">
-
+        <div class="card-body">
+            <form th:action="@{${reserva.id == null} ? '/reservas/save' : '/reservas/update'}" th:object="${reserva}" method="post">
                 <input type="hidden" th:field="*{id}">
 
-                <!-- Selección de Cliente (Villano) -->
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
                 <div class="mb-3">
-                    <label class="form-label text-light">Cliente (Villano):</label>
+                    <label class="form-label">Cliente (Villano)</label>
                     <select class="form-select" th:field="*{villano}" required>
-                        <option value="" disabled selected>-- Seleccione un villano --</option>
+                        <option value="">Seleccione un villano...</option>
                         <option th:each="v : ${allVillanos}" th:value="${v.id}"
                                 th:text="${v.alias} + ' (' + ${v.nombre} + ')'"></option>
                     </select>
                 </div>
 
-                <!-- Selección de Guarida -->
                 <div class="mb-3">
-                    <label class="form-label text-light">Guarida a Reservar:</label>
+                    <label class="form-label">Guarida a Reservar</label>
                     <select class="form-select" th:field="*{guarida}" required>
-                        <option value="" disabled selected>-- Seleccione una guarida --</option>
+                        <option value="">Seleccione una guarida...</option>
                         <option th:each="g : ${allGuaridas}" th:value="${g.id}"
                                 th:text="${g.nombre} + ' - ' + ${g.precioNoche} + '€/noche'"></option>
                     </select>
                 </div>
 
-                <!-- Fechas -->
-                <div class="row mb-4">
+                <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label text-light">Fecha Entrada:</label>
+                        <label class="form-label">Fecha Entrada</label>
                         <input type="date" class="form-control" th:field="*{fechaInicio}" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-light">Fecha Salida:</label>
+                        <label class="form-label">Fecha Salida</label>
                         <input type="date" class="form-control" th:field="*{fechaFin}" required>
                     </div>
                 </div>
 
-                <!-- Checkbox de Estado -->
-                <div class="form-check mb-4 p-3 rounded" style="background-color: #1a1a1d; border: 1px solid #333;">
-                    <input class="form-check-input" type="checkbox" th:field="*{estado}"
-                           style="background-color: #000; border-color: #555;">
-                    <label class="form-check-label text-light fw-bold ms-2">
-                        Reserva Confirmada (Pagada)
-                    </label>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" th:field="*{estado}">
+                    <label class="form-check-label">Reserva Confirmada (Pagada)</label>
                 </div>
 
-                <!-- Info sobre Facturación (Azul Nocturno) -->
-                <div class="alert mb-4 d-flex align-items-center" role="alert"
-                     style="background-color: #0c2e4e; color: #d0e1f5; border: 1px solid #1a4a75;">
-                    <span class="me-2 fs-4">ℹ️</span>
-                    <div>
-                        Al guardar, se generará o actualizará automáticamente la <strong>factura maligna</strong> correspondiente.
-                    </div>
+                <div class="alert alert-info">
+                    ℹ️ Al guardar, se generará/actualizará automáticamente la factura correspondiente.
                 </div>
 
-                <!-- Botones -->
-                <div class="d-flex gap-2 justify-content-end">
-                    <a href="/reservas" class="btn btn-outline-light">Cancelar</a>
-                    <button type="submit" class="btn btn-primary px-4">Confirmar Reserva</button>
-                </div>
+                <button type="submit" class="btn btn-primary w-100">Confirmar Reserva</button>
             </form>
         </div>
     </div>

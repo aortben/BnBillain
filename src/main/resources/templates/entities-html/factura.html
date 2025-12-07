@@ -1,111 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Facturas - BnBillains')}"></head>
-<body class="d-flex flex-column h-100">
-
+<head th:replace="~{fragments/head :: head ('Facturas')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0 flex-grow-1 container" style="margin-top: 100px; margin-bottom: 50px;">
-
-    <!-- Título y Botón Nuevo -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="display-5">Gestión de Facturas</h2>
-        <!-- Botón Nuevo: Morado -->
-        <a th:href="@{/factura/new}" class="btn btn-primary btn-lg shadow-sm">
-            + Nueva Factura
-        </a>
+<main class="container mt-4">
+    <div class="mb-4">
+        <h1>Gestión de Facturas</h1>
     </div>
 
-    <!-- Tabla de Resultados -->
-    <div class="card shadow">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-dark">
-                    <tr>
-                        <th style="background-color: #000; color: var(--color-logo-light);">ID</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Fecha Emisión</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Importe Base</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Impuestos Malignos</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Total</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Método de Pago</th>
-                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    <!-- Mensaje si vacía -->
-                    <tr th:if="${facturas.isEmpty()}">
-                        <td colspan="7" class="text-center p-4 text-muted">
-                            <em>No hay facturas emitidas por el Departamento de Contabilidad del Mal.</em>
-                        </td>
-                    </tr>
-
-                    <tr th:each="factura : ${facturas}">
-                        <td th:text="${factura.id}">1</td>
-
-                        <td th:text="${factura.fechaEmision}">01/01/2024</td>
-
-                        <!-- Importe Base -->
-                        <td class="fw-bold text-white"
-                            th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'">100.00 €</td>
-
-                        <!-- Impuestos Malignos (Rojo sutil) -->
-                        <td style="color: #a71d2a;"
-                            th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'">21.00 €</td>
-
-                        <!-- Total (Resaltado) -->
-                        <td class="fw-bold text-white" style="font-size: 1.1em;"
-                            th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'">121.00 €</td>
-
-                        <td>
-                            <span class="badge" style="background-color: #333; border: 1px solid #555;"
-                                  th:text="${factura.metodoPago != null ? factura.metodoPago : 'N/A'}">Lingotes de Oro</span>
-                        </td>
-
-                        <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <!-- Editar: Morado -->
-                                <a th:href="@{/factura/{id}/edit(id=${factura.id})}"
-                                   class="btn btn-sm btn-primary">Editar</a>
-
-                                <!-- Eliminar: Rojo Apagado -->
-                                <a th:href="@{/factura/{id}/delete(id=${factura.id})}"
-                                   class="btn btn-sm btn-dull-danger"
-                                   onclick="return confirm('¿Eliminar esta factura? Esta acción no se puede deshacer.');">Eliminar</a>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="table-responsive bg-white shadow-sm rounded">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th class="text-end">Importe</th>
+                <th class="text-end">Impuestos</th>
+                <th class="text-end fw-bold">TOTAL</th>
+                <th>Método</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="factura : ${facturas}">
+                <td th:text="${factura.id}">1</td>
+                <td th:text="${factura.fechaEmision}">2025-01-01</td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'"></td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'"></td>
+                <td class="text-end fw-bold text-success" th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'"></td>
+                <td><span class="badge bg-secondary" th:text="${factura.metodoPago}"></span></td>
+                <td class="text-center">
+                    <div class="btn-group">
+                        <a th:href="@{/facturas/{id}/edit(id=${factura.id})}" class="btn btn-sm btn-warning">✏️</a>
+                        <a th:href="@{/facturas/{id}/verDetalle(id=${factura.id})}" class="btn btn-sm btn-info text-white" target="_blank">📄 PDF</a>
+                        <a th:href="@{/facturas/delete/{id}(id=${factura.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?');">🗑️</a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <nav th:if="${totalPages != null and totalPages > 1}" class="mt-4">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a class="page-link"
-                   style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/facturas(page=${currentPage - 1})}">Anterior</a>
-            </li>
-
-            <li class="page-item disabled">
-                <span class="page-link"
-                      style="background-color: #0f0f10; border-color: #333; color: var(--color-logo-light);"
-                      th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
-            </li>
-
-            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a class="page-link"
-                   style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
-                   th:href="@{/facturas(page=${currentPage + 1})}">Siguiente</a>
-            </li>
-        </ul>
-    </nav>
 </main>
-
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
 </body>
 </html>
