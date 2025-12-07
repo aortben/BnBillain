@@ -7,109 +7,134 @@
 
 <main class="container" style="margin-top: 100px; margin-bottom: 50px;">
 
-    <!-- Título y Botón Nuevo -->
+    <!-- Cabecera -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="display-5">Catálogo de Guaridas</h2>
-        <!-- Botón Nuevo: Morado -->
-        <a th:href="@{/guaridas/new}" class="btn btn-primary btn-lg shadow-sm">+ Nueva Guarida</a>
+        <div>
+            <h2 class="display-5 mb-0">Catálogo de Guaridas</h2>
+            <p class="text-white mt-1">Encuentra el lugar perfecto para tu próximo plan malvado.</p>
+        </div>
+        <a th:href="@{/guaridas/new}" class="btn btn-primary btn-lg shadow-sm">
+            <span class="fs-5">+</span> Nueva Guarida
+        </a>
     </div>
 
-    <!-- Buscador y Filtros (Tarjeta oscura) -->
-    <div class="card shadow-sm mb-4 p-3">
-        <form th:action="@{/guaridas}" method="get" class="row g-2">
-            <div class="col-md-6">
-                <input type="text" name="search" class="form-control" placeholder="Buscar por Nombre..." th:value="${search}">
+    <!-- Buscador y Filtros (Restaurado y Estilizado) -->
+    <div class="card shadow-sm mb-5 p-4 border-secondary" style="background-color: #1a1a1d;">
+        <h5 class="card-title text-white mb-3" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Filtrar Propiedades</h5>
+
+        <form th:action="@{/guaridas}" method="get" class="row g-3">
+            <!-- Campo de Búsqueda -->
+            <div class="col-md-4">
+                <label for="search" class="form-label text-light small">Nombre o Ubicación</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-muted">🔍</span>
+                    <input type="text" id="search" name="search" class="form-control bg-dark border-secondary text-light"
+                           placeholder="Ej. Volcán..." th:value="${search}">
+                </div>
             </div>
+
+            <!-- Precio Mínimo -->
             <div class="col-md-2">
-                <input type="number" name="minPrice" class="form-control" placeholder="Precio mín." th:value="${minPrice}" step="0.01">
+                <label for="minPrice" class="form-label text-light small">Precio Mín (€)</label>
+                <input type="number" id="minPrice" name="minPrice" class="form-control bg-dark border-secondary text-light"
+                       placeholder="0" th:value="${minPrice}" step="0.01">
             </div>
+
+            <!-- Precio Máximo -->
             <div class="col-md-2">
-                <input type="number" name="maxPrice" class="form-control" placeholder="Precio máx." th:value="${maxPrice}" step="0.01">
+                <label for="maxPrice" class="form-label text-light small">Precio Máx (€)</label>
+                <input type="number" id="maxPrice" name="maxPrice" class="form-control bg-dark border-secondary text-light"
+                       placeholder="Max" th:value="${maxPrice}" step="0.01">
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+
+            <!-- Botones de Acción -->
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
             </div>
-            <div class="col-md-12 mt-2 text-end">
-                <!-- Botón Limpiar: Estilo outline claro para que resalte sobre oscuro -->
-                <a th:href="@{/guaridas}" class="btn btn-sm btn-outline-light">Limpiar filtros</a>
+            <div class="col-md-2 d-flex align-items-end">
+                <a th:href="@{/guaridas}" class="btn btn-outline-light w-100">Limpiar</a>
+            </div>
+
+            <!-- Ordenación (Fila inferior) -->
+            <div class="col-12 mt-3 d-flex justify-content-end align-items-center gap-3 border-top border-secondary pt-3">
+                <span class="text-muted small">Ordenar resultados por:</span>
+                <div class="btn-group" role="group">
+                    <a th:href="@{/guaridas(sort='priceAsc', search=${search}, minPrice=${minPrice}, maxPrice=${maxPrice})}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${sort == 'priceAsc'} ? 'active'">Precio Asc ⬆️</a>
+
+                    <a th:href="@{/guaridas(sort='priceDesc', search=${search}, minPrice=${minPrice}, maxPrice=${maxPrice})}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${sort == 'priceDesc'} ? 'active'">Precio Desc ⬇️</a>
+
+                    <a th:href="@{/guaridas(sort='nameAsc', search=${search}, minPrice=${minPrice}, maxPrice=${maxPrice})}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${sort == 'nameAsc'} ? 'active'">Nombre (A-Z)</a>
+                </div>
             </div>
         </form>
     </div>
 
-    <!-- Tabla de Resultados -->
-    <div class="card shadow">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-dark">
-                    <tr>
-                        <!-- Cabeceras con estilo negro y texto magenta -->
-                        <th style="background-color: #000; color: var(--color-logo-light);">
-                            <a class="text-decoration-none"
-                               style="color: var(--color-logo-light);"
-                               th:href="@{/guaridas(sort='nameAsc', search=${search})}">Nombre ↕</a>
-                        </th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">
-                            <a class="text-decoration-none"
-                               style="color: var(--color-logo-light);"
-                               th:href="@{/guaridas(sort='priceAsc', search=${search})}">Precio ↕</a>
-                        </th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Ubicación</th>
-                        <th style="background-color: #000; color: var(--color-logo-light);">Imagen</th>
-                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${#lists.isEmpty(guaridas)}">
-                        <td colspan="5" class="text-center p-4 text-muted">
-                            <em>No hay guaridas registradas en este momento.</em>
-                        </td>
-                    </tr>
+    <!-- MENSAJE SI NO HAY RESULTADOS -->
+    <div th:if="${#lists.isEmpty(guaridas)}" class="text-center py-5">
+        <h3 class="text-muted">No se encontraron guaridas disponibles.</h3>
+        <p class="text-muted">Quizás los héroes las han desmantelado todas...</p>
+    </div>
 
-                    <tr th:each="guarida : ${guaridas}">
-                        <!-- Nombre con un poco de énfasis -->
-                        <td class="fw-bold" th:text="${guarida.nombre}">Guarida</td>
+    <!-- GRID DE TARJETAS (ESTILO INMOBILIARIA) -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
-                        <!-- Precio con color acento sutil -->
-                        <td th:text="${guarida.precioNoche} + '€/noche'" style="color: #ccc;">100€/noche</td>
+        <tr th:each="guarida : ${guaridas}"> <!-- Iteramos aquí, pero generamos COLUMNAS -->
+            <div class="col">
+                <div class="card h-100 shadow border-secondary hover-effect">
 
-                        <td th:text="${guarida.ubicacion}">Ubicación</td>
+                    <!-- IMAGEN GRANDE (Top) -->
+                    <div class="position-relative">
+                        <img th:src="@{${guarida.pathImagen}}"
+                             class="card-img-top"
+                             alt="Foto Guarida"
+                             style="height: 220px; object-fit: cover; border-bottom: 1px solid #333;">
 
-                        <td>
-                            <!-- Imagen con borde sutil -->
-                            <img alt="Imagen de la Guarida"
-                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 1px solid #444;"
-                                 th:if="${guarida.imagen != null}"
-                                 th:src="@{'/uploads/' + ${guarida.imagen}}"/>
-                            <span th:if="${guarida.imagen == null}" class="badge bg-secondary">Sin imagen</span>
-                        </td>
+                        <!-- Badge de Precio flotante -->
+                        <div class="position-absolute bottom-0 end-0 bg-dark text-white px-3 py-1 m-2 rounded shadow-sm border border-secondary">
+                            <span class="fw-bold fs-5" style="color: var(--color-logo-light);"
+                                  th:text="${#numbers.formatDecimal(guarida.precioNoche, 1, 0)} + ' €'">500 €</span>
+                            <span class="small text-muted">/noche</span>
+                        </div>
+                    </div>
 
-                        <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <!-- Detalles: Outline Villain -->
-                                <a th:href="@{/guaridas/{id}(id=${guarida.id})}"
-                                   class="btn btn-sm btn-outline-villain"
-                                   title="Ver Detalle">Detalles</a>
+                    <div class="card-body">
+                        <!-- Título y Ubicación -->
+                        <h4 class="card-title text-white mb-1" th:text="${guarida.nombre}">Volcán del Mal</h4>
+                        <p class="card-text text-muted mb-3">
+                            <span style="color: #a0a0a0;"><span th:text="${guarida.ubicacion}">Isla Calavera</span></span>
+                        </p>
 
-                                <!-- Editar: Morado -->
-                                <a th:href="@{/guaridas/{id}/edit(id=${guarida.id})}"
-                                   class="btn btn-sm btn-primary">Editar</a>
+                        <!-- Descripción corta (truncada) -->
+                        <p class="card-text text-light small"
+                           th:text="${guarida.descripcion != null and guarida.descripcion.length() > 80 ? guarida.descripcion.substring(0, 80) + '...' : guarida.descripcion}">
+                            Descripción breve de la propiedad...
+                        </p>
+                    </div>
 
-                                <!-- Eliminar: Rojo Apagado -->
-                                <a th:href="@{/guaridas/delete/{id}(id=${guarida.id})}"
-                                   class="btn btn-sm btn-dull-danger"
-                                   onclick="return confirm('¿Eliminar guarida?');">Eliminar</a>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <!-- Pie con Botones -->
+                    <div class="card-footer bg-transparent border-top border-secondary d-flex justify-content-between align-items-center">
+                        <a th:href="@{/guaridas/{id}(id=${guarida.id})}" class="btn btn-sm btn-outline-villain flex-grow-1 me-2">Ver Detalles</a>
+
+                        <div class="btn-group">
+                            <a th:href="@{/guaridas/{id}/edit(id=${guarida.id})}" class="btn btn-sm btn-outline-light" title="Editar">Editar</a>
+                            <a th:href="@{/guaridas/delete/{id}(id=${guarida.id})}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('¿Eliminar esta propiedad?');" title="Eliminar">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </tr>
     </div>
 
     <!-- Paginación Oscura -->
-    <nav class="mt-4" th:if="${totalPages > 1}">
+    <nav class="mt-5" th:if="${totalPages > 1}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link"
@@ -133,5 +158,18 @@
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- Estilo extra para efecto hover en las tarjetas -->
+<style>
+    .hover-effect {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(122, 0, 75, 0.3) !important; /* Resplandor morado */
+        border-color: var(--color-logo-light) !important;
+    }
+</style>
+
 </body>
 </html>

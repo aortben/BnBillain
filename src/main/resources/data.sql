@@ -40,16 +40,16 @@ INSERT INTO villano (nombre, alias, carne_villano, email) VALUES
 
 -- 4. GUARIDAS
 INSERT INTO guarida (nombre, descripcion, ubicacion, precio_noche, imagen, sala_secreta_id) VALUES
-('Volcán del Pacífico', 'Acogedor volcán activo. Ideal para planes que requieren magma.', 'Isla Calavera', 500.00, 'volcan.jpg', 1),
-('Ático Torre Oscura', 'Vistas panorámicas a la ciudad que planeas destruir.', 'Gotham City', 1200.00, 'torre.jpg', 2),
+('Castillo de Bowser', 'En acogedor volcán activo. Ideal para planes que requieren magma.', 'Reino Champiñon', 500.00, 'guarida_castillo_bowser.jpg', 1),
+('Ático Torre Oscura', 'Vistas panorámicas a la ciudad que planeas destruir.', 'Area de los tres estados', 1200.00, 'edificio_doof.jpg', 2),
 ('Submarino Nuclear', 'Totalmente indetectable. Incluye torpedos.', 'Fosa de las Marianas', 850.00, 'submarino.jpg', 3),
-('Búnker del Desierto', 'A prueba de bombas y superhéroes.', 'Area 51', 300.00, 'bunker.jpg', 4),
+('Búnker del Desierto', 'A prueba de bombas, jedies y la fuerza.', 'Tatooine', 300.00, 'bunker.jpg', 4),
 
--- Nuevas Guaridas
-('Cementerio de Elefantes', 'Ambiente tétrico con mucha neblina verde. Cuidado con las hienas.', 'Sabana Africana', 150.00, 'cementerio.jpg', 5),
+-- Guaridas extra (Nuevas)
+('Cementerio de Elefantes', 'Ambiente tétrico con mucha neblina verde.', 'Sabana Africana', 150.00, 'cementerio.jpeg', 5),
 ('Emporio de Vudú', 'Local en Nueva Orleans con acceso directo al "Otro Lado".', 'Nueva Orleans', 400.00, 'vudu.jpg', 6),
-('Estrella de la Muerte (En obras)', 'Estación espacial completa. Ojo con el conducto de ventilación.', 'Espacio Exterior', 5000.00, 'deathstar.jpg', 7),
-('El Inframundo', 'Hace un poco de calor, pero es genial para reuniones familiares eternas.', 'Grecia Antigua', 666.00, 'inframundo.jpg', 8);
+('Estrella de la Muerte', 'Estación espacial completa. Ojo con el conducto de ventilación.', 'Espacio Exterior', 5000.00, 'estrella.jpg', 7),
+('El Inframundo', 'Hace un poco de calor, pero es genial para reuniones.', 'Grecia Antigua', 666.00, 'inframundo.jpg', 8);
 
 
 -- 5. RELACIÓN GUARIDA-COMODIDAD

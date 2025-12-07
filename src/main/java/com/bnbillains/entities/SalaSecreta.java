@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "salaSecreta") // CORREGIDO: Coincide con tu SQL 'CREATE TABLE salaSecreta'
+@Table(name = "salaSecreta")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

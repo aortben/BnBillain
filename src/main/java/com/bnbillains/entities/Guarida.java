@@ -73,4 +73,11 @@ public class Guarida {
         this.imagen = imagen;
         this.salaSecreta = salaSecreta;
     }
+
+    public String getPathImagen() {
+        if (this.imagen != null && !this.imagen.isEmpty()) {
+
+        }
+        return "/uploads/" + this.imagen;
+    }
 }

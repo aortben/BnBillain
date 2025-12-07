@@ -66,7 +66,7 @@ public class GuaridaController {
         }
 
         // 2. Paginación Manual (Slice en memoria)
-        int pageSize = 5;
+        int pageSize = 6;
         int totalItems = todosLosResultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
         if (page > totalPages && totalPages > 0) page = totalPages;
