@@ -23,7 +23,8 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
     // ¡CRUCIAL! Necesario para que ReservaService encuentre la factura asociada
     Optional<Factura> findByReserva_Id(Long reservaId);
 
-
+    // --- NUEVO: FILTRO POR FECHA ---
+    List<Factura> findByFechaEmisionBetween(LocalDate inicio, LocalDate fin, Sort sort);
 
     // --- MÉTODOS DE SOPORTE (validacion)---
     boolean existsByReserva_Id(Long reservaId);

@@ -31,26 +31,39 @@ public class FacturaController {
         this.reservaRepository = reservaRepository;
     }
 
-    // --- LISTAR ---
     @GetMapping("/facturas")
     public String listar(@RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) String metodoPago,
                          @RequestParam(required = false) Double minImporte,
                          @RequestParam(required = false) Double maxImporte,
+                         @RequestParam(required = false) LocalDate fechaInicio, // NUEVO
+                         @RequestParam(required = false) LocalDate fechaFin,    // NUEVO
                          @RequestParam(required = false) String sort,
                          Model model) {
 
         Sort sortObj = getSort(sort);
         List<Factura> resultados;
 
-        if (minImporte != null && maxImporte != null) {
-            resultados = facturaService.buscarPorRangoImporte(minImporte, maxImporte, sortObj);
-        } else if (metodoPago != null && !metodoPago.isBlank()) {
+        // 1. LÓGICA DE FILTRADO EN CASCADA
+        if (fechaInicio != null || fechaFin != null) {
+            // Si falta una fecha, rellenamos con +/- infinito (años lejanos)
+            LocalDate inicio = (fechaInicio != null) ? fechaInicio : LocalDate.of(1900, 1, 1);
+            LocalDate fin = (fechaFin != null) ? fechaFin : LocalDate.of(2100, 12, 31);
+            resultados = facturaService.buscarPorRangoFechas(inicio, fin, sortObj);
+        }
+        else if (minImporte != null || maxImporte != null) {
+            Double min = (minImporte != null) ? minImporte : 0.0;
+            Double max = (maxImporte != null) ? maxImporte : Double.MAX_VALUE;
+            resultados = facturaService.buscarPorRangoImporte(min, max, sortObj);
+        }
+        else if (metodoPago != null && !metodoPago.isBlank()) {
             resultados = facturaService.buscarPorMetodoPago(metodoPago, sortObj);
-        } else {
+        }
+        else {
             resultados = facturaService.obtenerTodas(sortObj);
         }
 
+        // 2. Paginación Manual
         int pageSize = 5;
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -60,13 +73,18 @@ public class FacturaController {
         int end = Math.min(start + pageSize, totalItems);
         List<Factura> listaPaginada = (start > end || totalItems == 0) ? Collections.emptyList() : resultados.subList(start, end);
 
+        // 3. Pasar datos a la vista
         model.addAttribute("facturas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalItems", totalItems);
+
+        // Mantener filtros en pantalla
         model.addAttribute("metodoPago", metodoPago);
         model.addAttribute("minImporte", minImporte);
         model.addAttribute("maxImporte", maxImporte);
+        model.addAttribute("fechaInicio", fechaInicio); // NUEVO
+        model.addAttribute("fechaFin", fechaFin);       // NUEVO
         model.addAttribute("sort", sort);
 
         return "entities-html/factura";

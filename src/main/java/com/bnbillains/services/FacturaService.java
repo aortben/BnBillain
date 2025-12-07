@@ -5,6 +5,7 @@ import com.bnbillains.repositories.FacturaRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,4 +77,10 @@ public class FacturaService {
     public List<Factura> obtenerFacturasPorVillano(Long villanoId) {
         return facturaRepository.findByReserva_Villano_Id(villanoId);
     }
+
+    // --- NUEVO MÉTODO ---
+    public List<Factura> buscarPorRangoFechas(LocalDate inicio, LocalDate fin, Sort sort) {
+        return facturaRepository.findByFechaEmisionBetween(inicio, fin, sort);
+    }
+
 }
