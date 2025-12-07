@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head ('Reservas - BnBillains')}"></head>
-<body class="d-flex flex-column h-100 bg-light">
+<body class="d-flex flex-column h-100">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="container mt-4">
+<main class="flex-shrink-0 flex-grow-1 container" style="margin-top: 100px; margin-bottom: 50px;">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📅 Libro de Reservas</h2>
-        <a th:href="@{/reservas/new}" class="btn btn-success shadow">+ Nueva Reserva</a>
+        <h2 class="display-5">Libro de Reservas</h2>
+        <a th:href="@{/reservas/new}" class="btn btn-primary btn-lg shadow-sm">
+            + Nueva Reserva
+        </a>
     </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body bg-white">
-            <form th:action="@{/reservas}" method="get" class="row g-2 align-items-end">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form th:action="@{/reservas}" method="get" class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label small text-muted">Filtrar por Cliente</label>
+                    <label class="form-label small fw-bold text-uppercase text-muted">Filtrar por Cliente</label>
                     <select name="villanoId" class="form-select">
                         <option value="">-- Todos los Villanos --</option>
                         <option th:each="v : ${allVillanos}" th:value="${v.id}" th:text="${v.alias}"
@@ -22,7 +26,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small text-muted">Estado</label>
+                    <label class="form-label small fw-bold text-uppercase text-muted">Estado</label>
                     <select name="estado" class="form-select">
                         <option value="">-- Todos --</option>
                         <option value="true" th:selected="${estado == true}">Confirmada</option>
@@ -31,79 +35,133 @@
                 </div>
                 <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                    <a th:href="@{/reservas}" class="btn btn-outline-secondary">Limpiar</a>
+                    <a th:href="@{/reservas}" class="btn btn-outline-light w-50">Limpiar</a>
                 </div>
                 <input type="hidden" name="sort" th:value="${sort}">
             </form>
         </div>
     </div>
 
-    <div class="table-responsive bg-white shadow rounded">
-        <table class="table table-hover mb-0 align-middle">
-            <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th><a class="text-white text-decoration-none" th:href="@{/reservas(page=${currentPage}, sort='dateDesc', villanoId=${villanoId}, estado=${estado})}">Fechas ↕</a></th>
-                <th>Villano</th>
-                <th>Guarida</th>
-                <th><a class="text-white text-decoration-none" th:href="@{/reservas(page=${currentPage}, sort='costDesc', villanoId=${villanoId}, estado=${estado})}">Coste ↕</a></th>
-                <th>Estado</th>
-                <th class="text-center">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${#lists.isEmpty(reservas)}">
-                <td colspan="7" class="text-center py-4 text-muted">No hay reservas que coincidan.</td>
-            </tr>
-            <tr th:each="r : ${reservas}">
-                <td th:text="${r.id}">1</td>
-                <td>
-                    <div class="fw-bold text-primary" th:text="${r.fechaInicio}"></div>
-                    <div class="small text-muted">hasta <span th:text="${r.fechaFin}"></span></div>
-                </td>
-                <td>
-                    <a th:href="@{/villanos/{id}(id=${r.villano.id})}" class="text-decoration-none fw-bold text-dark">
-                        🦹 <span th:text="${r.villano.alias}">Joker</span>
-                    </a>
-                </td>
-                <td th:text="${r.guarida.nombre}">Volcán</td>
-                <td class="text-end fw-bold text-success" th:text="${#numbers.formatDecimal(r.costeTotal, 1, 2)} + ' €'">1000 €</td>
-                <td>
-                    <span th:if="${r.estado}" class="badge bg-success">CONFIRMADA</span>
-                    <span th:unless="${r.estado}" class="badge bg-warning text-dark">PENDIENTE</span>
-                </td>
-                <td class="text-center">
-                    <div class="btn-group">
-                        <a th:if="${r.factura != null}"
-                           th:href="@{/facturas/{id}/verDetalle(id=${r.factura.id})}"
-                           class="btn btn-sm btn-info text-white"
-                           title="Ver Factura PDF" target="_blank">📄</a>
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th style="background-color: #000; color: var(--color-logo-light);">ID</th>
 
-                        <a th:href="@{/reservas/{id}/edit(id=${r.id})}" class="btn btn-sm btn-warning" title="Editar">✏️</a>
-                        <a th:href="@{/reservas/delete/{id}(id=${r.id})}" class="btn btn-sm btn-danger"
-                           onclick="return confirm('¿Cancelar reserva? Se borrará la factura asociada.');" title="Cancelar">❌</a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                        <th style="background-color: #000;">
+                            <a th:href="@{/reservas(page=${currentPage}, sort='dateDesc', villanoId=${villanoId}, estado=${estado})}"
+                               style="color: var(--color-logo-light); text-decoration: none;">
+                                Fechas <i class="bi bi-arrow-down-up small opacity-50"></i>
+                            </a>
+                        </th>
+
+                        <th style="background-color: #000; color: var(--color-logo-light);">Villano</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Guarida</th>
+
+                        <th style="background-color: #000;">
+                            <a th:href="@{/reservas(page=${currentPage}, sort='costDesc', villanoId=${villanoId}, estado=${estado})}"
+                               style="color: var(--color-logo-light); text-decoration: none;">
+                                Coste <i class="bi bi-arrow-down-up small opacity-50"></i>
+                            </a>
+                        </th>
+
+                        <th style="background-color: #000; color: var(--color-logo-light);">Estado</th>
+                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:if="${#lists.isEmpty(reservas)}">
+                        <td colspan="7" class="text-center p-4 text-muted">
+                            <em>No hay reservas que coincidan con los criterios.</em>
+                        </td>
+                    </tr>
+
+                    <tr th:each="r : ${reservas}">
+                        <td th:text="${r.id}" class="text-muted">1</td>
+
+                        <td>
+                            <div class="fw-bold" style="color: #e0e0e0;" th:text="${r.fechaInicio}"></div>
+                            <div class="small" style="color: #95a5a6;">hasta <span th:text="${r.fechaFin}"></span></div>
+                        </td>
+
+                        <td>
+                            <a th:href="@{/villanos/{id}(id=${r.villano.id})}"
+                               class="text-decoration-none fw-bold"
+                               style="color: var(--color-text-main); transition: color 0.3s;"
+                               onmouseover="this.style.color='var(--color-logo-light)'"
+                               onmouseout="this.style.color='var(--color-text-main)'">
+                                <span th:text="${r.villano.alias}">Joker</span>
+                            </a>
+                        </td>
+
+                        <td th:text="${r.guarida.nombre}">Volcán</td>
+
+                        <td class="fw-bold" style="color: var(--color-logo-light);"
+                            th:text="${#numbers.formatDecimal(r.costeTotal, 1, 2)} + ' €'">
+                            1000 €
+                        </td>
+
+                        <td>
+                            <span th:if="${r.estado}" class="badge"
+                                  style="background-color: #1e4620; border: 1px solid #2e7d32; color: #cfebce;">
+                                CONFIRMADA
+                            </span>
+                            <span th:unless="${r.estado}" class="badge"
+                                  style="background-color: #5e4b00; border: 1px solid #8f7200; color: #fff3cd;">
+                                PENDIENTE
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a th:if="${r.factura != null}"
+                                   th:href="@{/facturas/{id}/verDetalle(id=${r.factura.id})}"
+                                   class="btn btn-sm btn-outline-villain"
+                                   title="Ver Factura PDF" target="_blank">Recibo</a>
+
+                                <a th:href="@{/reservas/{id}/edit(id=${r.id})}"
+                                   class="btn btn-sm btn-primary" title="Editar">Editar</a>
+
+                                <a th:href="@{/reservas/delete/{id}(id=${r.id})}"
+                                   class="btn btn-sm btn-dull-danger"
+                                   onclick="return confirm('¿Cancelar reserva? Se borrará la factura asociada.');"
+                                   title="Eliminar">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <nav class="mt-4" th:if="${totalPages > 1}">
+    <nav th:if="${totalPages > 1}" class="mt-4">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/reservas(page=${currentPage - 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Anterior</a>
+                <a class="page-link"
+                   style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
+                   th:href="@{/reservas(page=${currentPage - 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Anterior</a>
             </li>
+
             <li class="page-item disabled">
-                <span class="page-link" th:text="${currentPage} + ' / ' + ${totalPages}"></span>
+                <span class="page-link"
+                      style="background-color: #0f0f10; border-color: #333; color: var(--color-logo-light);"
+                      th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
             </li>
+
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/reservas(page=${currentPage + 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Siguiente</a>
+                <a class="page-link"
+                   style="background-color: #1a1a1d; border-color: #333; color: var(--color-text-main);"
+                   th:href="@{/reservas(page=${currentPage + 1}, villanoId=${villanoId}, estado=${estado}, sort=${sort})}">Siguiente</a>
             </li>
         </ul>
     </nav>
 
 </main>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
 </body>
 </html>

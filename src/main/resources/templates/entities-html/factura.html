@@ -1,45 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Facturas')}"></head>
-<body class="d-flex flex-column h-100 bg-light">
+<head th:replace="~{fragments/head :: head ('Facturas - BnBillains')}"></head>
+<body class="d-flex flex-column h-100">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="container mt-4">
-    <div class="mb-4">
-        <h1>Gestión de Facturas</h1>
+<main class="container" style="margin-top: 100px; margin-bottom: 50px;">
+
+    <!-- Título y Botón Nuevo -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="display-5">Gestión de Facturas</h2>
+        <!-- Botón Nuevo Morado -->
+        <a th:href="@{/facturas/new}" class="btn btn-primary btn-lg shadow-sm">
+            + Nueva Factura
+        </a>
     </div>
 
-    <div class="table-responsive bg-white shadow-sm rounded">
-        <table class="table table-hover mb-0 align-middle">
-            <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th class="text-end">Importe</th>
-                <th class="text-end">Impuestos</th>
-                <th class="text-end fw-bold">TOTAL</th>
-                <th>Método</th>
-                <th class="text-center">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="factura : ${facturas}">
-                <td th:text="${factura.id}">1</td>
-                <td th:text="${factura.fechaEmision}">2025-01-01</td>
-                <td class="text-end" th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'"></td>
-                <td class="text-end" th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'"></td>
-                <td class="text-end fw-bold text-success" th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'"></td>
-                <td><span class="badge bg-secondary" th:text="${factura.metodoPago}"></span></td>
-                <td class="text-center">
-                    <div class="btn-group">
-                        <a th:href="@{/facturas/{id}/edit(id=${factura.id})}" class="btn btn-sm btn-warning">✏️</a>
-                        <a th:href="@{/facturas/{id}/verDetalle(id=${factura.id})}" class="btn btn-sm btn-info text-white" target="_blank">📄 PDF</a>
-                        <a th:href="@{/facturas/delete/{id}(id=${factura.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?');">🗑️</a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <!-- Tabla de Resultados -->
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th style="background-color: #000; color: var(--color-logo-light);">ID</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Fecha</th>
+                        <th class="text-end" style="background-color: #000; color: var(--color-logo-light);">Importe</th>
+                        <th class="text-end" style="background-color: #000; color: var(--color-logo-light);">Impuestos</th>
+                        <th class="text-end fw-bold" style="background-color: #000; color: var(--color-logo-light);">TOTAL</th>
+                        <th style="background-color: #000; color: var(--color-logo-light);">Método</th>
+                        <th class="text-center" style="background-color: #000; color: var(--color-logo-light);">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <!-- Mensaje si vacía -->
+                    <tr th:if="${#lists.isEmpty(facturas)}">
+                        <td colspan="7" class="text-center p-4 text-white">
+                            <em>No hay facturas registradas en la contabilidad del mal.</em>
+                        </td>
+                    </tr>
+
+                    <tr th:each="factura : ${facturas}">
+                        <td th:text="${factura.id}">1</td>
+
+                        <td th:text="${factura.fechaEmision}">2025-01-01</td>
+
+                        <!-- Importe Base (Grisáceo) -->
+                        <td class="text-end text-white fw-bold"
+                            th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'">100.00 €</td>
+
+                        <!-- Impuestos Malignos (Rojo Sangre) -->
+                        <td class="text-end" style="color: #a71d2a;"
+                            th:text="${#numbers.formatDecimal(factura.impuestosMalignos, 1, 2)} + ' €'">21.00 €</td>
+
+                        <!-- TOTAL (Resaltado en blanco/verde) -->
+                        <td class="text-end fw-bold" style="font-size: 1.1em; color: #fff;"
+                            th:text="${#numbers.formatDecimal(factura.importe + factura.impuestosMalignos, 1, 2)} + ' €'">121.00 €</td>
+
+                        <!-- Método de pago (Badge oscuro) -->
+                        <td>
+                            <span class="badge" style="background-color: #333; border: 1px solid #555;"
+                                  th:text="${factura.metodoPago}">Lingotes</span>
+                        </td>
+
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <!-- Editar: Morado -->
+                                <a th:href="@{/facturas/{id}/edit(id=${factura.id})}"
+                                   class="btn btn-sm btn-primary" title="Editar">Editar</a>
+
+                                <!-- PDF: Azul Info -->
+                                <a th:href="@{/facturas/{id}/verDetalle(id=${factura.id})}"
+                                   class="btn btn-sm btn-info text-white"
+                                   target="_blank" title="Ver PDF">Resguardo</a>
+
+                                <!-- Eliminar: Rojo Apagado -->
+                                <a th:href="@{/facturas/delete/{id}(id=${factura.id})}"
+                                   class="btn btn-sm btn-dull-danger"
+                                   onclick="return confirm('¿Eliminar esta factura permanentemente?');" title="Eliminar">Eliminar️</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 </main>
