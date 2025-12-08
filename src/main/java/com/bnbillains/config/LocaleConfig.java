@@ -36,7 +36,6 @@ public class LocaleConfig implements WebMvcConfigurer {
      * Define un `LocaleChangeInterceptor` que intercepta las peticiones HTTP
      para cambiar el idioma
      * utilizando un parámetro llamado "lang" en la URL.
-     *
      * @return una instancia de `LocaleChangeInterceptor` con el parámetro
     configurado.
      */
@@ -52,7 +51,6 @@ public class LocaleConfig implements WebMvcConfigurer {
      solicitudes.
      * Esto permite que el idioma de la aplicación se pueda cambiar
      dinámicamente.
-     *
      * @param registry el registro de interceptores de Spring.
      */
     @Override

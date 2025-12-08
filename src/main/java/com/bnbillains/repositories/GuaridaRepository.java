@@ -12,23 +12,28 @@ import java.util.Optional;
 @Repository
 public interface GuaridaRepository extends JpaRepository<Guarida, Long> {
 
-    // --- MÉTODO FALTANTE (IMPORTANTE) ---
-    // Este es el que usa SalaSecretaService para encontrar la guarida y romper el vínculo
+    // --- GESTIÓN DE RELACIONES ---
+
+    // Método especial para encontrar a qué Guarida pertenece una Sala Secreta.
+    // Útil para operaciones de mantenimiento o borrado seguro.
     Optional<Guarida> findBySalaSecreta(SalaSecreta salaSecreta);
 
-    // Buscar por ubicación exacta
+    // --- BÚSQUEDAS Y FILTROS ---
+
+    // Busca guaridas por ubicación exacta (ej: "Volcán", "Isla Desierta")
     List<Guarida> findByUbicacion(String ubicacion);
 
-    // Buscar por nombre (contiene texto e ignora mayúsculas/minúsculas)
+    // Buscador principal: Encuentra guaridas cuyo nombre contenga el texto (flexible)
     List<Guarida> findByNombreContainingIgnoreCase(String nombre);
 
-    // Buscar por rango de precio
+    // Filtra guaridas dentro de un presupuesto (Precio Mínimo y Máximo)
     List<Guarida> findByPrecioNocheBetween(Double min, Double max);
 
-    // Buscar por rango de precio con ordenación
+    // Lo mismo que el anterior, pero permite ordenar los resultados (Baratos primero, etc.)
     List<Guarida> findByPrecioNocheBetween(Double min, Double max, Sort sort);
 
-    // Verificar si existe por nombre
+    // --- VALIDACIONES ---
+
+    // Comprobación rápida para evitar que se creen dos guaridas con el mismo nombre
     boolean existsByNombre(String nombre);
 }
-

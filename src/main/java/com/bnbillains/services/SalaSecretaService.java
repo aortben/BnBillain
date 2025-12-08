@@ -15,28 +15,17 @@ import java.util.Optional;
 public class SalaSecretaService {
 
     private final SalaSecretaRepository salaSecretaRepository;
-    private final GuaridaRepository guaridaRepository; // Necesario para romper el vínculo
+    private final GuaridaRepository guaridaRepository;
 
     public SalaSecretaService(SalaSecretaRepository salaSecretaRepository, GuaridaRepository guaridaRepository) {
         this.salaSecretaRepository = salaSecretaRepository;
         this.guaridaRepository = guaridaRepository;
     }
 
-    public List<SalaSecreta> obtenerTodas() {
-        return salaSecretaRepository.findAll();
-    }
-
-    public List<SalaSecreta> obtenerTodasOrdenadas(Sort sort) {
-        return salaSecretaRepository.findAll(sort);
-    }
-
-    public Optional<SalaSecreta> obtenerPorId(Long id) {
-        return salaSecretaRepository.findById(id);
-    }
-
-    public SalaSecreta guardar(SalaSecreta salaSecreta) {
-        return salaSecretaRepository.save(salaSecreta);
-    }
+    // Métodos estándar
+    public List<SalaSecreta> obtenerTodasOrdenadas(Sort sort) { return salaSecretaRepository.findAll(sort); }
+    public Optional<SalaSecreta> obtenerPorId(Long id) { return salaSecretaRepository.findById(id); }
+    public SalaSecreta guardar(SalaSecreta s) { return salaSecretaRepository.save(s); }
 
     public SalaSecreta actualizar(Long id, SalaSecreta salaSecreta) {
         return salaSecretaRepository.findById(id)
@@ -49,34 +38,27 @@ public class SalaSecretaService {
                 .orElseThrow(() -> new IllegalArgumentException("Sala Secreta no encontrada"));
     }
 
-    @Transactional // Asegura que la desvinculación y el borrado sean atómicos
+    // --- BORRADO SEGURO (Gestión de Relaciones) ---
+    @Transactional
     public void eliminar(Long id) {
-        // 1. Verificar existencia
         SalaSecreta sala = salaSecretaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Sala Secreta no encontrada con ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Sala no encontrada"));
 
-        // 2. Buscar si hay una Guarida vinculada a esta sala
-        // (Esto requiere que GuaridaRepository tenga el método findBySalaSecreta)
+        // Comprobamos si hay una guarida usando esta sala
         Optional<Guarida> guaridaAsociada = guaridaRepository.findBySalaSecreta(sala);
 
-        // 3. Romper el vínculo si existe
+        // Si existe, rompemos el vínculo (la ponemos a null) antes de borrar la sala
+        // para evitar errores de base de datos.
         if (guaridaAsociada.isPresent()) {
             Guarida g = guaridaAsociada.get();
-            g.setSalaSecreta(null); // Liberamos la sala
-            guaridaRepository.save(g); // Actualizamos la guarida
+            g.setSalaSecreta(null);
+            guaridaRepository.save(g);
         }
 
-        // 4. Ahora sí, borrar la sala sin violar FK
         salaSecretaRepository.deleteById(id);
     }
 
-    public Optional<SalaSecreta> obtenerPorCodigoAcceso(String codigo) {
-        return salaSecretaRepository.findByCodigoAcceso(codigo);
-    }
-
-    // intento de busqueda flexible
     public List<SalaSecreta> buscarFlexible(String texto, Sort sort) {
-        // Buscamos por función principal, que es lo más lógico para filtrar
         return salaSecretaRepository.findByFuncionPrincipalContainingIgnoreCase(texto, sort);
     }
 

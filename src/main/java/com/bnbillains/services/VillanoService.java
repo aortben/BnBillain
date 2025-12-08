@@ -17,21 +17,19 @@ public class VillanoService {
         this.villanoRepository = villanoRepository;
     }
 
-    // --- LECTURA ---
-    public List<Villano> obtenerTodas(Sort sort) { // Acepta sort
-        return villanoRepository.findAll(sort);
-    }
+    // --- MÉTODOS DE LECTURA ---
 
-    // Método para compatibilidad si alguien lo usa sin sort
-    public List<Villano> obtenerTodas() {
-        return villanoRepository.findAll();
+    // Obtiene todos los villanos permitiendo ordenación (ej: por Alias A-Z)
+    public List<Villano> obtenerTodas(Sort sort) {
+        return villanoRepository.findAll(sort);
     }
 
     public Optional<Villano> obtenerPorId(Long id) {
         return villanoRepository.findById(id);
     }
 
-    // --- ESCRITURA ---
+    // --- ESCRITURA Y EDICIÓN ---
+
     public Villano guardar(Villano villano) {
         return villanoRepository.save(villano);
     }
@@ -39,6 +37,7 @@ public class VillanoService {
     public Villano actualizar(Long id, Villano villano) {
         return villanoRepository.findById(id)
                 .map(v -> {
+                    // Actualizamos campo a campo para mayor control
                     v.setNombre(villano.getNombre());
                     v.setAlias(villano.getAlias());
                     v.setCarnetDeVillano(villano.getCarnetDeVillano());
@@ -52,21 +51,17 @@ public class VillanoService {
         villanoRepository.deleteById(id);
     }
 
-    // --- BÚSQUEDA ---
-    public Optional<Villano> buscarPorEmail(String email) {
-        return villanoRepository.findByEmail(email);
-    }
+    // --- BÚSQUEDAS AVANZADAS ---
 
-    public Optional<Villano> buscarPorCarnetDeVillano(String carnet) {
-        return villanoRepository.findByCarnetDeVillano(carnet);
-    }
-
-    // Búsqueda inteligente (Nombre o Alias) con Orden
+    // Búsqueda inteligente: El usuario escribe texto y buscamos coincidencia
+    // tanto en el nombre real como en el alias criminal.
     public List<Villano> buscarFlexible(String texto, Sort sort) {
         return villanoRepository.findByNombreContainingIgnoreCaseOrAliasContainingIgnoreCase(texto, texto, sort);
     }
 
-    // --- VALIDACIONES ---
+    // --- VALIDACIONES DE NEGOCIO ---
+
+    // Comprobaciones para evitar duplicados antes de guardar
     public boolean existePorCarnetDeVillano(String carnet) {
         return villanoRepository.existsByCarnetDeVillano(carnet);
     }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
-// Importaciones para la API (necesarias si descomentas el bloque final)
+// Importaciones para la API (Código desactivado intencionalmente)
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador encargado de gestionar las peticiones web para la entidad Comodidad.
+ * Maneja el listado, creación, edición y eliminación mediante vistas Thymeleaf.
+ */
 @Controller
 public class ComodidadController {
 
@@ -27,14 +31,22 @@ public class ComodidadController {
 
     private final ComodidadService comodidadService;
 
+    /**
+     * Inyección de dependencias por constructor.
+     */
     public ComodidadController(ComodidadService comodidadService) {
         this.comodidadService = comodidadService;
     }
 
-    //mvc
+    // --- SECCIÓN MVC (Vistas HTML) ---
 
     /**
-     * Listado de Comodidades con Paginación Manual, Búsqueda y Ordenación.
+     * Muestra el listado de comodidades con soporte para paginación, búsqueda y ordenación.
+     * * @param page Número de página actual (por defecto 1).
+     * @param search Texto para filtrar por nombre (opcional).
+     * @param sort Criterio de ordenación (opcional).
+     * @param model Modelo para pasar datos a la vista.
+     * @return La vista "entities-html/comodidad".
      */
     @GetMapping("/comodidades")
     public String listar(@RequestParam(defaultValue = "1") int page,
@@ -47,14 +59,14 @@ public class ComodidadController {
         Sort sortObj = getSort(sort);
         List<Comodidad> resultados;
 
-        //Obtención de datos (Filtrados u ordenados)
+        // Lógica de obtención de datos (Filtrados u ordenados)
         if (search != null && !search.isBlank()) {
             resultados = comodidadService.buscarPorFragmentoOrdenado(search, sortObj);
         } else {
             resultados = comodidadService.obtenerTodasOrdenadas(sortObj);
         }
 
-        //Paginación Manual (Cálculo matemático para cortar la lista)
+        // Lógica de Paginación Manual en memoria
         int pageSize = 5; // Elementos por página
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -68,7 +80,7 @@ public class ComodidadController {
         List<Comodidad> listaPaginada = (start > end || totalItems == 0) ?
                 Collections.emptyList() : resultados.subList(start, end);
 
-        // 3. Pasar atributos a la vista
+        // Pasar atributos a la vista
         model.addAttribute("comodidades", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
@@ -97,6 +109,10 @@ public class ComodidadController {
         return "redirect:/comodidades";
     }
 
+    /**
+     * Procesa el guardado de una nueva comodidad.
+     * Incluye validación para evitar nombres duplicados.
+     */
     @PostMapping("/comodidades/save")
     public String guardar(@Valid @ModelAttribute Comodidad comodidad,
                           BindingResult bindingResult,
@@ -137,6 +153,10 @@ public class ComodidadController {
         return "redirect:/comodidades";
     }
 
+    /**
+     * Elimina una comodidad.
+     * Controla la excepción si la comodidad está asignada a una guarida.
+     */
     @GetMapping("/comodidades/delete/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         logger.info("WEB: Eliminando comodidad ID {}", id);
@@ -151,7 +171,9 @@ public class ComodidadController {
         return "redirect:/comodidades";
     }
 
-    // ordenacion
+    /**
+     * Método auxiliar para convertir el string de ordenación en un objeto Sort.
+     */
     private Sort getSort(String sort) {
         if (sort == null) return Sort.by("id").ascending();
         return switch (sort) {
@@ -162,7 +184,14 @@ public class ComodidadController {
         };
     }
 
-    //API rest
+    // --- SECCIÓN API REST (DESACTIVADA) ---
+    /*
+     * NOTA DEL DESARROLLADOR:
+     * La implementación de la API REST se ha pospuesto. Se ha priorizado el desarrollo
+     * y comprensión del modelo MVC sobre la generación automática de endpoints,
+     * dado que la capacidad técnica actual se centra en la estabilidad de la aplicación web.
+     */
+
     /*
     @GetMapping("/api/comodidades")
     @ResponseBody
