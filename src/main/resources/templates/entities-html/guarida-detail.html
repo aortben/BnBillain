@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head (#{msg.guarida.title} + ' - ' + ${guarida.nombre})}"></head>
+<body class="d-flex flex-column h-100 bg-dark text-white">
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5 mb-5" style="padding-top: 20px;">
+
+    <div class="card shadow-lg mb-4 border-0 overflow-hidden" style="background-color: #1e1e1e;">
+
+        <div class="position-relative" style="height: 350px; background-color: #000; overflow: hidden;">
+            <img th:if="${guarida.imagen != null and !guarida.imagen.isEmpty()}"
+                 th:src="@{'/uploads/' + ${guarida.imagen}}"
+                 class="w-100 h-100"
+                 style="object-fit: cover; opacity: 0.7; filter: contrast(1.1) brightness(0.9);"
+                 alt="Foto Guarida"
+                 onerror="this.onerror=null; this.src='/images/guarida-default';">
+
+            <img th:if="${guarida.imagen == null or guarida.imagen.isEmpty()}"
+                 th:src="@{/images/guarida-default.jpg}"
+                 class="w-100 h-100"
+                 style="object-fit: cover; opacity: 0.5;"
+                 alt="Foto Guarida Default">
+
+            <div class="position-absolute bottom-0 start-0 p-4 w-100"
+                 style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                <h1 class="display-3 fw-bold" th:text="${guarida.nombre}"
+                    style="font-family: 'Creepster', cursive; color: var(--color-logo-light); text-shadow: 2px 2px 4px #000;">
+                    Nombre Guarida
+                </h1>
+                <p class="h4 text-light mb-0">
+                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                    <span th:text="${guarida.ubicacion}">Ubicación</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h2 class="text-success mb-0" style="color: #00ff9d !important; text-shadow: 0 0 10px rgba(0,255,157,0.3);">
+                            <span th:text="${#numbers.formatDecimal(guarida.precioNoche, 1, 0)}">0</span> €
+                            <small class="text-white fs-5" th:text="#{msg.guarida.perNight}">/ noche</small>
+                        </h2>
+                        <span class="badge bg-danger p-2" th:text="#{msg.guarida.status.available}">¡Disponible para el Mal!</span>
+                    </div>
+
+                    <h4 class="mb-3 text-secondary border-bottom border-secondary pb-2" th:text="#{msg.guarida.description}">Descripción</h4>
+                    <p class="lead text-light" style="opacity: 0.9; line-height: 1.8;" th:text="${guarida.descripcion}">
+                        Descripción detallada...
+                    </p>
+
+                    <div class="mt-5">
+                        <h5 class="text-secondary mb-3">
+                            <i class="fas fa-concierge-bell me-2"></i>
+                            <span th:text="#{msg.guaridaD.comodidad}">Comodidades Malignas</span>
+                        </h5>
+
+                        <div th:if="${guarida.comodidades.isEmpty()}" class="text-white fst-italic" th:text="#{msg.guaridaD.comodiEmp}">
+                            Esta guarida es austera (sin comodidades).
+                        </div>
+
+                        <div th:unless="${guarida.comodidades.isEmpty()}" class="d-flex flex-wrap gap-2">
+                            <span th:each="c : ${guarida.comodidades}"
+                                  class="badge border border-secondary p-2 d-flex align-items-center"
+                                  style="background-color: #2c2c2c; font-weight: normal; font-size: 0.9rem;">
+                                <span class="me-2" th:text="${c.nombre}">Wifi</span>
+                                <span th:if="${c.autoDestruccion}" th:title="#{msg.comodidad.destruction}" style="cursor: help;">⚠️</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4 border-0 shadow-sm" style="background-color: #121212; border: 1px solid #333;">
+                        <div class="card-header border-bottom border-secondary text-center py-3"
+                             style="background-color: #1a1a1d; color: var(--color-logo-light); font-family: 'Creepster', cursive; font-size: 1.5rem;"
+                             th:text="#{msg.guaridaD.salasecreta}">
+                            Sala Secreta
+                        </div>
+                        <div class="card-body text-light">
+                            <div th:if="${guarida.salaSecreta == null}" class="text-center text-white py-3">
+                                <p class="mb-0" th:text="#{msg.guaridaD.salaNoDis}">No dispone de sala secreta.</p>
+                            </div>
+
+                            <div th:if="${guarida.salaSecreta != null}">
+                                <div class="mb-3">
+                                    <label class="text-white small text-uppercase" th:text="#{msg.salasecreta.funtion}">Función Principal</label>
+                                    <div class="fs-5 fw-bold text-light" th:text="${guarida.salaSecreta.funcionPrincipal}">Bunker</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-white small text-uppercase" th:text="#{msg.salasecreta.code}">Código de Acceso</label>
+                                    <div>
+                                        <code class="p-1 rounded fs-5" style="background-color: #000; color: #0f0; border: 1px solid #003300;"
+                                              th:text="${guarida.salaSecreta.codigoAcceso}">****</code>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-white small text-uppercase" th:text="#{msg.salasecreta.exit}">Salida de Emergencia</label>
+                                    <div class="d-flex align-items-center">
+                                        <span th:if="${guarida.salaSecreta.salidaEmergencia}"
+                                              class="badge border border-success text-success bg-transparent">
+                                            <i class="fas fa-check me-1"></i> <span th:text="#{msg.salasecreta.yes}">Sí</span>
+                                        </span>
+                                        <span th:unless="${guarida.salaSecreta.salidaEmergencia}"
+                                              class="badge border border-danger text-danger bg-transparent">
+                                            <i class="fas fa-times me-1"></i> <span th:text="#{msg.salasecreta.no}">No</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <a th:href="@{/guaridas/{id}/edit(id=${guarida.id})}"
+                           class="btn btn-primary btn-lg shadow"
+                           th:text="#{msg.guaridaD.edit}">Editar Guarida</a>
+                        <a th:href="@{/guaridas}"
+                           class="btn btn-outline-light"
+                           th:text="#{msg.guaridaD.comeback}">Volver al listado</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0" style="background-color: #1e1e1e;">
+        <div class="card-header border-bottom border-secondary bg-transparent py-3">
+            <h3 class="mb-0 text-light" style="font-family: 'Creepster', cursive;" th:text="#{msg.guaridaD.resenas}">Reseñas de Villanos</h3>
+        </div>
+        <div class="card-body p-4">
+
+            <div th:if="${guarida.resenas.isEmpty()}" class="alert alert-dark text-center border-secondary" style="background-color: #151515;">
+                <p class="mb-0 text-white" th:text="#{msg.guaridaD.resenasEmp.funny}">
+                    Aún no hay reseñas. (Las reseñas negativas fueron eliminadas así como sus autores.)
+                </p>
+            </div>
+
+            <div th:unless="${guarida.resenas.isEmpty()}" class="row g-3">
+                <div class="col-md-6" th:each="resena : ${guarida.resenas}">
+                    <div class="card h-100 border-secondary shadow-sm" style="background-color: #252525;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-0 text-warning"
+                                        th:text="${resena.villano != null ? resena.villano.alias : 'Anónimo'}">Villano</h5>
+                                    <small class="text-white">
+                                        <span th:text="#{msg.resena.publishedOn}">Publicado el:</span>
+                                        <span th:text="${resena.fechaPublicacion}">Fecha</span>
+                                    </small>
+                                </div>
+                                <span class="badge bg-warning text-dark fs-6" th:text="${resena.puntuacion} + ' ★'">5 ★</span>
+                            </div>
+                            <p class="card-text text-light fst-italic">"<span th:text="${resena.comentario}">Comentario...</span>"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

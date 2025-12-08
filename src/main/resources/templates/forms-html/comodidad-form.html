@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head (#{msg.comodidad.form.tab})}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center container"
+      style="margin-top: 100px; margin-bottom: 50px;">
+
+    <div class="card shadow col-md-6 border-secondary">
+        <div class="card-header text-center">
+            <h2 class="mb-0 display-6"
+                th:text="${comodidad.id != null} ? #{msg.comodidad.edit} : #{msg.comodidad.new}">
+                Nueva/Editar Comodidad
+            </h2>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert"
+                 style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
+                 style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form th:if="${comodidad.id != null}" th:action="@{/comodidades/update}" th:object="${comodidad}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="mb-3">
+                    <label for="nombreEdit" class="form-label text-light" th:text="#{msg.comodidad.name} + ':'">Nombre:</label>
+                    <input type="text" class="form-control" id="nombreEdit" th:field="*{nombre}" required
+                           th:placeholder="#{msg.comodidad.placeholder.name}">
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="autoDestruccionEdit" class="form-label text-light"
+                           th:text="#{msg.comodidad.destruction} + '?'">¿Tiene Auto-Destrucción?</label>
+                    <select class="form-select" id="autoDestruccionEdit" th:field="*{autoDestruccion}">
+                        <option th:value="true"
+                                th:text="#{msg.comodidad.yes} + ' (' + #{msg.comodidad.dangerous} + ')'"
+                                th:selected="*{autoDestruccion} == true">Sí (Peligroso)</option>
+                        <option th:value="false"
+                                th:text="#{msg.comodidad.no} + ' (' + #{msg.comodidad.safe} + ')'"
+                                th:selected="*{autoDestruccion} == false">No (Seguro)</option>
+                    </select>
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/comodidades" class="btn btn-outline-light" th:text="#{msg.guaridaForm.cancel}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4" th:text="#{msg.comodidad.btn.update}">Guardar Cambios</button>
+                </div>
+            </form>
+
+            <form th:if="${comodidad.id == null}" th:action="@{/comodidades/save}" th:object="${comodidad}" method="post">
+
+                <div class="mb-3">
+                    <label for="nombreNew" class="form-label text-light" th:text="#{msg.comodidad.name} + ':'">Nombre:</label>
+                    <input type="text" class="form-control" id="nombreNew" th:field="*{nombre}" required
+                           th:placeholder="#{msg.comodidad.placeholder.name}">
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="autoDestruccionNew" class="form-label text-light"
+                           th:text="#{msg.comodidad.destruction} + '?'">¿Tiene Auto-Destrucción?</label>
+                    <select class="form-select" id="autoDestruccionNew" th:field="*{autoDestruccion}">
+                        <option th:value="true"
+                                th:text="#{msg.comodidad.yes} + ' (' + #{msg.comodidad.dangerous} + ')'">Sí (Peligroso)</option>
+                        <option th:value="false"
+                                th:text="#{msg.comodidad.no} + ' (' + #{msg.comodidad.safe} + ')'" selected>No (Seguro)</option>
+                    </select>
+                    <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('autoDestruccion')}" th:errors="*{autoDestruccion}"></div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/comodidades" class="btn btn-outline-light" th:text="#{msg.guaridaForm.cancel}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4" th:text="#{msg.comodidad.btn.create}">Crear Comodidad</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
