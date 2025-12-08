@@ -11,14 +11,16 @@ import java.util.Optional;
 @Repository
 public interface VillanoRepository extends JpaRepository<Villano, Long> {
 
+    // Búsquedas exactas para login o recuperación de perfil
     Optional<Villano> findByEmail(String email);
     Optional<Villano> findByCarnetDeVillano(String carnetDeVillano);
 
+    // Validaciones de unicidad (se usan al registrar un nuevo villano)
     boolean existsByEmail(String email);
     boolean existsByCarnetDeVillano(String carnetDeVillano);
 
-    // --- NUEVO PARA EL CONTROLLER ---
-    // Busca por nombre O por alias (contiene texto, ignora mayúsculas) + ORDENACIÓN
+    // --- BUSCADOR INTELIGENTE ---
+    // Esta consulta es "Nombre O Alias". Permite que el usuario escriba algo
+    // y el sistema busque en ambos campos a la vez.
     List<Villano> findByNombreContainingIgnoreCaseOrAliasContainingIgnoreCase(String nombre, String alias, Sort sort);
 }
-

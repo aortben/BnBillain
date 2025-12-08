@@ -1,7 +1,7 @@
 package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Guarida;
-import com.bnbillains.entities.SalaSecreta; // <--- Importante
+import com.bnbillains.entities.SalaSecreta;
 import com.bnbillains.repositories.ComodidadRepository;
 import com.bnbillains.services.FileStorageService;
 import com.bnbillains.services.GuaridaService;
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+// Controlador principal para la gestión del catálogo de alojamientos
 @Controller
 public class GuaridaController {
 
@@ -30,7 +31,7 @@ public class GuaridaController {
     private final ComodidadRepository comodidadRepository;
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private FileStorageService fileStorageService; // Servicio para guardar fotos en disco
 
     public GuaridaController(GuaridaService guaridaService, ComodidadRepository comodidadRepository) {
         this.guaridaService = guaridaService;
@@ -52,6 +53,7 @@ public class GuaridaController {
         Sort sortObj = getSort(sort);
         List<Guarida> todosLosResultados;
 
+        // Lógica de filtrado: Priorizamos rango de precio, luego nombre, luego todo
         if (minPrice != null && maxPrice != null) {
             todosLosResultados = guaridaService.buscarPorRangoPrecioOrdenado(minPrice, maxPrice, sortObj);
         } else if (search != null && !search.isBlank()) {
@@ -60,7 +62,7 @@ public class GuaridaController {
             todosLosResultados = guaridaService.obtenerTodosOrdenados(sortObj);
         }
 
-        // Paginación Manual (Slice)
+        // Paginación Manual (Cálculo de índices para cortar la lista)
         int pageSize = 6;
         int totalItems = todosLosResultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -72,10 +74,12 @@ public class GuaridaController {
         List<Guarida> listaPaginada = (start > end || totalItems == 0) ?
                 Collections.emptyList() : todosLosResultados.subList(start, end);
 
+        // Pasamos datos a la vista
         model.addAttribute("guaridas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalItems", totalItems);
+        // Mantenemos filtros en pantalla
         model.addAttribute("search", search);
         model.addAttribute("sort", sort);
         model.addAttribute("minPrice", minPrice);
@@ -94,6 +98,7 @@ public class GuaridaController {
 
         Guarida g = guarida.get();
         model.addAttribute("guarida", g);
+        // Pasamos listas vacías si son nulas para evitar errores en Thymeleaf
         model.addAttribute("comodidades", g.getComodidades() != null ? g.getComodidades() : Collections.emptyList());
         model.addAttribute("resenas", g.getResenas() != null ? g.getResenas() : Collections.emptyList());
         model.addAttribute("salaSecreta", g.getSalaSecreta());
@@ -110,7 +115,8 @@ public class GuaridaController {
         logger.info("WEB: Formulario nueva guarida.");
         Guarida guarida = new Guarida();
 
-        // ✅ IMPORTANTE: Inicializar SalaSecreta para que el form HTML pueda hacer *{salaSecreta.codigo}
+        // Inicializamos la Sala Secreta vacía para que el formulario HTML funcione
+        // y podamos editar sus campos (código, función) directamente.
         guarida.setSalaSecreta(new SalaSecreta());
 
         model.addAttribute("guarida", guarida);
@@ -126,7 +132,7 @@ public class GuaridaController {
         if (optGuarida.isPresent()) {
             Guarida guarida = optGuarida.get();
 
-            // ✅ IMPORTANTE: Si por error en BD es null, inicializarla para que no falle el form
+            // Seguridad: Si la base de datos tiene un nulo, lo arreglamos aquí
             if (guarida.getSalaSecreta() == null) {
                 guarida.setSalaSecreta(new SalaSecreta());
             }
@@ -144,7 +150,7 @@ public class GuaridaController {
 
     @PostMapping("/guaridas/save")
     public String guardar(@Valid @ModelAttribute Guarida guarida,
-                          @RequestParam("imageFile") MultipartFile imageFile,
+                          @RequestParam("imageFile") MultipartFile imageFile, // Recibimos el archivo
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes,
                           Model model) {
@@ -154,21 +160,20 @@ public class GuaridaController {
             return "forms-html/guarida-form";
         }
 
-        // Validación de nombre único
+        // Validación manual de nombre único
         if (guarida.getId() == null && guaridaService.existePorNombre(guarida.getNombre())) {
             model.addAttribute("errorMessage", "El nombre de la guarida ya existe.");
             model.addAttribute("allComodidades", comodidadRepository.findAll());
             return "forms-html/guarida-form";
         }
 
-        // Subida de imagen
+        // Lógica de subida de imagen
         if (!imageFile.isEmpty()) {
             String fileName = fileStorageService.saveFile(imageFile);
             if (fileName != null) {
                 guarida.setImagen(fileName);
             }
         }
-        // Nota: Si no sube imagen, guarida.imagen será null, y la entidad usará la default.
 
         guaridaService.guardar(guarida);
         redirectAttributes.addFlashAttribute("successMessage", "Guarida guardada con éxito.");
@@ -188,15 +193,15 @@ public class GuaridaController {
         }
 
         try {
-            // ✅ LÓGICA DE IMAGEN EN UPDATE:
+            // GESTIÓN INTELIGENTE DE IMAGEN:
             if (!imageFile.isEmpty()) {
-                // 1. Si sube nueva foto, guardarla y setearla
+                // 1. Si el usuario sube foto nueva, la guardamos y asignamos
                 String fileName = fileStorageService.saveFile(imageFile);
                 if (fileName != null) {
                     guarida.setImagen(fileName);
                 }
             } else {
-                // 2. Si NO sube foto, recuperar la antigua de BD para no perderla
+                // 2. Si NO sube foto, recuperamos la antigua de la BD para no perderla
                 Optional<Guarida> guaridaAntigua = guaridaService.obtenerPorId(guarida.getId());
                 guaridaAntigua.ifPresent(g -> guarida.setImagen(g.getImagen()));
             }
@@ -222,7 +227,6 @@ public class GuaridaController {
         return "redirect:/guaridas";
     }
 
-    // Helper
     private Sort getSort(String sort) {
         if (sort == null) return Sort.by("id").ascending();
         return switch (sort) {

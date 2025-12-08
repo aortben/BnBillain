@@ -1,6 +1,6 @@
 package com.bnbillains.entities;
 
-import jakarta.persistence.*; // Anotaciones de JPA
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -11,57 +11,72 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * La clase `Reseña` representa una entidad que modela la opinión y valoración
- * que un villano deja sobre una guarida tras su estancia.
- * Contiene validaciones específicas para la puntuación (1-5 estrellas).
+ * Entidad que modela la opinión y valoración (feedback) de un usuario.
+ * Vincula un Villano con una Guarida mediante una puntuación y un comentario.
  */
-@Entity // Marca esta clase como una entidad gestionada por JPA.
-@Table(name = "resena") // Especifica el nombre de la tabla asociada a esta entidad.
+@Entity
+@Table(name = "resena")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resena {
 
-    // Campo que almacena el identificador único de la reseña.
+    /**
+     * Identificador único de la reseña (Clave Primaria).
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Campo para el texto de la opinión.
+    /**
+     * Texto explicativo de la experiencia.
+     * Limitado a 1000 caracteres para evitar textos excesivamente largos.
+     */
     @Size(max = 1000, message = "{msg.resena.comentario.size}")
     @Column(name = "comentario", length = 1000)
     private String comentario;
 
-    // Campo para la puntuación numérica (Estrellas).
-    // Se valida que esté entre 1 y 5.
+    /**
+     * Valoración numérica (Estrellas).
+     * Validaciones estrictas: Obligatorio, mínimo 1, máximo 5.
+     */
     @NotNull(message = "{msg.resena.puntuacion.notNull}")
     @Min(value = 1, message = "{msg.resena.puntuacion.min}")
     @Max(value = 5, message = "{msg.resena.puntuacion.max}")
     @Column(name = "puntuacion", nullable = false)
     private Long puntuacion;
 
-    // Fecha en la que se publicó el comentario.
+    /**
+     * Fecha de emisión de la reseña.
+     */
     @Column(name = "fecha_publicacion")
     private LocalDate fechaPublicacion;
 
-    // Relación Muchos a Uno con Villano (Autor de la reseña).
+    // --- RELACIONES ---
+
+    /**
+     * Autor de la reseña (Villano).
+     * Relación Muchos a Uno: Un villano puede escribir muchas reseñas.
+     */
     @ManyToOne
     @JoinColumn(name = "villano_id")
     private Villano villano;
 
-    // Relación Muchos a Uno con Guarida (Destino de la reseña).
+    /**
+     * Alojamiento evaluado (Guarida).
+     * Relación Muchos a Uno: Una guarida puede recibir muchas reseñas.
+     */
     @ManyToOne
     @JoinColumn(name = "guarida_id")
     private Guarida guarida;
 
     /**
-     * Constructor personalizado sin `id`.
-     *
-     * @param comentario Texto de la opinión.
-     * @param puntuacion Valoración numérica.
+     * Constructor personalizado para crear reseñas sin ID.
+     * @param comentario Texto de opinión.
+     * @param puntuacion Valor numérico (1-5).
      * @param fechaPublicacion Fecha de creación.
      * @param villano Autor.
-     * @param guarida Lugar valorado.
+     * @param guarida Lugar.
      */
     public Resena(String comentario, Long puntuacion, LocalDate fechaPublicacion, Villano villano, Guarida guarida) {
         this.comentario = comentario;

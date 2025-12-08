@@ -13,10 +13,13 @@ import java.util.List;
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     // --- BÚSQUEDAS ORDENADAS ---
+
+    // Filtro exacto: Sirve para los botones de la web "Ver 5 Estrellas", "Ver 1 Estrella".
+    // Acepta ordenación (por fecha, por ejemplo).
     List<Resena> findByPuntuacion(Long puntuacion, Sort sort);
 
-    // Buscar por texto en el comentario + orden
+    // Buscador de texto: Busca palabras dentro del comentario.
+    // "IgnoreCase" permite encontrar "Malo" aunque escriban "malo".
     List<Resena> findByComentarioContainingIgnoreCase(String texto, Sort sort);
 
 }
-

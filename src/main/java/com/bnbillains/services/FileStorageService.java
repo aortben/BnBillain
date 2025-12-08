@@ -11,39 +11,45 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+
 @Service
 public class FileStorageService {
+
     private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
+
     // Variable de entorno para la ruta de almacenamiento
     @Value("${UPLOAD_PATH}")
     private String uploadPath;
+
     /**
-     * Guarda un archivo en el sistema de archivos y devuelve el nombre del
-     archivo guardado.
+     * Guarda un archivo en el sistema de archivos y devuelve el nombre del archivo guardado.
      *
      * @param file El archivo a guardar.
      * @return El nombre del archivo guardado o null si ocurre un error.
      */
     public String saveFile(MultipartFile file) {
         try {
-// Generar un nombre único para el archivo
+            // Generar un nombre único para el archivo
             String fileExtension = getFileExtension(file.getOriginalFilename());
-            String uniqueFileName = UUID.randomUUID().toString() + "." +
-                    fileExtension;
-// Ruta completa del archivo
-            Path filePath = Paths.get(uploadPath + File.separator +
-                    uniqueFileName);
-// Crear los directorios si no existen
+            String uniqueFileName = UUID.randomUUID().toString() + "." + fileExtension;
+
+            // Ruta completa del archivo
+            Path filePath = Paths.get(uploadPath + File.separator + uniqueFileName);
+
+            // Crear los directorios si no existen
             Files.createDirectories(filePath.getParent());
-// Guardar el archivo en la ruta
+
+            // Guardar el archivo en la ruta
             Files.write(filePath, file.getBytes());
             logger.info("Archivo {} guardado con éxito.", uniqueFileName);
+
             return uniqueFileName; // Devolver el nombre del archivo para guardarlo en la base de datos
         } catch (IOException e) {
             logger.error("Error al guardar el archivo: {}", e.getMessage());
             return null;
         }
     }
+
     /**
      * Elimina un archivo del sistema de archivos.
      *
@@ -55,10 +61,10 @@ public class FileStorageService {
             Files.deleteIfExists(filePath);
             logger.info("Archivo {} eliminado con éxito.", fileName);
         } catch (IOException e) {
-            logger.error("Error al eliminar el archivo {}: {}", fileName,
-                    e.getMessage());
+            logger.error("Error al eliminar el archivo {}: {}", fileName, e.getMessage());
         }
     }
+
     /**
      * Obtiene la extensión del archivo.
      *

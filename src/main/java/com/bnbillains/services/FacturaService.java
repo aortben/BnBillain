@@ -17,6 +17,7 @@ public class FacturaService {
         this.facturaRepository = facturaRepository;
     }
 
+    // Métodos de lectura básicos (pasan el Sort al repositorio)
     public List<Factura> obtenerTodas(Sort sort) {
         return facturaRepository.findAll(sort);
     }
@@ -25,8 +26,12 @@ public class FacturaService {
         return facturaRepository.findById(id);
     }
 
-    // --- ESCRITURA ---
+    // --- LÓGICA DE ESCRITURA ---
+
+    // Guarda una nueva factura aplicando reglas de negocio
     public Factura guardar(Factura factura) {
+        // Regla de oro: Una reserva solo puede tener UNA factura.
+        // Si intentamos crear una nueva para una reserva que ya tiene, bloqueamos.
         if (factura.getId() == null && factura.getReserva() != null) {
             if (facturaRepository.existsByReserva_Id(factura.getReserva().getId())) {
                 throw new IllegalArgumentException("Esta reserva ya ha sido facturada. ¡No seas avaricioso!");
@@ -36,14 +41,14 @@ public class FacturaService {
     }
 
     // --- MÉTODO ACTUALIZAR BLINDADO ---
+    // Este método es "defensivo": protege los datos sensibles de ser borrados por error
     public Factura actualizar(Long id, Factura facturaDatosNuevos) {
         return facturaRepository.findById(id)
                 .map(facturaExistente -> {
-                    // 1. Actualizamos SOLO lo que el usuario puede cambiar (Método de Pago)
+                    // 1. Actualizamos lo que el usuario quiere cambiar (Método de Pago)
                     facturaExistente.setMetodoPago(facturaDatosNuevos.getMetodoPago());
 
-                    // 2. Protegemos los datos sensibles: Solo actualizamos si vienen datos reales
-                    // (Esto evita que se pongan a 0 o null si el formulario no los envía)
+                    // 2. Actualizamos importes SOLO si vienen datos reales (no nulos)
                     if (facturaDatosNuevos.getImporte() != null) {
                         facturaExistente.setImporte(facturaDatosNuevos.getImporte());
                     }
@@ -51,9 +56,9 @@ public class FacturaService {
                         facturaExistente.setImpuestosMalignos(facturaDatosNuevos.getImpuestosMalignos());
                     }
 
-                    // 3. ⛔ IMPORTANTE: NO tocamos la reserva (facturaExistente.setReserva(...))
+                    // 3. SEGURIDAD CRÍTICA: NO tocamos la reserva (facturaExistente.setReserva(...))
                     // Mantenemos la relación que ya existe en la base de datos.
-                    // Así, aunque el formulario envíe la reserva mal o null, no la perdemos.
+                    // Si el formulario web enviase la reserva como null, aquí la perderíamos si no hiciéramos esto.
 
                     return facturaRepository.save(facturaExistente);
                 })
@@ -65,14 +70,18 @@ public class FacturaService {
     }
 
     // --- BÚSQUEDA ---
+
+    // Busca por método de pago (ej: "Bitcoin") y ordena
     public List<Factura> buscarPorMetodoPago(String metodo, Sort sort) {
         return facturaRepository.findByMetodoPagoContainingIgnoreCase(metodo, sort);
     }
 
+    // Busca por rango de dinero y ordena
     public List<Factura> buscarPorRangoImporte(Double min, Double max, Sort sort) {
         return facturaRepository.findByImporteBetween(min, max, sort);
     }
 
+    // Busca las facturas de un cliente concreto
     public List<Factura> obtenerFacturasPorVillano(Long villanoId) {
         return facturaRepository.findByReserva_Villano_Id(villanoId);
     }

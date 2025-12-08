@@ -11,13 +11,17 @@ import java.util.Optional;
 @Repository
 public interface SalaSecretaRepository extends JpaRepository<SalaSecreta, Long> {
 
+    // Recupera una sala por su contraseña exacta (útil para lógica interna)
     Optional<SalaSecreta> findByCodigoAcceso(String codigoAcceso);
 
+    // Validación rápida: ¿Existe ya este código? (Para evitar duplicados al crear)
     boolean existsByCodigoAcceso(String codigoAcceso);
 
-    // Buscar por función principal ignorando mayúsculas y soportando ordenación
+    // --- MÉTODOS PARA EL BUSCADOR WEB ---
+
+    // Busca por la descripción de uso (ej: "Nuclear") y permite ordenar
     List<SalaSecreta> findByFuncionPrincipalContainingIgnoreCase(String texto, Sort sort);
 
-    // Buscar por código parcial ignorando mayúsculas y soportando ordenación
+    // Busca por fragmento del código (ej: "123") ignorando mayúsculas
     List<SalaSecreta> findByCodigoAccesoContainingIgnoreCase(String texto, Sort sort);
 }
