@@ -78,6 +78,13 @@
                 </ul>
             </div>
 
+            <ul class="navbar-nav">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <span class="navbar-text me-3">Bienvenido, </span><span
+                        sec:authentication="name"></span>
+                </li>
+            </ul>
+
             <!-- Botones de Login y Logout -->
             <ul class="navbar-nav ms-auto mb-2 mb-md-0">
                 <!-- Mostrar enlace de login si el usuario no está autenticado -->
