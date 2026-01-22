@@ -1,41 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Ticket Logger - Login')"></head>
+<head th:replace="fragments/head :: head ('BnBillains - Acceso')"></head>
 <body class="d-flex flex-column h-100">
-<!-- Fragmento del header -->
+
 <header th:replace="fragments/header :: header"></header>
-<!-- Contenido principal con el formulario de login -->
+
 <main class="flex-shrink-0">
-    <div class="container">
-        <h1 class="mt-5" th:text="#{spring.security.ui.login.title}"></h1>
+    <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form th:action="@{/login}" method="post" class="form-signin">
-                    <!-- Campo de usuario -->
-                    <div class="form-group mb-3">
-                        <label th:for="username"
-                               th:text="#{spring.security.ui.login.username}"></label>
-                        <input type="text" id="username" name="username"
-                               class="form-control" th:placeholder="#{spring.security.ui.login.username}"
-                               required autofocus>
+            <div class="col-md-5">
+                <div class="card shadow-lg">
+                    <div class="card-header text-center py-3">
+                        <h3 class="mb-0">Identificación Criminal</h3>
                     </div>
-                    <!-- Campo de contraseña -->
-                    <div class="form-group mb-3">
-                        <label th:for="password"
-                               th:text="#{spring.security.ui.login.password}"></label>
-                        <input type="password" id="password" name="password"
-                               class="form-control" th:placeholder="#{spring.security.ui.login.password}"
-                               required>
+                    <div class="card-body p-4">
+
+                        <div th:if="${param.error}" class="alert alert-danger text-center border-0" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Credenciales incorrectas.
+                        </div>
+                        <div th:if="${param.logout}" class="alert alert-success text-center border-0 bg-dark text-white" role="alert">
+                            <i class="bi bi-door-closed"></i> Has huido correctamente.
+                        </div>
+
+                        <form th:action="@{/login}" method="post">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required autofocus>
+                                <label for="username" class="text-secondary">Usuario o Email</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                                <label for="password" class="text-secondary">Contraseña Secreta</label>
+                            </div>
+                            <div class="d-grid gap-2 mb-4">
+                                <button class="btn btn-primary btn-lg" type="submit">Entrar a la Guarida</button>
+                            </div>
+                        </form>
+
+                        <div class="position-relative text-center mb-4">
+                            <hr class="border-secondary">
+                            <span class="position-absolute top-50 start-50 translate-middle px-3"
+                                  style="background-color: var(--color-bg-card); color: var(--color-text-muted);">
+                                O usa identidad falsa
+                            </span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+
+                            <a href="/oauth2/authorization/google" class="btn btn-danger btn-lg text-white">
+                                <i class="bi bi-google me-2"></i> Acceder con Google
+                            </a>
+
+                            <a href="/oauth2/authorization/linkedin" class="btn btn-outline-light btn-lg">
+                                <i class="bi bi-linkedin me-2"></i> Acceder con LinkedIn
+                            </a>
+
+                            <a href="/oauth2/authorization/twitter" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-twitter-x me-2"></i> Acceder con X
+                            </a>
+
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <p class="small text-muted">¿Nuevo en el sindicato? <a href="/register" class="text-danger fw-bold text-decoration-none">Reclútate aquí</a></p>
+                        </div>
+
                     </div>
-                    <!-- Botón de envío -->
-                    <button class="btn btn-primary w-100" type="submit"
-                            th:text="#{spring.security.ui.login.submit}"></button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </main>
-<!-- Fragmento del footer -->
+
 <footer th:replace="fragments/footer :: footer"></footer>
+
 </body>
 </html>
