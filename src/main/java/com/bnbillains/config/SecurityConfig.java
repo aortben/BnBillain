@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .failureHandler(failureHandler)
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout") // URL estándar
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )

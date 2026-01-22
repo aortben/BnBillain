@@ -24,11 +24,12 @@ INSERT INTO comodidad (nombre, auto_destruccion) VALUES
 ('Abrigos de Piel de Dálmata', false);  -- ID 10
 
 -- 3. VILLANOS (Corregidos con el patrón: 3num + 1letra + 6num)
+
+INSERT INTO villano (nombre, alias, carne_villano, email, username, password, role, enabled) VALUES
 -- =========================================================================
 -- GOOGLE
 -- =========================================================================
 ('Jack Napier', 'The Joker', '666J000001', 'alopper.daw@gmail.com', 'joker', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_ADMIN', true),
-
 -- =========================================================================
 -- TWITTER / X
 -- =========================================================================
