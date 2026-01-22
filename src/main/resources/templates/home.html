@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('BnBillains - Guarida Central')}"></head>
+<body class="d-flex flex-column h-100 bg-light">
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main>
+
+    <div class="position-relative overflow-hidden p-3 p-md-5 text-center bg-dark text-white"
+         style="background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; min-height: 60vh; display: flex; align-items: center; justify-content: center;">
+
+        <div class="col-md-8 p-lg-5 mx-auto my-5">
+            <h1 class="display-3 fw-bold mb-3 text-danger" style="text-shadow: 2px 2px 4px #000;">BnBillains</h1>
+            <h2 class="fw-normal mb-3" th:text="#{msg.home.hero.title}">Tu Próxima Base</h2>
+            <p class="lead fw-normal mb-4" th:text="#{msg.home.hero.subtitle}">Descripción impactante...</p>
+
+            <div class="d-flex gap-3 justify-content-center lead fw-normal">
+                <a th:if="${#authorization.expression('isAuthenticated()')}"
+                   class="btn btn-danger btn-lg px-4 shadow-lg hover-scale"
+                   href="/guaridas">
+                    <i class="bi bi-search"></i> <span th:text="#{msg.home.btn.explore}">Explorar</span>
+                </a>
+
+                <a th:unless="${#authorization.expression('isAuthenticated()')}"
+                   class="btn btn-outline-light btn-lg px-4 shadow-lg"
+                   href="/login">
+                    <i class="bi bi-person-fill-lock"></i> <span th:text="#{msg.home.btn.login}">Login</span>
+                </a>
+            </div>
+
+            <div th:if="${#authorization.expression('isAuthenticated()')}" class="mt-4 text-warning animate__animated animate__fadeIn">
+                <small><i class="bi bi-radioactive"></i> <span th:text="#{msg.home.welcome}">Bienvenido</span> <strong th:text="${#authentication.name}">Usuario</strong></small>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container py-5">
+        <div class="row g-4 py-5 row-cols-1 row-cols-lg-3 text-center">
+
+            <div class="feature col">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-dark text-white fs-2 mb-3 rounded-circle shadow" style="width: 80px; height: 80px;">
+                    <i class="bi bi-eye-slash-fill"></i>
+                </div>
+                <h3 class="fs-4 text-danger mt-2" th:text="#{msg.home.feature1.title}">Privacidad</h3>
+                <p class="text-secondary px-4" th:text="#{msg.home.feature1.desc}">Texto privacidad.</p>
+            </div>
+
+            <div class="feature col">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-dark text-white fs-2 mb-3 rounded-circle shadow" style="width: 80px; height: 80px;">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h3 class="fs-4 text-danger mt-2" th:text="#{msg.home.feature2.title}">Seguridad</h3>
+                <p class="text-secondary px-4" th:text="#{msg.home.feature2.desc}">Texto seguridad.</p>
+            </div>
+
+            <div class="feature col">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-dark text-white fs-2 mb-3 rounded-circle shadow" style="width: 80px; height: 80px;">
+                    <i class="bi bi-gem"></i>
+                </div>
+                <h3 class="fs-4 text-danger mt-2" th:text="#{msg.home.feature3.title}">Lujo</h3>
+                <p class="text-secondary px-4" th:text="#{msg.home.feature3.desc}">Texto lujo.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="bg-dark text-secondary px-4 py-5 text-center">
+        <div class="py-5">
+            <h1 class="display-5 fw-bold text-white mb-4">La Red Criminal #1</h1>
+            <div class="col-lg-6 mx-auto">
+                <div class="row text-center text-white">
+                    <div class="col-4">
+                        <span class="display-6 fw-bold text-warning">500+</span>
+                        <br><small th:text="#{msg.home.stats.lairs}">Guaridas</small>
+                    </div>
+                    <div class="col-4 border-start border-end border-secondary">
+                        <span class="display-6 fw-bold text-warning">1.2k</span>
+                        <br><small th:text="#{msg.home.stats.villains}">Villanos</small>
+                    </div>
+                    <div class="col-4">
+                        <span class="display-6 fw-bold text-warning">99%</span>
+                        <br><small th:text="#{msg.home.stats.plans}">Planes Éxito</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

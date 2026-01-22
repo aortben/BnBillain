@@ -32,42 +32,79 @@ h1, h2, h3, h4, h5, h6 {
     text-shadow: 2px 2px 0px #000;
 }
 
-/* --- Navbar --- */
+/* --- Navbar Premium (Reemplaza la sección Navbar anterior) --- */
 .navbar {
-    background-color: #050505 !important;
-    background-image: none !important;
-    border-bottom: 3px solid var(--color-logo-light);
-    box-shadow: 0 4px 20px rgba(122, 0, 75, 0.4);
+    /* Fondo degradado oscuro estilo Villano */
+    background: linear-gradient(180deg, rgba(15,15,16,1) 0%, rgba(26,26,29,0.95) 100%) !important;
+    backdrop-filter: blur(10px); /* Efecto cristal */
+    border-bottom: 2px solid var(--color-logo-light);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    padding: 0.8rem 1rem;
 }
 
 .navbar-brand {
     font-family: var(--font-title);
-    color: var(--color-accent) !important;
+    color: var(--color-text-main) !important;
     font-size: 1.8rem;
+    text-shadow: 2px 2px 0 var(--color-logo-dark);
+    transition: transform 0.3s;
 }
 
-.navbar-brand img {
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15))
-            drop-shadow(0 0 10px var(--color-logo-dark));
-    transition: transform 0.3s ease;
-}
-
-.navbar-brand:hover img {
+.navbar-brand:hover {
     transform: scale(1.05);
+    color: var(--color-accent) !important;
 }
 
 .nav-link {
-    color: var(--color-text-main) !important;
+    color: var(--color-text-muted) !important;
     font-family: var(--font-body);
+    font-weight: 500;
     text-transform: uppercase;
-    font-weight: bold;
     letter-spacing: 1px;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
+    position: relative;
 }
 
-.nav-link:hover {
-    color: var(--color-logo-light) !important;
+.nav-link:hover, .nav-link.active {
+    color: var(--color-text-main) !important;
     text-shadow: 0 0 8px var(--color-logo-light);
+}
+
+/* Efecto subrayado al pasar el ratón */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--color-accent);
+    transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Dropdown Menu Oscuro */
+.dropdown-menu {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-logo-dark);
+}
+
+.dropdown-item {
+    color: var(--color-text-main);
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: var(--color-logo-dark);
+    color: #fff;
+}
+
+.dropdown-header {
+    color: var(--color-text-muted);
 }
 
 /* --- Dropdowns --- */

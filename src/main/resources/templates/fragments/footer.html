@@ -1,11 +1,34 @@
-<footer th:fragment="footer" xmlns:th="http://www.w3.org/1999/xhtml" class="text-light py-4 fixed-bottom"
-        style="width: 80%; margin: 0 auto;
-               box-shadow: 0 -4px 6px rgba(0,0,0,0.3);
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<footer th:fragment="footer" class="text-light py-3 fixed-bottom animate__animated animate__fadeInUp"
+        style="width: 90%; max-width: 1200px; margin: 0 auto;
+               background: linear-gradient(0deg, rgba(15,15,16,1) 0%, rgba(26,26,29,0.95) 100%);
+               backdrop-filter: blur(10px);
+               box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+               border-top: 2px solid var(--color-logo-light);
+               border-left: 1px solid #333;
+               border-right: 1px solid #333;
                border-radius: 15px 15px 0 0;">
-    <div class="container text-center">
-        <p class="mb-0" style="text-shadow: 1px 1px 2px #000;">
-            &copy; <span th:text="#{msg.footer}">2025 BnBillains - Plataforma de Alquiler de Guaridas. Todos los derechos malignos reservados.</span>
-        </p>
-    </div>
-</footer>
 
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="fs-5">😈</span>
+            <small class="text-muted" style="letter-spacing: 0.5px;">
+                &copy; 2025 <strong class="text-white">BnBillains</strong>.
+                <span class="d-none d-md-inline" th:text="#{msg.footer}">Derechos malignos reservados.</span>
+            </small>
+        </div>
+
+        <div class="d-none d-md-flex gap-3 small">
+            <a href="#" class="text-decoration-none text-secondary hover-white">Términos de Maldad</a>
+            <a href="#" class="text-decoration-none text-secondary hover-white">Política de Tortura</a>
+        </div>
+
+    </div>
+
+    <style>
+        .hover-white:hover { color: #fff !important; transition: color 0.3s; }
+    </style>
+</footer>
+</html>

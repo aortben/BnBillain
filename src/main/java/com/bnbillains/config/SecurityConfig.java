@@ -1,5 +1,7 @@
 package com.bnbillains.config;
 
+import com.bnbillains.handlers.CustomOAuth2FailureHandler;
+import com.bnbillains.handlers.CustomOAuth2SuccessHandler;
 import com.bnbillains.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,31 +21,35 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    // --- INYECCIÓN DE HANDLERS (PDF Pág 20) ---
+    @Autowired
+    private CustomOAuth2SuccessHandler successHandler;
+
+    @Autowired
+    private CustomOAuth2FailureHandler failureHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // 1. RUTAS PÚBLICAS
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error/**").permitAll()
-
-                        // 2. RUTAS DE ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // 3. RESTO BLOQUEADO
                         .anyRequest().authenticated()
                 )
-                // LOGIN CLÁSICO (Base de Datos)
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
-                // LOGIN OAUTH2 (Google)
+                // --- OAUTH2 ESTRICTO (Con Handlers) ---
                 .oauth2Login(oauth -> oauth
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        // En lugar de defaultSuccessUrl, usamos los handlers
+                        .successHandler(successHandler)
+                        .failureHandler(failureHandler)
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout") // URL estándar
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
@@ -54,7 +60,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Suprimimos el aviso de "deprecated" porque en esta versión sigue siendo válido
+    // ... resto de beans (authenticationProvider, passwordEncoder) igual que antes ...
     @Bean
     @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider() {

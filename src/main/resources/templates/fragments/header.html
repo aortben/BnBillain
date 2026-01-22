@@ -1,122 +1,74 @@
-<header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <nav class="navbar navbar-expand-md fixed-top"
-         style="width: 80%; margin: 0 auto;
-                background: linear-gradient(to right,
-                                            #ff0000 0%,
-                                            #ff4d4d 25%,
-                                            #ff9999 50%,
-                                            #ffe6e6 75%,
-                                            #ffffff 100%);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-                border-bottom: 2px solid #000;
-                border-radius: 0 0 15px 15px;">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
 
-            <a class="navbar-brand text-white fw-bold hover-scale" th:href="@{/}"
-               style="text-shadow: 2px 2px 0 #000; transition: transform 0.3s;">
-                <img src="/images/logo2.png" alt="BnBillains Logo" width="150" style="filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));">
+            <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                <img th:src="@{/images/logo.png}" alt="Logo" width="40" height="40" class="d-inline-block align-text-top"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <i class="bi bi-building-fill-exclamation text-danger" style="display:none;"></i>
+                <span>BnBillains</span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
-                    style="border: 2px solid #000;">
-                <span class="navbar-toggler-icon" style="filter: invert(0);"></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav mb-2 mb-md-0">
+            <div class="collapse navbar-collapse" id="navbarContent">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark fw-bold text-uppercase" th:href="@{/villanos}"
-                           style="letter-spacing: 1px;"
-                           th:text="#{msg.header.villains}">Villanos</a>
+                        <a class="nav-link" th:href="@{/}" th:text="#{msg.header.home}">Inicio</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-bold text-uppercase" th:href="@{/guaridas}"
-                           style="letter-spacing: 1px;"
-                           th:text="#{msg.header.lair}">Guaridas</a>
+                    <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link" th:href="@{/guaridas}" th:text="#{msg.header.lair}">Guaridas</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link" th:href="@{/villanos}" th:text="#{msg.header.villains}">Villanos</a>
                     </li>
                 </ul>
 
-                <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center gap-3">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link text-dark fw-bold dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span th:text="#{msg.header.options} ?: 'Opciones'">Más opciones</span>
+                    <li class="nav-item d-flex align-items-center">
+                        <a th:href="@{''(lang=es)}" class="nav-link p-1" title="Español">🇪🇸</a>
+                        <span class="text-secondary">|</span>
+                        <a th:href="@{''(lang=en)}" class="nav-link p-1" title="English">🇬🇧</a>
+                    </li>
+
+                    <li class="nav-item d-flex gap-2" th:unless="${#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm px-3">
+                            <i class="bi bi-person-fill"></i> <span th:text="#{spring.security.ui.login.submit}">Login</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-dark" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" th:href="@{/comodidades}" th:text="#{msg.header.comfort}">Comodidades</a></li>
-                            <li><a class="dropdown-item" th:href="@{/salas-secretas}" th:text="#{msg.header.secretRooms}">Salas Secretas</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" th:href="@{/resenas}" th:text="#{msg.header.reviews}">Reseñas</a></li>
-                            <li><a class="dropdown-item" th:href="@{/reservas}" th:text="#{msg.header.reservations}">Reservas</a></li>
-                            <li><a class="dropdown-item" th:href="@{/facturas}" th:text="#{msg.header.invoices}">Facturas</a></li>
+                        <a th:href="@{/register}" class="btn btn-danger btn-sm px-3">
+                            <i class="bi bi-person-plus-fill"></i> Registro
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://github.com/mdo.png" alt="Avatar" width="32" height="32" class="rounded-circle border border-danger">
+                            <span th:text="${#authentication.name}" class="text-white">Villano</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="userDropdown">
+                            <li><span class="dropdown-header text-uppercase small">Tu Cuenta</span></li>
+                            <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#">Mis Reservas</a></li>
+                            <li><hr class="dropdown-divider bg-secondary"></li>
+
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger fw-bold d-flex align-items-center gap-2">
+                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </li>
-
-                    <li class="nav-item">
-                        <div class="d-flex align-items-center bg-white border border-dark rounded-pill shadow-sm px-2 py-1"
-                             style="transform: scale(0.95);">
-
-                            <a th:href="@{''(lang=es)}"
-                               class="btn btn-sm btn-link text-decoration-none fw-bold text-dark px-2 lang-btn"
-                               title="Español"
-                               style="transition: all 0.2s;">
-                                <span style="font-size: 1.2em;">🇪🇸</span> <span class="small">ES</span>
-                            </a>
-
-                            <div style="width: 1px; height: 15px; background-color: #ccc;"></div>
-
-                            <a th:href="@{''(lang=en)}"
-                               class="btn btn-sm btn-link text-decoration-none fw-bold text-dark px-2 lang-btn"
-                               title="English"
-                               style="transition: all 0.2s;">
-                                <span class="small">EN</span> <span style="font-size: 1.2em;">🇬🇧</span>
-                            </a>
-                        </div>
-                    </li>
-
                 </ul>
             </div>
-
-            <ul class="navbar-nav">
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <span class="navbar-text me-3">Bienvenido, </span><span
-                        sec:authentication="name"></span>
-                </li>
-            </ul>
-
-            <!-- Botones de Login y Logout -->
-            <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-                <!-- Mostrar enlace de login si el usuario no está autenticado -->
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link" th:href="@{/login}">Login</a>
-                </li>
-                <!-- Mostrar enlace de logout si el usuario está autenticado -->
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/logout}"
-                       onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
-                        Logout
-                    </a>
-                    <form id="logout-form" th:action="@{/logout}" method="post"
-                          style="display: none;"></form>
-                </li>
-            </ul>
-
-
         </div>
     </nav>
-
-    <style>
-        .lang-btn:hover {
-            transform: scale(1.15);
-            text-shadow: 0 0 5px rgba(0,0,0,0.2);
-        }
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-        .nav-link:hover {
-            color: #d90429 !important; /* Rojo intenso al pasar el ratón */
-            text-shadow: 0 0 1px rgba(0,0,0,0.3);
-        }
-    </style>
 </header>
+</html>

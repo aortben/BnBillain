@@ -41,3 +41,5 @@ build/
 *.iml
 *.iws
 .vscode/
+
+.env
