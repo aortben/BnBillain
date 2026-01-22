@@ -11,27 +11,21 @@ import java.util.Optional;
 @Repository
 public interface VillanoRepository extends JpaRepository<Villano, Long> {
 
-    // Búsquedas exactas para login o recuperación de perfil
+    // --- BÚSQUEDAS EXACTAS (Login y Perfil) ---
+    // Sirve tanto para Login DB como para comprobar OAuth2
     Optional<Villano> findByEmail(String email);
+
+    // Método necesario para el Login clásico por formulario (si usas username en vez de email)
+    Optional<Villano> findByUsername(String username);
+
     Optional<Villano> findByCarnetDeVillano(String carnetDeVillano);
 
-    // Validaciones de unicidad (se usan al registrar un nuevo villano)
+    // --- VALIDACIONES (Registro) ---
+    // Sirve para el registro manual y para el Handler de OAuth2
     boolean existsByEmail(String email);
     boolean existsByCarnetDeVillano(String carnetDeVillano);
 
     // --- BUSCADOR INTELIGENTE ---
-    // Esta consulta es "Nombre O Alias". Permite que el usuario escriba algo
-    // y el sistema busque en ambos campos a la vez.
     List<Villano> findByNombreContainingIgnoreCaseOrAliasContainingIgnoreCase(String nombre, String alias, Sort sort);
 
-
-    // Método necesario para el Login clásico (Formulario)
-    Optional<Villano> findByUsername(String username);
-
-    // Método necesario para OAuth2 (Google/Twitter/Linkedin)
-    // Nos permite buscar si existe un villano con ese email
-    Optional<Villano> findByEmail(String email);
-
-    // Método auxiliar para el Handler de OAuth2 (PDF UD05-3)
-    boolean existsByEmail(String email);
 }

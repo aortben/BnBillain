@@ -16,7 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Inyectamos TU servicio de usuarios (el que conecta con la tabla Villano)
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -24,24 +23,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // 1. RUTAS PÚBLICAS (Login, Recursos estáticos, Errores)
+                        // 1. RUTAS PÚBLICAS
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error/**").permitAll()
 
-                        // 2. RUTAS PROTEGIDAS POR ROL (Ejemplos para cuando metáis roles)
+                        // 2. RUTAS DE ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         // 3. RESTO BLOQUEADO
                         .anyRequest().authenticated()
                 )
-                // --- CONFIGURACIÓN LOGIN BASE DE DATOS (Tu parte) ---
+                // LOGIN CLÁSICO (Base de Datos)
                 .formLogin(form -> form
-                        .loginPage("/login")        // Tu vista personalizada
+                        .loginPage("/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
-                // --- CONFIGURACIÓN OAUTH2 (Google + Sitio para LinkedIn/X) ---
-                // Al dejarlo así, Spring detectará automáticamente Google, LinkedIn y X
-                // cuando se añadan al application.properties. ¡Tus compañeros no tendrán que tocar Java!
+                // LOGIN OAUTH2 (Google)
                 .oauth2Login(oauth -> oauth
                         .loginPage("/login")
                         .defaultSuccessUrl("/", true)
@@ -57,8 +54,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Conecta Spring Security con tu Base de Datos MySQL
+    // Suprimimos el aviso de "deprecated" porque en esta versión sigue siendo válido
     @Bean
+    @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
