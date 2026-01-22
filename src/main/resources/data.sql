@@ -24,19 +24,31 @@ INSERT INTO comodidad (nombre, auto_destruccion) VALUES
 ('Abrigos de Piel de Dálmata', false);  -- ID 10
 
 -- 3. VILLANOS (Corregidos con el patrón: 3num + 1letra + 6num)
-INSERT INTO villano (nombre, alias, carne_villano, email) VALUES
--- Clásicos (Ids corregidos)
-('Jack Napier', 'The Joker', '666J000001', 'joker@arkham.net'),                 -- ID 1
-('Victor Fries', 'Mr. Freeze', '000F000002', 'frio@hielo.com'),                 -- ID 2
-('Heinz Doofenshmirtz', 'Dr. Doofenshmirtz', '999D000003', 'heinz@evilinc.com'),-- ID 3
-('Gru', 'Mi Villano Favorito', '001G000004', 'gru@minions.com'),                -- ID 4
+-- =========================================================================
+-- GOOGLE
+-- =========================================================================
+('Jack Napier', 'The Joker', '666J000001', 'alopper.daw@gmail.com', 'joker', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_ADMIN', true),
 
--- Nuevos Fichajes
-('Scar', 'El Verdadero Rey', '100S123123', 'scar@pridelands.com'),              -- ID 5
-('Dr. Facilier', 'El Hombre Sombra', '666F654321', 'facilier@friendsontheotherside.com'), -- ID 6
-('Anakin Skywalker', 'Darth Vader', '501V501501', 'vader@empire.gov'),          -- ID 7
-('Hades', 'Dios del Inframundo', '666H666666', 'hades@olympus.rejects.com'),    -- ID 8
-('Cruella de Vil', 'Reina de la Moda', '101C101101', 'cruella@hellhall.fashion'); -- ID 9
+-- =========================================================================
+-- TWITTER / X
+-- =========================================================================
+-- LinkedIn, cambia el email de Mr. Freeze por el tuyo.
+('Victor Fries', 'Mr. Freeze', '000F000002', 'EMAIL_DEL_COMPAÑERO_TWITTER@ejemplo.com', 'freeze', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_USER', true),
+
+-- =========================================================================
+-- LINKEDIN
+-- =========================================================================
+-- LinkedIn, cambia el email de Doofenshmirtz por el tuyo.
+('Heinz Doofenshmirtz', 'Dr. Doofenshmirtz', '999D000003', 'EMAIL_DEL_COMPAÑERO_LINKEDIN@ejemplo.com', 'doof', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_MANAGER', true),
+
+
+-- OTROS VILLANOS DE RELLENO (Para que la web no se vea vacía)
+('Gru', 'Mi Villano Favorito', '001G000004', 'gru@minions.com', 'gru', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_USER', true),
+('Scar', 'El Verdadero Rey', '100S123123', 'scar@pridelands.com', 'scar', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_USER', true),
+('Dr. Facilier', 'El Hombre Sombra', '666F654321', 'facilier@friendsontheotherside.com', 'facilier', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_USER', true),
+('Anakin Skywalker', 'Darth Vader', '501V501501', 'vader@empire.gov', 'vader', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_MANAGER', true),
+('Hades', 'Dios del Inframundo', '666H666666', 'hades@olympus.rejects.com', 'hades', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_ADMIN', true),
+('Cruella de Vil', 'Reina de la Moda', '101C101101', 'cruella@hellhall.fashion', 'cruella', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_USER', true);
 
 -- 4. GUARIDAS
 INSERT INTO guarida (nombre, descripcion, ubicacion, precio_noche, imagen, sala_secreta_id) VALUES
