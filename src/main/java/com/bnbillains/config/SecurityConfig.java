@@ -1,121 +1,73 @@
 package com.bnbillains.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.bnbillains.services.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static javax.print.attribute.standard.ReferenceUriSchemesSupported.HTTP;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /**
-     * Configura la seguridad de la aplicación, definiendo autenticación y
-     autorización
-     * para diferentes roles de usuario, y gestionando la política de sesiones.
-     */
+    // Inyectamos TU servicio de usuarios (el que conecta con la tabla Villano)
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
-        private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
-        /**
-         * Configura el filtro de seguridad para las solicitudes HTTP, especificando
-         las
-         * rutas permitidas y los roles necesarios para acceder a diferentes
-         endpoints.
-         *
-         * @param http instancia de {@link HttpSecurity} para configurar la
-        seguridad.
-         * @return una instancia de {@link SecurityFilterChain} que contiene la
-        configuración de seguridad.
-         * @throws Exception si ocurre un error en la configuración de seguridad.
-         */
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            logger.info("Entrando en el método securityFilterChain");
-            // Configuración de seguridad
-            http.authorizeHttpRequests(auth -> {
-                        logger.debug("Configurando autorización de solicitudes HTTP");
-                                auth
-                                        .requestMatchers("/", "/hello").permitAll()
-                                        // Acceso anónimo
-                                        .requestMatchers("/admin").hasRole("ADMIN")
-                                        // Solo ADMIN
-                                        .requestMatchers("/regions", "/provinces",
-                                                "/supermarkets", "/locations", "/categories").hasRole("MANAGER") // Solo MANAGER
-                                        .requestMatchers("/tickets").hasRole("USER") // Solo USER
-                                        .anyRequest().authenticated(); // Cualquier otra solicitud requiere autenticación
-                    })
-                    .formLogin(form -> {
-                        logger.debug("Configurando formulario de inicio de sesión");
-                        form
-                                .loginPage("/login")
-                                .defaultSuccessUrl("/")
-                                .permitAll();
-                    })
-                    .sessionManagement(session -> {
-                        logger.debug("Configurando política de gestión de sesiones");
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED); // Usasesiones cuando sea necesario
-                    });
-            logger.info("Saliendo del método securityFilterChain");
-            return http.build();
-        }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        // 1. RUTAS PÚBLICAS (Login, Recursos estáticos, Errores)
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error/**").permitAll()
 
-        /**
-         * Configura los detalles de usuario en memoria para pruebas y desarrollo,
-         asignando
-         * roles específicos a cada usuario.
-         *
-         * @return una instancia de {@link UserDetailsService} que proporciona
-        autenticación en memoria.
-         */
-        @Bean
-        public UserDetailsService userDetailsService() {
-            logger.info("Entrando en el método userDetailsService");
-            logger.debug("Creando usuario con rol USER");
-            UserDetails user = User.builder()
-                    .username("user")
-                    .password(passwordEncoder().encode("password"))
-                    .roles("USER")
-                    .build();
-            logger.debug("Creando usuario con rol ADMIN");
-            UserDetails admin = User.builder()
-                    .username("admin")
-                    .password(passwordEncoder().encode("password"))
-                    .roles("ADMIN")
-                    .build();
-            logger.debug("Creando usuario con rol MANAGER");
-            UserDetails manager = User.builder()
-                    .username("manager")
-                    .password(passwordEncoder().encode("password"))
-                    .roles("MANAGER")
-                    .build();
-            logger.info("Saliendo del método userDetailsService");
-            return new InMemoryUserDetailsManager(user, admin, manager);
-        }
+                        // 2. RUTAS PROTEGIDAS POR ROL (Ejemplos para cuando metáis roles)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
-        /**
-         * Configura el codificador de contraseñas para cifrar las contraseñas de
-         los usuarios
-         * utilizando BCrypt.
-         *
-         * @return una instancia de {@link PasswordEncoder} que utiliza BCrypt para
-        cifrar contraseñas.
-         */
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            logger.info("Entrando en el método passwordEncoder");
-            PasswordEncoder encoder = new BCryptPasswordEncoder();
-            logger.info("Saliendo del método passwordEncoder");
-            return encoder;
-        }
+                        // 3. RESTO BLOQUEADO
+                        .anyRequest().authenticated()
+                )
+                // --- CONFIGURACIÓN LOGIN BASE DE DATOS (Tu parte) ---
+                .formLogin(form -> form
+                        .loginPage("/login")        // Tu vista personalizada
+                        .defaultSuccessUrl("/", true)
+                        .permitAll()
+                )
+                // --- CONFIGURACIÓN OAUTH2 (Google + Sitio para LinkedIn/X) ---
+                // Al dejarlo así, Spring detectará automáticamente Google, LinkedIn y X
+                // cuando se añadan al application.properties. ¡Tus compañeros no tendrán que tocar Java!
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                );
+
+        return http.build();
     }
+
+    // Conecta Spring Security con tu Base de Datos MySQL
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
