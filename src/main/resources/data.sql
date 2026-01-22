@@ -1,27 +1,27 @@
 SET NAMES utf8mb4;
 -- 1. SALAS SECRETAS
 INSERT INTO sala_secreta (codigo_acceso, funcion_principal, salida_emergencia) VALUES
-   ('OMG-99', 'Laboratorio de Mutaciones', true),       -- ID 1 (Volcán)
-   ('DOOM-1', 'Sala de Control de Misiles', false),     -- ID 2 (Torre)
-   ('FISH-X', 'Tanque de Alimentación', true),          -- ID 3 (Submarino)
-   ('GOLD-7', 'Cámara del Tesoro', false),              -- ID 4 (Búnker)
-   ('LION-K', 'Cueva de los Huesos', true),             -- ID 5 (Scar)
-   ('VOODOO', 'Sala de los Espíritus', false),          -- ID 6 (Facilier)
-   ('SITH-66', 'Cámara de Meditación Hiperbárica', true), -- ID 7 (Vader)
-   ('HADES-0', 'Piscina de Almas Perdidas', false);     -- ID 8 (Hades)
+   ('OMG-99', 'Laboratorio de Mutaciones', true),
+   ('DOOM-1', 'Sala de Control de Misiles', false),
+   ('FISH-X', 'Tanque de Alimentación', true),
+   ('GOLD-7', 'Cámara del Tesoro', false),
+   ('LION-K', 'Cueva de los Huesos', true),
+   ('VOODOO', 'Sala de los Espíritus', false),
+   ('SITH-66', 'Cámara de Meditación Hiperbárica', true),
+   ('HADES-0', 'Piscina de Almas Perdidas', false);
 
 -- 2. COMODIDADES
 INSERT INTO comodidad (nombre, auto_destruccion) VALUES
-('Foso con Tiburones', false),          -- ID 1
-('Rayo Láser Orbital', true),           -- ID 2
-('Ejército de Minions', false),         -- ID 3
-('Wifi 6G Encriptado', false),          -- ID 4
-('Silla Giratoria Maligna', false),     -- ID 5
-('Hienas Hambrientas', false),          -- ID 6
-('Sombras Vivientes', true),            -- ID 7
-('Sistema de Soporte Vital', false),    -- ID 8
-('Fuego Azul Decorativo', false),       -- ID 9
-('Abrigos de Piel de Dálmata', false);  -- ID 10
+('Foso con Tiburones', false),
+('Rayo Láser Orbital', true),
+('Ejército de Minions', false),
+('Wifi 6G Encriptado', false),
+('Silla Giratoria Maligna', false),
+('Hienas Hambrientas', false),
+('Sombras Vivientes', true),
+('Sistema de Soporte Vital', false),
+('Fuego Azul Decorativo', false),
+('Abrigos de Piel de Dálmata', false);
 
 -- 3. VILLANOS (Corregidos con el patrón: 3num + 1letra + 6num)
 
@@ -31,10 +31,10 @@ INSERT INTO villano (nombre, alias, carne_villano, email, username, password, ro
 -- =========================================================================
 ('Jack Napier', 'The Joker', '666J000001', 'alopper.daw@gmail.com', 'joker', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_ADMIN', true),
 -- =========================================================================
--- TWITTER / X
+-- GITLAB
 -- =========================================================================
--- LinkedIn, cambia el email de Mr. Freeze por el tuyo.
-('Victor Fries', 'Mr. Freeze', '000F000002', 'EMAIL_DEL_COMPAÑERO_TWITTER@ejemplo.com', 'freeze', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_USER', true),
+
+('Victor Fries', 'Mr. Freeze', '000F000002', 'alvaroortegabenitez03@gmail.com', 'freeze', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_ADMIN', true),
 
 -- =========================================================================
 -- LINKEDIN
