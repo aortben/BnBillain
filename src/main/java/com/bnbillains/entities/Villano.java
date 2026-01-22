@@ -85,6 +85,20 @@ public class Villano {
     @EqualsAndHashCode.Exclude
     private List<Resena> resenasEscritas;
 
+    // CAMPOS DE SEGURIDAD (Spring Security)
+
+    @Column(name = "username", unique = true)
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "role")
+    private String role;
+
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
     /**
      * Constructor personalizado para registro rápido (sin ID ni listas).
      */

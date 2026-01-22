@@ -34,3 +34,10 @@ build/
 
 ### Zencoder ###
 .zencoder/
+
+
+# IDEs
+.idea/
+*.iml
+*.iws
+.vscode/

@@ -22,12 +22,18 @@ CREATE TABLE IF NOT EXISTS comodidad (
 );
 
 CREATE TABLE IF NOT EXISTS villano (
-     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-     nombre VARCHAR(255) NOT NULL,
-     alias VARCHAR(255) NOT NULL,
-     carne_villano VARCHAR(20) NOT NULL UNIQUE,
-     email VARCHAR(255) NOT NULL UNIQUE
-);
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    -- CAMPOS DE SEGURIDAD (NUEVOS)
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'ROLE_USER',
+    enabled BOOLEAN DEFAULT TRUE,
+    -- CAMPOS DE NEGOCIO (ORIGINALES)
+    nombre VARCHAR(255) NOT NULL,
+    alias VARCHAR(255) NOT NULL,
+    carne_villano VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE
+    );
 
 -- =========================================================
 -- 2. ENTIDADES PRINCIPALES
