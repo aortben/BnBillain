@@ -42,3 +42,4 @@ build/
 *.iws
 .vscode/
 
+.env
