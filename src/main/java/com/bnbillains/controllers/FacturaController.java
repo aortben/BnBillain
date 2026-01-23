@@ -1,11 +1,15 @@
 package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Factura;
+import com.bnbillains.entities.Villano;
 import com.bnbillains.repositories.ReservaRepository;
+import com.bnbillains.repositories.VillanoRepository;
 import com.bnbillains.services.FacturaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,10 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Controlador para la gestión administrativa de facturas.
- * Permite listar, filtrar, editar estados de pago y visualizar documentos fiscales.
- */
 @Controller
 public class FacturaController {
 
@@ -29,18 +29,14 @@ public class FacturaController {
 
     private final FacturaService facturaService;
     private final ReservaRepository reservaRepository;
+    private final VillanoRepository villanoRepository;
 
-    public FacturaController(FacturaService facturaService, ReservaRepository reservaRepository) {
+    public FacturaController(FacturaService facturaService, ReservaRepository reservaRepository, VillanoRepository villanoRepository) {
         this.facturaService = facturaService;
         this.reservaRepository = reservaRepository;
+        this.villanoRepository = villanoRepository;
     }
 
-    // --- LISTAR ---
-
-    /**
-     * Muestra el listado de facturas con filtros avanzados.
-     * Soporta filtrado por rango de precios y método de pago simultáneamente.
-     */
     @GetMapping("/facturas")
     public String listar(@RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) String metodoPago,
@@ -52,7 +48,6 @@ public class FacturaController {
         Sort sortObj = getSort(sort);
         List<Factura> resultados;
 
-        // Lógica de filtrado en cascada (Prioridad: Rango > Método > Todo)
         if (minImporte != null && maxImporte != null) {
             resultados = facturaService.buscarPorRangoImporte(minImporte, maxImporte, sortObj);
         } else if (metodoPago != null && !metodoPago.isBlank()) {
@@ -61,7 +56,6 @@ public class FacturaController {
             resultados = facturaService.obtenerTodas(sortObj);
         }
 
-        // Paginación Manual (Cálculo de sublistas para la vista)
         int pageSize = 5;
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -71,7 +65,6 @@ public class FacturaController {
         int end = Math.min(start + pageSize, totalItems);
         List<Factura> listaPaginada = (start > end || totalItems == 0) ? Collections.emptyList() : resultados.subList(start, end);
 
-        // Pasar datos al HTML
         model.addAttribute("facturas", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
@@ -84,12 +77,9 @@ public class FacturaController {
         return "entities-html/factura";
     }
 
-    // --- FORMULARIOS ---
-
     @GetMapping("/facturas/new")
     public String formularioNuevo(Model model) {
         Factura f = new Factura();
-        // Inicializamos fecha HOY para evitar errores de validación en la vista
         f.setFechaEmision(LocalDate.now());
 
         model.addAttribute("factura", f);
@@ -103,7 +93,6 @@ public class FacturaController {
         if (facturaOpt.isPresent()) {
             Factura f = facturaOpt.get();
 
-            // Aseguramos que la fecha no sea nula para el selector HTML
             if (f.getFechaEmision() == null) {
                 f.setFechaEmision(LocalDate.now());
             }
@@ -114,8 +103,6 @@ public class FacturaController {
         }
         return "redirect:/facturas";
     }
-
-    // --- GUARDAR ---
 
     @PostMapping("/facturas/save")
     public String guardar(@Valid @ModelAttribute Factura factura,
@@ -129,7 +116,6 @@ public class FacturaController {
         }
 
         try {
-            // Seguridad extra: si llega sin fecha, ponemos hoy
             if (factura.getFechaEmision() == null) factura.setFechaEmision(LocalDate.now());
             facturaService.guardar(factura);
             redirectAttributes.addFlashAttribute("successMessage", "Factura emitida correctamente.");
@@ -140,26 +126,15 @@ public class FacturaController {
         return "redirect:/facturas";
     }
 
-    // --- ACTUALIZAR ---
-
-    /**
-     * Actualiza la factura existente.
-     * Incluye lógica para ignorar errores de validación en campos de solo lectura
-     * (como importes o fechas) si estos no se envían correctamente desde el formulario HTML.
-     */
     @PostMapping("/facturas/update")
     public String actualizar(@Valid @ModelAttribute Factura factura,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
                              Model model) {
 
-        // 1. FILTRO INTELIGENTE DE ERRORES
         if (bindingResult.hasErrors()) {
-
-            // Lista de campos 'readonly' cuyos errores podemos ignorar (porque los recuperaremos de la BD)
             List<String> camposSoloLectura = List.of("fechaEmision", "importe", "impuestosMalignos", "reserva");
 
-            // Comprobamos si hay errores en campos críticos (los que SÍ editamos, como metodoPago)
             boolean errorCritico = bindingResult.getFieldErrors().stream()
                     .anyMatch(err -> !camposSoloLectura.contains(err.getField()));
 
@@ -167,7 +142,6 @@ public class FacturaController {
                 logger.warn("Errores de validación críticos detectados: {}", bindingResult.getAllErrors());
                 model.addAttribute("allReservas", reservaRepository.findAll());
 
-                // Restauramos datos visuales recuperando de la BD para no romper el formulario
                 if(factura.getId() != null) {
                     facturaService.obtenerPorId(factura.getId()).ifPresent(orig -> {
                         if(factura.getReserva() == null) factura.setReserva(orig.getReserva());
@@ -176,12 +150,10 @@ public class FacturaController {
                 }
                 return "forms-html/factura-form";
             }
-            // Si llegamos aquí, los errores eran solo de campos readonly. Los ignoramos.
             logger.info("Saltando validación estricta de campos readonly. Procediendo a actualizar.");
         }
 
         try {
-            // Llamamos al servicio "blindado" que protege los datos
             facturaService.actualizar(factura.getId(), factura);
             redirectAttributes.addFlashAttribute("successMessage", "✅ Estado de pago actualizado.");
         } catch (Exception e) {
@@ -191,8 +163,6 @@ public class FacturaController {
         }
         return "redirect:/facturas";
     }
-
-    // --- EXTRAS ---
 
     @GetMapping("/facturas/delete/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
@@ -205,9 +175,6 @@ public class FacturaController {
         return "redirect:/facturas";
     }
 
-    /**
-     * Carga la vista de detalle para impresión (PDF).
-     */
     @GetMapping("/facturas/{id}/verDetalle")
     public String verDetalle(@PathVariable Long id, Model model) {
         return facturaService.obtenerPorId(id)
@@ -216,6 +183,56 @@ public class FacturaController {
                     return "entities-html/factura-detail";
                 })
                 .orElseGet(() -> "redirect:/facturas");
+    }
+
+    @GetMapping("/mis-facturas")
+    public String misFacturas(@RequestParam(defaultValue = "1") int page,
+                              @RequestParam(required = false) String sort,
+                              Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return "redirect:/login";
+        }
+        
+        String username = authentication.getName();
+        Optional<Villano> villano = villanoRepository.findByUsername(username);
+        
+        if (villano.isEmpty()) {
+            logger.warn("Usuario autenticado {} no tiene villano asociado", username);
+            return "redirect:/facturas";
+        }
+        
+        List<Factura> resultados = facturaService.obtenerFacturasPorVillano(villano.get().getId());
+        
+        Sort sortObj = getSort(sort);
+        resultados.sort((a, b) -> {
+            if (sortObj.getOrderFor("fechaEmision") != null) {
+                int cmp = a.getFechaEmision().compareTo(b.getFechaEmision());
+                return sortObj.getOrderFor("fechaEmision").isAscending() ? cmp : -cmp;
+            }
+            if (sortObj.getOrderFor("importe") != null) {
+                int cmp = Double.compare(a.getImporte(), b.getImporte());
+                return sortObj.getOrderFor("importe").isAscending() ? cmp : -cmp;
+            }
+            return Long.compare(a.getId(), b.getId());
+        });
+        
+        int pageSize = 5;
+        int totalItems = resultados.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalItems);
+        List<Factura> listaPaginada = (start > end || totalItems == 0) ? Collections.emptyList() : resultados.subList(start, end);
+        
+        model.addAttribute("facturas", listaPaginada);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("sort", sort);
+        
+        return "entities-html/factura";
     }
 
     private Sort getSort(String sort) {

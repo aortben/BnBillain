@@ -18,12 +18,12 @@
     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert"
          style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
         <span th:text="${successMessage}"></span>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
     </div>
     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
          style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
         <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
     </div>
 
     <div class="card shadow-sm mb-4 p-3">

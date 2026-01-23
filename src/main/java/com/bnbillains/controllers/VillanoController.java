@@ -1,11 +1,14 @@
 package com.bnbillains.controllers;
 
 import com.bnbillains.entities.Villano;
+import com.bnbillains.repositories.VillanoRepository;
 import com.bnbillains.services.VillanoService;
 import com.bnbillains.services.FacturaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,15 +26,14 @@ public class VillanoController {
     private static final Logger logger = LoggerFactory.getLogger(VillanoController.class);
     private final VillanoService villanoService;
     private final FacturaService facturaService;
+    private final VillanoRepository villanoRepository;
 
-    public VillanoController(VillanoService villanoService, FacturaService facturaService) {
+    public VillanoController(VillanoService villanoService, FacturaService facturaService, VillanoRepository villanoRepository) {
         this.villanoService = villanoService;
         this.facturaService = facturaService;
+        this.villanoRepository = villanoRepository;
     }
 
-    /**
-     * Listado de Villanos: Paginación + Filtro (Nombre/Alias) + Ordenación.
-     */
     @GetMapping("/villanos")
     public String listar(@RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) String search,
@@ -43,14 +45,12 @@ public class VillanoController {
         Sort sortObj = getSort(sort);
         List<Villano> resultados;
 
-        // 1. Obtención de datos
         if (search != null && !search.isBlank()) {
             resultados = villanoService.buscarFlexible(search, sortObj);
         } else {
             resultados = villanoService.obtenerTodas(sortObj);
         }
 
-        // 2. Paginación Manual
         int pageSize = 5;
         int totalItems = resultados.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -64,7 +64,6 @@ public class VillanoController {
         List<Villano> listaPaginada = (start > end || totalItems == 0) ?
                 Collections.emptyList() : resultados.subList(start, end);
 
-        // 3. Pasar atributos
         model.addAttribute("villanos", listaPaginada);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
@@ -72,7 +71,7 @@ public class VillanoController {
         model.addAttribute("search", search);
         model.addAttribute("sort", sort);
 
-        return "entities-html/villano"; // Ruta: templates/entities-html/villano.html
+        return "entities-html/villano";
     }
 
     @GetMapping("/villanos/{id}")
@@ -120,7 +119,6 @@ public class VillanoController {
             return "forms-html/villano-form";
         }
 
-        // Validación de duplicados (Carnet o Email)
         if (villano.getId() == null) {
             if (villanoService.existePorCarnetDeVillano(villano.getCarnetDeVillano())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "El carnet de villano ya existe.");
@@ -168,7 +166,24 @@ public class VillanoController {
         return "redirect:/villanos";
     }
 
-    // Helper de ordenación
+    @GetMapping("/mi-perfil")
+    public String miPerfil() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return "redirect:/login";
+        }
+        
+        String username = authentication.getName();
+        Optional<Villano> villano = villanoRepository.findByUsername(username);
+        
+        if (villano.isEmpty()) {
+            logger.warn("Usuario autenticado {} no tiene villano asociado", username);
+            return "redirect:/";
+        }
+        
+        return "redirect:/villanos/" + villano.get().getId();
+    }
+
     private Sort getSort(String sort) {
         if (sort == null) return Sort.by("id").ascending();
         return switch (sort) {

@@ -20,12 +20,12 @@
             <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert"
                  style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
                 <span th:text="${successMessage}"></span>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
             </div>
             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
                  style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
                 <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
             </div>
 
             <form th:action="${guarida.id != null ? '/guaridas/update' : '/guaridas/save'}"
@@ -118,14 +118,14 @@
                         <div class="col-md-6">
                             <label class="form-label text-white small text-uppercase fw-bold" th:text="#{msg.salasecreta.code}">Código Acceso</label>
                             <input type="text" class="form-control" th:field="*{salaSecreta.codigoAcceso}"
-                                   maxlength="8" required placeholder="Ej. 666-XYZ"
+                                   maxlength="8" required th:placeholder="#{msg.salaSecretaForm.placeholder.code}"
                                    style="font-family: monospace;">
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label text-white small text-uppercase fw-bold" th:text="#{msg.salasecreta.funtion}">Función Principal</label>
                             <input type="text" class="form-control" th:field="*{salaSecreta.funcionPrincipal}"
-                                   required placeholder="Ej. Laboratorio">
+                                   required th:placeholder="#{msg.salaSecretaForm.placeholder.func}">
                         </div>
 
                         <div class="col-12 mt-2">

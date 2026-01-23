@@ -1,74 +1,124 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <header th:fragment="header">
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-md fixed-top"
+         style="width: 80%; margin: 0 auto;
+                background-color: #050505 !important;
+                border-bottom: 2px solid #7a004b; /* EL BORDE MORADO */
+                box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+                border-radius: 0 0 15px 15px;">
+
         <div class="container-fluid">
 
-            <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
-                <img th:src="@{/images/logo.png}" alt="Logo" width="40" height="40" class="d-inline-block align-text-top"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <i class="bi bi-building-fill-exclamation text-danger" style="display:none;"></i>
-                <span>BnBillains</span>
+            <a class="navbar-brand text-white fw-bold hover-scale"
+               th:href="${#authorization.expression('isAuthenticated()')} ? @{/}"
+               style="text-shadow: 2px 2px 0 #2e003e; transition: transform 0.3s;">
+                <img th:src="@{/images/logo2.png}" th:alt="#{msg.home.logoAlt}" width="150"
+                     style="filter: drop-shadow(0 0 5px rgba(122, 0, 75, 0.5));">
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-            </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" th:aria-label="#{msg.header.toggleNav}"
+                    style="border: 1px solid #7a004b;">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span> </button>
 
-            <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mb-2 mb-md-0">
 
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/}" th:text="#{msg.header.home}">Inicio</a>
+                    <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link text-light fw-bold text-uppercase" th:href="@{/villanos}"
+                           style="letter-spacing: 1px;" th:text="#{msg.header.villains}">Villanos</a>
                     </li>
                     <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
-                        <a class="nav-link" th:href="@{/guaridas}" th:text="#{msg.header.lair}">Guaridas</a>
-                    </li>
-                    <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
-                        <a class="nav-link" th:href="@{/villanos}" th:text="#{msg.header.villains}">Villanos</a>
+                        <a class="nav-link text-light fw-bold text-uppercase" th:href="@{/guaridas}"
+                           style="letter-spacing: 1px;" th:text="#{msg.header.lair}">Guaridas</a>
                     </li>
                 </ul>
 
-                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center gap-3">
 
-                    <li class="nav-item d-flex align-items-center">
-                        <a th:href="@{''(lang=es)}" class="nav-link p-1" title="Español">🇪🇸</a>
-                        <span class="text-secondary">|</span>
-                        <a th:href="@{''(lang=en)}" class="nav-link p-1" title="English">🇬🇧</a>
+                    <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link text-light fw-bold dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span th:text="#{msg.header.options} ?: 'Opciones'">Más opciones</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-purple" aria-labelledby="navbarDropdown"
+                            style="background-color: #1a1a1d; border-color: #7a004b;">
+                            <li><a class="dropdown-item text-light" th:href="@{/comodidades}" th:text="#{msg.header.comfort}">Comodidades</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/salas-secretas}" th:text="#{msg.header.secretRooms}">Salas Secretas</a></li>
+                            <li><hr class="dropdown-divider bg-secondary"></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/resenas}" th:text="#{msg.header.reviews}">Reseñas</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/reservas}" th:text="#{msg.header.reservations}">Reservas</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/facturas}" th:text="#{msg.header.invoices}">Facturas</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <div class="d-flex align-items-center bg-dark border border-secondary rounded-pill shadow-sm px-2 py-1"
+                             style="transform: scale(0.95); border-color: #7a004b !important;">
+                            <a th:href="@{''(lang=es)}" class="btn btn-sm btn-link text-decoration-none fw-bold text-light px-2 lang-btn" th:title="#{msg.header.spanish}">
+                                <span style="font-size: 1.2em;">🇪🇸</span> <span class="small">ES</span>
+                            </a>
+                            <div style="width: 1px; height: 15px; background-color: #555;"></div>
+                            <a th:href="@{''(lang=en)}" class="btn btn-sm btn-link text-decoration-none fw-bold text-light px-2 lang-btn" th:title="#{msg.header.english}">
+                                <span class="small">EN</span> <span style="font-size: 1.2em;">🇬🇧</span>
+                            </a>
+                        </div>
                     </li>
 
                     <li class="nav-item d-flex gap-2" th:unless="${#authorization.expression('isAuthenticated()')}">
-                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm px-3">
-                            <i class="bi bi-person-fill"></i> <span th:text="#{spring.security.ui.login.submit}">Login</span>
+                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm fw-bold px-3">
+                            <i class="bi bi-person-fill"></i> <span th:text="#{msg.header.login}">Login</span>
                         </a>
-                        <a th:href="@{/register}" class="btn btn-danger btn-sm px-3">
-                            <i class="bi bi-person-plus-fill"></i> Registro
+                        <a th:href="@{/register}" class="btn btn-sm fw-bold px-3 text-white"
+                           style="background-color: #7a004b; border: 1px solid #7a004b;">
+                            <span th:text="#{msg.header.register}">Registro</span>
                         </a>
                     </li>
 
                     <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="Avatar" width="32" height="32" class="rounded-circle border border-danger">
-                            <span th:text="${#authentication.name}" class="text-white">Villano</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-light fw-bold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://github.com/mdo.png" th:alt="#{msg.header.avatar}" width="35" height="35"
+                                 class="rounded-circle border border-light shadow-sm">
+                            <span th:text="${#authentication.name}">Villano</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="userDropdown">
-                            <li><span class="dropdown-header text-uppercase small">Tu Cuenta</span></li>
-                            <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
-                            <li><a class="dropdown-item" href="#">Mis Reservas</a></li>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown"
+                            style="background-color: #1a1a1d; border-color: #7a004b;">
+                            <li><span class="dropdown-header text-uppercase small fw-bold text-white" th:text="#{msg.header.myAccount}">Mi Cuenta</span></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/mi-perfil}" th:text="#{msg.header.myProfile}">Mi Perfil</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/mis-reservas}" th:text="#{msg.header.reservations}">Reservas</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/mis-facturas}" th:text="#{msg.header.invoices}">Facturas</a></li>
                             <li><hr class="dropdown-divider bg-secondary"></li>
 
                             <li>
                                 <form th:action="@{/logout}" method="post" class="m-0">
-                                    <button type="submit" class="dropdown-item text-danger fw-bold d-flex align-items-center gap-2">
-                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    <button type="submit" class="dropdown-item text-danger fw-bold d-flex align-items-center gap-2 hover-bg-dark">
+                                        <i class="bi bi-box-arrow-right"></i> <span th:text="#{msg.header.logout}">Cerrar Sesión</span>
                                     </button>
                                 </form>
                             </li>
                         </ul>
                     </li>
+
                 </ul>
             </div>
         </div>
     </nav>
+
+    <style>
+        .lang-btn:hover { transform: scale(1.15); color: #7a004b !important; } /* Morado al pasar ratón */
+        .hover-scale:hover { transform: scale(1.05); }
+
+        .nav-link:hover {
+            color: #7a004b !important; /* Morado al pasar el ratón */
+            text-shadow: 0 0 5px rgba(122, 0, 75, 0.5);
+        }
+
+        /* Estilos para el dropdown oscuro */
+        .dropdown-item:hover {
+            background-color: #2e003e !important; /* Morado oscuro al pasar ratón */
+            color: #fff !important;
+        }
+    </style>
 </header>
 </html>

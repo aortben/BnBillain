@@ -20,7 +20,7 @@
             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert"
                  style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
                 <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
             </div>
 
             <form th:action="@{${villano.id == null} ? '/villanos/save' : '/villanos/update'}"
