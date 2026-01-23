@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('BnBillains - ' + #{msg.construction.title})}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center container"
+      style="min-height: 100vh; padding-top: 120px; padding-bottom: 100px;">
+
+    <div class="card shadow col-md-8 col-lg-6 border-secondary" 
+         style="background: linear-gradient(135deg, #1a1a1d 0%, #2e003e 100%); border-color: #7a004b !important;">
+        
+        <div class="card-header text-center" style="background-color: #050505; border-bottom: 2px solid #7a004b;">
+            <h1 class="display-3 mb-0" style="font-family: 'Creepster', cursive; color: #cf000f; text-shadow: 3px 3px 0 #2e003e;">
+                <i class="bi bi-hammer"></i> <span th:text="#{msg.construction.title}">EN CONSTRUCCIÓN</span>
+            </h1>
+        </div>
+
+        <div class="card-body p-5 text-center">
+            
+            <div class="mb-4" style="font-size: 5rem; animation: pulse 2s infinite;">
+                <i class="bi bi-tools" style="color: #7a004b; filter: drop-shadow(0 0 10px rgba(122, 0, 75, 0.8));"></i>
+            </div>
+
+            <div class="alert alert-warning mb-4" 
+                 style="background-color: rgba(207, 0, 15, 0.2); border: 2px dashed #cf000f; color: #fff;">
+                <h4 class="alert-heading mb-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i> 
+                    <span th:text="#{msg.construction.warning}">¡Zona en Obras!</span>
+                </h4>
+                <p class="lead mb-2" th:text="#{msg.construction.message1}">
+                    Nuestros minions están trabajando arduamente en el sistema de reclutamiento.
+                </p>
+                <p class="mb-0" th:text="#{msg.construction.message2}">
+                    Por ahora, tendrás que usar identidades falsas (OAuth) o esperar a que terminemos de construir esta sección.
+                </p>
+            </div>
+
+            <div class="p-4 rounded mb-4" style="background-color: rgba(0, 0, 0, 0.4); border: 1px solid #7a004b;">
+                <h5 class="text-uppercase mb-3" style="color: #7a004b; letter-spacing: 2px;">
+                    <i class="bi bi-info-circle"></i> 
+                    <span th:text="#{msg.construction.info}">Estado del Proyecto</span>
+                </h5>
+                <div class="text-start text-light small">
+                    <p class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i> 
+                        <span th:text="#{msg.construction.done1}">Sistema de login funcional</span>
+                    </p>
+                    <p class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i> 
+                        <span th:text="#{msg.construction.done2}">OAuth con Google/LinkedIn/GitLab</span>
+                    </p>
+                    <p class="mb-2">
+                        <i class="bi bi-hourglass-split text-warning"></i> 
+                        <span th:text="#{msg.construction.progress}">Registro manual... (nuestros minions son lentos)</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a th:href="@{/login}" class="btn btn-primary btn-lg shadow">
+                    <i class="bi bi-arrow-left-circle"></i> 
+                    <span th:text="#{msg.construction.backLogin}">Volver al Login</span>
+                </a>
+                <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-house"></i> 
+                    <span th:text="#{msg.construction.backHome}">Ir al Inicio</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+    </style>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>
+

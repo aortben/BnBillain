@@ -35,7 +35,7 @@ h1, h2, h3, h4, h5, h6 {
 /* --- Navbar Premium (Reemplaza la sección Navbar anterior) --- */
 .navbar {
     /* Fondo degradado oscuro estilo Villano */
-    background: linear-gradient(180deg, rgba(15,15,16,1) 0%, rgba(26,26,29,0.95) 100%) !important;
+    background:#050505 !important;
     backdrop-filter: blur(10px); /* Efecto cristal */
     border-bottom: 2px solid var(--color-logo-light);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
@@ -52,7 +52,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar-brand:hover {
     transform: scale(1.05);
-    color: var(--color-accent) !important;
+    color: var(--color-logo-light) !important;
 }
 
 .nav-link {
@@ -79,7 +79,7 @@ h1, h2, h3, h4, h5, h6 {
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: var(--color-accent);
+    background-color: var(--color-logo-light);
     transition: width 0.3s;
 }
 

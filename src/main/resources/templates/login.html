@@ -1,89 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head ('BnBillains - Acceso')}"></head>
+<head th:replace="~{fragments/head :: head ('BnBillains - ' + #{msg.login.title})}"></head>
 <body class="d-flex flex-column h-100">
 
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-shrink-0 d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
+<main class="flex-shrink-0 flex-grow-1 d-flex justify-content-center align-items-center container"
+      style="min-height: 100vh; padding-top: 120px; padding-bottom: 100px;">
 
-                <div class="card shadow-lg animate__animated animate__fadeInUp"
-                     style="background-color: rgba(26, 26, 29, 0.95); border: 1px solid var(--color-logo-light); box-shadow: 0 0 20px rgba(122, 0, 75, 0.2);">
+    <div class="card shadow col-md-6 col-lg-4 border-secondary">
 
-                    <div class="card-header text-center py-4 border-0" style="background: transparent;">
-                        <h2 class="mb-0 text-danger" style="font-family: var(--font-title); letter-spacing: 3px; text-shadow: 2px 2px 0 #000;">
-                            Identificación Criminal
-                        </h2>
+        <div class="card-header text-center">
+            <h2 class="mb-0 display-6" th:text="#{msg.login.title}">
+                Identificación
+            </h2>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert"
+                 style="background-color: #5a0000; color: #fff; border-color: #8a0000;">
+                <i class="bi bi-radioactive"></i> <span th:text="#{msg.login.error}">Credenciales incorrectas.</span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
+            </div>
+
+            <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show" role="alert"
+                 style="background-color: #1e4620; color: #fff; border-color: #2e7d32;">
+                <i class="bi bi-door-closed"></i> <span th:text="#{msg.login.logoutSuccess}">Has huido correctamente.</span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" th:aria-label="#{msg.common.close}"></button>
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="username" class="form-label text-light fw-bold" th:text="#{msg.login.username}">Usuario o Email:</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               th:placeholder="#{msg.login.usernamePlaceholder}" required autofocus>
                     </div>
 
-                    <div class="card-body p-4 pt-0">
+                    <div class="col-12">
+                        <label for="password" class="form-label text-light fw-bold" th:text="#{msg.login.password}">Contraseña:</label>
+                        <input type="password" class="form-control" id="password" name="password"
+                               th:placeholder="#{msg.login.passwordPlaceholder}" required>
+                    </div>
 
-                        <div th:if="${param.error}" class="alert alert-danger text-center border-danger bg-dark text-danger shadow-sm mb-4" role="alert">
-                            <i class="bi bi-radioactive"></i> Credenciales incorrectas, impostor.
-                            <div th:if="${errorMessage}" class="small mt-1 text-light" th:text="${errorMessage}"></div>
+                    <div class="col-12 mt-4">
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg shadow" type="submit">
+                                <i class="bi bi-fingerprint"></i> <span th:text="#{msg.login.submit}">ACCEDER</span>
+                            </button>
                         </div>
-
-                        <div th:if="${param.logout}" class="alert alert-success text-center border-success bg-dark text-success shadow-sm mb-4" role="alert">
-                            <i class="bi bi-door-closed"></i> Has huido a las sombras correctamente.
-                        </div>
-
-                        <form th:action="@{/login}" method="post">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required autofocus>
-                                <label for="username" class="text-secondary">Nombre en Clave o Email</label>
-                            </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-                                <label for="password" class="text-secondary">Contraseña Secreta</label>
-                            </div>
-                            <div class="d-grid gap-2 mb-4">
-                                <button class="btn btn-danger btn-lg fw-bold shadow-sm" type="submit"
-                                        style="letter-spacing: 1px;">
-                                    <i class="bi bi-fingerprint"></i> ACCEDER A LA GUARIDA
-                                </button>
-                            </div>
-                        </form>
-
-                        <div class="position-relative text-center mb-4">
-                            <hr class="border-secondary opacity-50">
-                            <span class="position-absolute top-50 start-50 translate-middle px-3 text-muted small text-uppercase"
-                                  style="background-color: #1a1a1d; font-weight: bold; letter-spacing: 1px;">
-                                O usa identidad falsa
-                            </span>
-                        </div>
-
-                        <div class="d-grid gap-3">
-
-                            <a href="/oauth2/authorization/google" class="btn btn-outline-light btn-lg text-start position-relative overflow-hidden group-hover">
-                                <i class="bi bi-google fs-5 me-3 text-danger"></i>
-                                <span class="fw-bold">Google</span>
-                            </a>
-
-                            <a href="/oauth2/authorization/linkedin" class="btn btn-outline-light btn-lg text-start">
-                                <i class="bi bi-linkedin fs-5 me-3 text-primary"></i>
-                                <span class="fw-bold">LinkedIn</span>
-                            </a>
-
-                            <a href="/oauth2/authorization/gitlab" class="btn btn-outline-light btn-lg text-start position-relative overflow-hidden group-hover">
-                                <i class="bi bi-gitlab fs-5 me-3" style="color: #FC6D26;"></i>
-                                <span class="fw-bold">GitLab</span>
-                            </a>
-
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <p class="small text-muted mb-0">¿Aún no tienes ficha policial?</p>
-                            <a href="/register" class="text-danger fw-bold text-decoration-none text-uppercase" style="letter-spacing: 1px;">
-                                <i class="bi bi-person-plus-fill"></i> Reclútate aquí
-                            </a>
-                        </div>
-
                     </div>
                 </div>
+            </form>
+
+            <hr class="my-4" style="border-color: var(--color-logo-light); opacity: 0.5;">
+
+            <div class="p-3 rounded mb-3" style="background-color: #121212; border: 1px solid #333;">
+                <h6 class="text-center text-white text-uppercase small fw-bold mb-3" th:text="#{msg.login.useFakeIdentity}">O usa identidad falsa</h6>
+
+                <div class="d-grid gap-2">
+
+                    <a href="/oauth2/authorization/google" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-google text-danger"></i>
+                        <span class="fw-bold small">Google</span>
+                    </a>
+
+                    <a href="/oauth2/authorization/linkedin" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-linkedin text-primary"></i>
+                        <span class="small">LinkedIn</span>
+                    </a>
+
+                    <a href="/oauth2/authorization/gitlab" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-gitlab" style="color: #FC6D26;"></i>
+                        <span class="small">GitLab</span>
+                    </a>
+
+                </div>
             </div>
+
+            <div class="text-center mt-3">
+                <p class="small text-white mb-1" th:text="#{msg.login.noRecord}">¿Sin antecedentes?</p>
+                <a href="/register" class="text-light fw-bold text-decoration-none hover-scale d-inline-block">
+                    <span th:text="#{msg.login.registerHere}">RECLÚTATE AQUÍ</span> <i class="bi bi-arrow-right-short"></i>
+                </a>
+            </div>
+
         </div>
     </div>
 </main>

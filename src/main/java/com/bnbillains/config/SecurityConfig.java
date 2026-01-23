@@ -21,7 +21,6 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    // --- INYECCIÓN DE HANDLERS (PDF Pág 20) ---
     @Autowired
     private CustomOAuth2SuccessHandler successHandler;
 
@@ -32,24 +31,25 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // Permitimos el acceso a la raíz "/" (Index) y a los recursos estáticos
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        // --- CAMBIO CLAVE AQUÍ ---
+                        // Al loguearse, forzamos la ida a "/home" (Dashboard) en vez de "/" (Landing)
+                        .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
-                // --- OAUTH2 ESTRICTO (Con Handlers) ---
                 .oauth2Login(oauth -> oauth
                         .loginPage("/login")
-                        // En lugar de defaultSuccessUrl, usamos los handlers
-                        .successHandler(successHandler)
+                        .successHandler(successHandler) // OJO: Revisa que este handler también redirija a /home
                         .failureHandler(failureHandler)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout") // URL estándar
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
@@ -60,7 +60,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ... resto de beans (authenticationProvider, passwordEncoder) igual que antes ...
     @Bean
     @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider() {
