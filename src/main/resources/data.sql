@@ -37,10 +37,9 @@ INSERT INTO villano (nombre, alias, carne_villano, email, username, password, ro
 ('Victor Fries', 'Mr. Freeze', '000F000002', 'alvaroortegabenitez03@gmail.com', 'freeze', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_ADMIN', true),
 
 -- =========================================================================
--- LINKEDIN
+-- Discord
 -- =========================================================================
--- LinkedIn, cambia el email de Doofenshmirtz por el tuyo.
-('Heinz Doofenshmirtz', 'Dr. Doofenshmirtz', '999D000003', 'EMAIL_DEL_COMPAÑERO_LINKEDIN@ejemplo.com', 'doof', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_MANAGER', true),
+('Heinz Doofenshmirtz', 'Dr. Doofenshmirtz', '999D000003', 'jmgarciacampos06@gmail.com', 'doof', '$2a$12$FVRijCavVZ7Qt15.CQssHe9m/6eLAdjAvOPiOKFIjMU161wApxzye', 'ROLE_MANAGER', true),
 
 
 -- OTROS VILLANOS DE RELLENO (Para que la web no se vea vacía)
